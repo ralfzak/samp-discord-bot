@@ -736,10 +736,10 @@ namespace app.Services
             "Words"
         };
 
-        public static async Task<SAMPWikiResponseModel> GetInfoAsync(string article)
+        public static async Task<SampWikiResponseModel> GetInfoAsync(string article)
         {
             string url = $"http://ralfzak.me/api/sampwiki/wiki.php?p={article}";
-            SAMPWikiResponseModel result = new SAMPWikiResponseModel();
+            SampWikiResponseModel result;
 
             using (HttpClient client = new HttpClient())
             {
@@ -750,7 +750,7 @@ namespace app.Services
                         try
                         {
                             string res = await content.ReadAsStringAsync();
-                            result = JsonConvert.DeserializeObject<SAMPWikiResponseModel>(res);
+                            result = JsonConvert.DeserializeObject<SampWikiResponseModel>(res);
                         }
                         catch (Exception)
                         {
@@ -761,11 +761,6 @@ namespace app.Services
             }
 
             return result;
-        }
-
-        public static string BeautifyExample(string s)
-        {
-            return new Regex("[ ]{2,}", RegexOptions.None).Replace(s, "\n   ").Replace(" }", "\n}");
         }
 
         public static string GetClosestArticle(string atr)

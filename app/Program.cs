@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +9,8 @@ using Discord.WebSocket;
 using Discord.Commands;
 using app.Services;
 using app.Helpers;
+using app.Models;
+using Newtonsoft.Json;
 
 namespace app
 {

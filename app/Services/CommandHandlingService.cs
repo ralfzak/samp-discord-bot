@@ -52,7 +52,8 @@ namespace app.Services
             // user cmd cooldown
             if (UserService.IsUserOnCooldown(rawMessage.Author.Id, ""))
             {
-                LoggerService.Write($"[MessageReceivedAsync] user {rawMessage.Author.Username} {rawMessage.Author.Id} is on a cooldown, msg blocked: {rawMessage.Content}");
+                LoggerService.Write($"[MessageReceivedAsync] user {rawMessage.Author.Username} {rawMessage.Author.Id} " +
+                                    $"is on a cooldown, msg blocked: {rawMessage.Content}");
                 await Task.CompletedTask;
                 return;
             }
@@ -79,7 +80,8 @@ namespace app.Services
             {
                 await context.Channel.SendMessageAsync(result.ErrorReason);
             }
-            else if (result.Error.Value == CommandError.ObjectNotFound || result.Error.Value == CommandError.MultipleMatches)
+            else if (result.Error.Value == CommandError.ObjectNotFound || 
+                     result.Error.Value == CommandError.MultipleMatches)
             {
                 await context.Channel.SendMessageAsync(result.ErrorReason);
             }
@@ -88,17 +90,14 @@ namespace app.Services
                 await _discord
                     .GetGuild(Program.GUILD_ID)
                     .GetTextChannel(Program.ADMIN_CHAN_ID)
-                    .SendMessageAsync($"failed cmd ({command.Value.Name}) by {context.User.Username} - error: [{result.Error.ToString()}] {result.ErrorReason}");
+                    .SendMessageAsync($"Failed cmd ({command.Value.Name}) by {context.User.Username} " +
+                                      $"- error: [{result.Error.ToString()}] {result.ErrorReason}");
             }
-            
         }
 
-        private bool ChannelAllowsCommands(ulong chanid)
+        private bool ChannelAllowsCommands(ulong channelId)
         {
-            if (chanid == Program.ADVERT_CHAN_ID)
-                return false;
-
-            return true;
+            return channelId != Program.ADVERT_CHAN_ID;
         }
     }
 }

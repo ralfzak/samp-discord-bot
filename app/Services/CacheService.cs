@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace app.Services
 {
@@ -8,13 +7,13 @@ namespace app.Services
     {
         private static Dictionary<string, string> CACHE_MAP = new Dictionary<string, string>();
 
-        public static int GetUserForumID(ulong user_id)
+        public static int GetUserForumId(ulong user_id)
         {
             string key = $"FORUMID-{user_id}";
             return (CACHE_MAP.ContainsKey(key)) ? Int32.Parse(CACHE_MAP[key]) : -1;
         }
 
-        public static void SetUserForumID(ulong user_id, int id)
+        public static void SetUserForumId(ulong user_id, int id)
         {
             string key = $"FORUMID-{user_id}";
             if (CACHE_MAP.ContainsKey(key))
@@ -46,9 +45,9 @@ namespace app.Services
             return (CACHE_MAP.ContainsKey(key)) ? ((VERIFICATION_STATES)Int32.Parse(CACHE_MAP[key])) : VERIFICATION_STATES.NONE;
         }
 
-        public static void SetUserVerificationState(ulong user_id, VERIFICATION_STATES state)
+        public static void SetUserVerificationState(ulong userId, VERIFICATION_STATES state)
         {
-            string key = $"STATE-{user_id}";
+            string key = $"STATE-{userId}";
             if (CACHE_MAP.ContainsKey(key))
             {
                 CACHE_MAP[key] = ((int)state).ToString();

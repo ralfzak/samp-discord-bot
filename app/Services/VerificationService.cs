@@ -40,7 +40,8 @@ namespace app.Services
             if (match.Success && profile_page.Contains(token))
             {
                 var fname = match.Groups[0].Value.Remove(0, 36).Replace("</title>", "");
-                LoggerService.Write($"[GetForumProfileIfContainsCodeAsync] fetching forumid {profile_id}: got forumName as {fname}");
+                LoggerService.Write($"[GetForumProfileIfContainsCodeAsync] fetching forumid {profile_id}: " +
+                                    $"got forumName as {fname}");
                 return fname;
             }
 
@@ -55,7 +56,8 @@ namespace app.Services
             if (match.Success)
             {
                 var fname = match.Groups[0].Value.Remove(0, 36).Replace("</title>", "");
-                LoggerService.Write($"[GetForumProfileNameAsync] fetching forumid {profile_id}: got forumName as {fname}");
+                LoggerService.Write($"[GetForumProfileNameAsync] fetching forumid {profile_id}: " +
+                                    $"got forumName as {fname}");
                 return fname;
             }
 
