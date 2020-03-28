@@ -14,10 +14,10 @@ namespace app.Services
 {
     static class SAMPServerService
     {
-        public static async Task<SAMPServerResponseModel> GetInfoAsync(string ip, int port)
+        public static async Task<SampServerResponseModel> GetInfoAsync(string ip, int port)
         {
             string url = $"http://ralfzak.me/api/samp.php?ip={ip}&port={port}";
-            var result = new SAMPServerResponseModel();
+            var result = new SampServerResponseModel();
 
             if (!ValidateIPv4(ip))
                 return result;
@@ -31,7 +31,7 @@ namespace app.Services
                         try
                         {
                             string res = await content.ReadAsStringAsync();
-                            result = JsonConvert.DeserializeObject<SAMPServerResponseModel>(res);
+                            result = JsonConvert.DeserializeObject<SampServerResponseModel>(res);
                         }
                         catch (Exception) {
                             result = null;
@@ -90,7 +90,7 @@ namespace app.Services
         private string szIP;
         private ushort iPort;
 
-        public SAMPServerQueryService(string ip, ushort port, char packet_type, int timeout = 500)
+        public SAMPServerQueryService(string ip, ushort port, char packetType, int timeout = 500)
         {
             MemoryStream stream = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(stream);
@@ -125,9 +125,9 @@ namespace app.Services
                             writer.Write(Convert.ToByte(Convert.ToInt16(szSplitIP[3])));
 
                             writer.Write(iPort);
-                            writer.Write(packet_type);
+                            writer.Write(packetType);
 
-                            LoggerService.Write("[SAMPServerQueryService] Transmitting Packet: " + packet_type);
+                            LoggerService.Write("[SAMPServerQueryService] Transmitting Packet: " + packetType);
                         }
                     }
                     svrConnect.SendTo(stream.ToArray(), serverEndPoint);

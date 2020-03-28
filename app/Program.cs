@@ -6,31 +6,45 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using app.Services;
-using app.Helpers;
 
 namespace app
 {
     class Program
     {
-        private static bool PRODUCTION = true;
-        private static string BOT_TOKEN = "NTY4MTMyMzM3NTczOTUzNTUy.XL41rQ.puaIj7V17qdwQfV35Hk2Mr05vu4";
-        public static ulong BOT_ID = 568132337573953552;
-
         public static string FORUM_PROFILE_URL = "https://forum.sa-mp.com/member.php?u=";
 
-        public static ulong GUILD_ID = 567064077613006861;
-
-        public static ulong VERIFIED_ROLE_ID = 568478807791763483;
-
-        public static ulong SCRIPTING_CHAN_ID = 567081165677264898;
-        public static ulong ADVERT_CHAN_ID = 568123810897985538;
-        public static ulong BOT_CHAN_ID = 570986182452838412;
-        public static ulong ADMIN_CHAN_ID = 569907291965358091;
+        private static string BOT_TOKEN = 
+            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_BOT_TOKEN);
         
-        public static string DB_SERVER = (PRODUCTION) ? "localhost" : "51.83.97.107";
-        public static string DB_DB = "sampdiscord";
-        public static string DB_USER = (PRODUCTION) ? "sampdiscord" : "sampdiscord";
-        public static string DB_PASS = "sampdiscord";
+        public static ulong GUILD_ID = 
+            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_GUILD_ID));
+
+        public static ulong VERIFIED_ROLE_ID = 
+            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_VERIFIED_ROLE_ID));
+
+        public static ulong SCRIPTING_CHAN_ID = 
+            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_SCRIPTING_CHAN_ID));
+        
+        public static ulong ADVERT_CHAN_ID = 
+            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_ADVERT_CHAN_ID));
+        
+        public static ulong BOT_CHAN_ID = 
+            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_BOT_CHAN_ID));
+        
+        public static ulong ADMIN_CHAN_ID = 
+            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_ADMIN_CHAN_ID));
+
+        public static string DB_SERVER =
+            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_DB_SERVER);
+
+        public static string DB_DB =
+            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_DB_DB);
+
+        public static string DB_USER =
+            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_DB_USER);
+
+        public static string DB_PASS =
+            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_DB_PASS);
 
         static void Main(string[] args)
         {

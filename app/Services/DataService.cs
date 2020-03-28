@@ -6,7 +6,12 @@ namespace app.Services
 {
     public static class DataService
     {
-        private static string CONNECTION_STRING = $"server={Program.DB_SERVER};port=3306;database={Program.DB_DB};user={Program.DB_USER};password={Program.DB_PASS};";
+        private static string CONNECTION_STRING = 
+            $"server={Program.DB_SERVER};" +
+            $"port=3306;" +
+            $"database={Program.DB_DB};" +
+            $"user={Program.DB_USER};" +
+            $"password={Program.DB_PASS};";
 
         private static MySqlConnection GetConnection()
         {

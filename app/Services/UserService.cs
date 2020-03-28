@@ -37,7 +37,10 @@ namespace app.Services
             // remove all keys with low cooldown
             if (COOLDOWN_MAP.Count > 0)
             {
-                var expiredKeys = COOLDOWN_MAP.Where(kp => (IsOnCooldown(kp.Value) && kp.Key != key)).Select(kp => kp.Key).ToList();
+                var expiredKeys = COOLDOWN_MAP
+                    .Where(kp => (IsOnCooldown(kp.Value) && kp.Key != key))
+                    .Select(kp => kp.Key)
+                    .ToList();
                 foreach (var k in expiredKeys)
                 {
                     COOLDOWN_MAP.Remove(k);
@@ -63,7 +66,8 @@ namespace app.Services
                 fname = forum_info;
             }
 
-            var data = DataService.Get("SELECT `userid` FROM `verifications` WHERE `forumid`=@fid OR `forum_name`=@fname LIMIT 1;",
+            var data = DataService.Get(
+                "SELECT `userid` FROM `verifications` WHERE `forumid`=@fid OR `forum_name`=@fname LIMIT 1;",
                 new Dictionary<string, object>()
                 {
                     {"@fid", fid},
@@ -86,7 +90,8 @@ namespace app.Services
             fid = -1;
             fname = string.Empty;
 
-            var data = DataService.Get("SELECT `forumid`, `forum_name` FROM `verifications` WHERE `userid`=@uid LIMIT 1;", 
+            var data = DataService.Get(
+                "SELECT `forumid`, `forum_name` FROM `verifications` WHERE `userid`=@uid LIMIT 1;", 
                 new Dictionary<string, object>()
                 {
                     {"@uid", user_id}
@@ -128,7 +133,8 @@ namespace app.Services
 
         public static void StoreUserVerification(ulong uid, int fid, string forum_name, string discord_user)
         {
-            DataService.Put("INSERT INTO verifications (`forumid`, `userid`, `forum_name`, `by`) VALUES (@fid, @uid, @fname, @by)",
+            DataService.Put(
+                "INSERT INTO verifications (`forumid`, `userid`, `forum_name`, `by`) VALUES (@fid, @uid, @fname, @by)",
                 new Dictionary<string, object>()
                 {
                     {"@fid", fid},
@@ -140,7 +146,8 @@ namespace app.Services
 
         public static void DeleteUserVerification(ulong uid)
         {
-            DataService.Put("DELETE FROM verifications WHERE `userid`=@uid;",
+            DataService.Put(
+                "DELETE FROM verifications WHERE `userid`=@uid;",
                 new Dictionary<string, object>()
                 {
                     {"@uid", uid}

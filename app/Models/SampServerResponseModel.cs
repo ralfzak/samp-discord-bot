@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace app.Models
+﻿namespace app.Models
 {
-    public class SAMPServerResponseModel
+    public class SampServerResponseModel
     {
         public string ServerID { get; set; }
         public string IP { get; set; }

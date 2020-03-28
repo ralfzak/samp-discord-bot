@@ -1,0 +1,13 @@
+{
+  "botToken": "",
+  "guildId": "",
+  "verifiedRoleId": "",
+  "scriptingChannelId": "",
+  "advertChannelId": "",
+  "botChannelId": "",
+  "adminChannelId": "",
+  "dbServer": "",
+  "dbDatabase": "",
+  "dbUser": "",
+  "dbPassword":  ""
+}

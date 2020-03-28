@@ -12,20 +12,21 @@ using Discord.WebSocket;
 using System.Threading;
 using System.Net;
 
-namespace app.Models
+namespace app.Modules
 {
-    public class WikiModel : ModuleBase<SocketCommandContext>
+    public class WikiModule : ModuleBase<SocketCommandContext>
     {
         // Server 
         [Command("wiki")]
         [Name("wiki")]
         [Summary("/wiki")]
-        public async Task wikiAsync(string input = "")
+        public async Task Wiki(string input = "")
         {
             // server cmd cooldown
             if (UserService.IsUserOnCooldown(Context.User.Id, "wiki"))
             {
-                LoggerService.Write($"[cooldown] user {Context.User.Username} {Context.User.Id} is on a cooldown, cmd blocked");
+                LoggerService.Write($"[cooldown] user {Context.User.Username} {Context.User.Id} is on a cooldown, " +
+                                    "cmd blocked");
                 await Task.CompletedTask;
                 return;
             }
@@ -38,9 +39,12 @@ namespace app.Models
                 return;
             }
 
-            if (Context.Channel.Id != Program.BOT_CHAN_ID && Context.Channel.Id != Program.ADMIN_CHAN_ID && Context.Channel.Id != Program.SCRIPTING_CHAN_ID)
+            if (Context.Channel.Id != Program.BOT_CHAN_ID && 
+                Context.Channel.Id != Program.ADMIN_CHAN_ID && 
+                Context.Channel.Id != Program.SCRIPTING_CHAN_ID)
             {
-                await Context.User.SendMessageAsync($"This command only works on <#{Program.BOT_CHAN_ID}> and <#{Program.SCRIPTING_CHAN_ID}>");
+                await Context.User.SendMessageAsync($"This command only works on <#{Program.BOT_CHAN_ID}> " +
+                                                    $"and <#{Program.SCRIPTING_CHAN_ID}>");
                 return;
             }
 
@@ -55,7 +59,8 @@ namespace app.Models
             var articleInfo = await SAMPWikiService.GetInfoAsync(article);
             if (object.ReferenceEquals(articleInfo, null))
             {
-                await ReplyAsync($"Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                await ReplyAsync("Sorry! I haven't found any similar matches. " +
+                                 $"Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
                 return;
             }
 
@@ -67,7 +72,8 @@ namespace app.Models
 
             if (articleInfo.status != "ok")
             {
-                await ReplyAsync($"Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                await ReplyAsync("Sorry! I haven't found any similar matches. " +
+                                 $"Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
                 return;
             }
 
