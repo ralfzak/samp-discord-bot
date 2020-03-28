@@ -4,14 +4,8 @@ using System.Text;
 
 namespace app.Services
 {
-    /// <summary>
-    /// Contains approximate string matching
-    /// </summary>
     public static class LevenshteinDistance
     {
-        /// <summary>
-        /// Compute the distance between two strings.
-        /// </summary>
         public static int Compute(string s, string t)
         {
             int n = s.Length;

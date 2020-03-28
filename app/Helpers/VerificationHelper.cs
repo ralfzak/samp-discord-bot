@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-
-
-namespace app.Helpers
+﻿namespace app.Helpers
 {
     public static class VerificationHelper
     {

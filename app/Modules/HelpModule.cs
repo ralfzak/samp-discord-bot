@@ -11,9 +11,9 @@ using app.Helpers;
 using Discord.WebSocket;
 using System.Threading;
 
-namespace app.Models
+namespace app.Modules
 {
-    public class HelpModel : ModuleBase<SocketCommandContext>
+    public class HelpModule : ModuleBase<SocketCommandContext>
     {
         // Help
         [Command("help")]

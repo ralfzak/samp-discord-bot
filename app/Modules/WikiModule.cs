@@ -12,9 +12,9 @@ using Discord.WebSocket;
 using System.Threading;
 using System.Net;
 
-namespace app.Models
+namespace app.Modules
 {
-    public class WikiModel : ModuleBase<SocketCommandContext>
+    public class WikiModule : ModuleBase<SocketCommandContext>
     {
         // Server 
         [Command("wiki")]

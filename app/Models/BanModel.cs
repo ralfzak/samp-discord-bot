@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace app.Models
+﻿namespace app.Models
 {
     class BanModel
     {

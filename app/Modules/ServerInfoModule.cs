@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using app.Services;
-using System.Linq;
-using app.Helpers;
-using Discord.WebSocket;
-using System.Threading;
+using app.Models;
 using System.Net;
 
-namespace app.Models
+namespace app.Modules
 {
-    public class ServerInfoModel : ModuleBase<SocketCommandContext>
+    public class ServerInfoModule : ModuleBase<SocketCommandContext>
     {
         // Server 
         [Command("server")]

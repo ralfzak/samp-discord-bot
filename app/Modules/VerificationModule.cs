@@ -11,7 +11,7 @@ using app.Helpers;
 using Discord.WebSocket;
 using System.Threading;
 
-namespace app.Models
+namespace app.Modules
 {
     public class VerificationModule : ModuleBase<SocketCommandContext>
     {
