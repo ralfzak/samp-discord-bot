@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
-namespace discordBot.Services
+namespace app.Services
 {
     public static class DataService
     {

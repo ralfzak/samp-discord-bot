@@ -5,14 +5,14 @@ using System.IO;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using discordBot.Services;
+using app.Services;
 using System.Linq;
-using discordBot.Helpers;
+using app.Helpers;
 using Discord.WebSocket;
 using System.Threading;
 using System.Net;
 
-namespace discordBot.Models
+namespace app.Models
 {
     public class BanningModel : ModuleBase<SocketCommandContext>
     {

@@ -4,7 +4,7 @@ using System.Text;
 using System.Linq;
 
 
-namespace discordBot.Helpers
+namespace app.Helpers
 {
     public static class VerificationHelper
     {

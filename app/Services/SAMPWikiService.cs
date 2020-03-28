@@ -1,4 +1,4 @@
-﻿using discordBot.Models;
+﻿using app.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using System.Linq;
 
-namespace discordBot.Services
+namespace app.Services
 {
     static class SAMPWikiService
     {

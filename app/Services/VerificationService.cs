@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-namespace discordBot.Services
+namespace app.Services
 {
     public enum VERIFICATION_STATES
     {

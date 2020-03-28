@@ -5,10 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using discordBot.Services;
-using discordBot.Helpers;
+using app.Services;
+using app.Helpers;
 
-namespace discordBot
+namespace app
 {
     class Program
     {

@@ -7,10 +7,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using discordBot.Models;
+using app.Models;
 using Newtonsoft.Json;
 
-namespace discordBot.Services
+namespace app.Services
 {
     static class SAMPServerService
     {
