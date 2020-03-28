@@ -1,0 +1,11 @@
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\bin\Debug\netcoreapp2.1\discordBot.deps.json
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\bin\Debug\netcoreapp2.1\discordBot.runtimeconfig.json
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\bin\Debug\netcoreapp2.1\discordBot.runtimeconfig.dev.json
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\bin\Debug\netcoreapp2.1\discordBot.dll
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\obj\Debug\netcoreapp2.1\discordBot.csprojAssemblyReference.cache
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\obj\Debug\netcoreapp2.1\discordBot.csproj.CoreCompileInputs.cache
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\obj\Debug\netcoreapp2.1\discordBot.AssemblyInfoInputs.cache
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\obj\Debug\netcoreapp2.1\discordBot.AssemblyInfo.cs
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\bin\Debug\netcoreapp2.1\discordBot.pdb
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\obj\Debug\netcoreapp2.1\discordBot.dll
+C:\Users\ralf\Documents\Visual Studio 2017\Projects\SAMP\discordBot\discordBot\obj\Debug\netcoreapp2.1\discordBot.pdb
