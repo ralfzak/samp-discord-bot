@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace discordBot.Services
+namespace app.Services
 {
     public static class UserService
     {

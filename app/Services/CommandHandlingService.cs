@@ -7,9 +7,9 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
-using discordBot.Helpers;
+using app.Helpers;
 
-namespace discordBot.Services
+namespace app.Services
 {
     public class CommandHandlingService
     {

@@ -6,7 +6,7 @@ using System.Linq;
 using Discord;
 using Discord.WebSocket;
 
-namespace discordBot.Services
+namespace app.Services
 {
     class EventHandlingService
     {

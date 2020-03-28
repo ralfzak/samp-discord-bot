@@ -6,10 +6,10 @@ using System.Linq;
 using Discord;
 using Discord.WebSocket;
 using System.Collections.Generic;
-using discordBot.Models;
+using app.Models;
 using System.IO;
 
-namespace discordBot.Services
+namespace app.Services
 {
     class ServerAdPurgeService
     {

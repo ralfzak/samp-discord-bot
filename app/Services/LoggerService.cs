@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace discordBot.Services
+namespace app.Services
 {
     class LoggerService
     {

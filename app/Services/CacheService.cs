@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace discordBot.Services
+namespace app.Services
 {
     public static class CacheService
     {

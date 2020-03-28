@@ -1,3 +1,4 @@
 .vs
-discordBot\bin
-discordBot\obj
+app/bin
+app/obj
+.idea/

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace discordBot.Models
+namespace app.Models
 {
     class SAMPWikiResponseModel
     {
