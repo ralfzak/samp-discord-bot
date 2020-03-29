@@ -3,7 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.WebSocket;
 using System.Collections.Generic;
+using System.Linq;
+using app.Helpers;
 using app.Models;
+using Discord;
+using Discord.Rest;
 
 namespace app.Services
 {
@@ -17,16 +21,96 @@ namespace app.Services
         {
             _discord = services.GetRequiredService<DiscordSocketClient>();
             _services = services;
-            _banTimer = new System.Threading.Timer(this.OnBanCheckAsync, null, 60000, 600000);
             
-            LoggerService.Write("The banning check has been hooked to BanTimer!");
+            _banTimer = new System.Threading.Timer(this.OnBanCheckAsync, null, 60000, 600000);
+            _discord.UserBanned += OnUserBanned;
+            _discord.UserUnbanned += OnUserUnbanned;
+            
+            LoggerService.Write("The banning check has been hooked to BanTimer and ban monitoring events hooked!");
         }
 
         public async Task InitializeAsync()
         {
             await Task.CompletedTask;
         }
+        
+        private async Task OnUserBanned(SocketUser user, SocketGuild server)
+        {
+            var banData = server.GetBanAsync(user.Id);
+            var banningUser = GetBanningUserFromAuditLog(server.GetAuditLogsAsync(5), user.Id);
+            var banReason = banData.Result.Reason ?? MessageHelper.NO_REASON_GIVEN;
+            
+            LoggerService.Write($"[OnUserBanned] {banningUser.Username} banned {user.Username} for {banReason}");
+            
+            // store ban in DB
+            // int daysToBan = 30 * 6;
+            // int timeToAdd = (daysToBan * 86400);
+            StoreBan(
+                banData.Result.User.Id, 
+                banData.Result.User.Username,
+                banningUser.Id,
+                banningUser.Username,
+                0,
+                banReason,
+                0);
 
+            // send user message
+            try
+            {
+                var dmChannel = await user.GetOrCreateDMChannelAsync();
+                // var expiresOn = DateTime.Now.AddSeconds(timeToAdd).ToString("dddd, dd MMMM yyyy");
+                    
+                // await dmChannel.SendMessageAsync($"You have been banned from **{server.Name}**. This ban will expire on {expiresOn}.");
+                await dmChannel.SendMessageAsync($"You have been banned from **{server.Name}**. This ban is permanent.");
+            }
+            catch (Exception e)
+            {
+                LoggerService.Write($"Failed to send ban DM to {user.Username} : {e.Message}");
+            }
+
+            await Task.CompletedTask;
+        }
+
+        private async Task OnUserUnbanned(SocketUser user, SocketGuild server)
+        {
+            LoggerService.Write($"[OnUserUnbanned] {user.Username}");
+            
+            var banData = GetBans(user.Id.ToString());
+            if (banData.Count > 0)
+            {
+                LoggerService.Write($"[OnUserUnbanned] {banData[0].Name} banned by {banData[0].ByName} for {banData[0].Reason}. Lifting...");
+                RemoveBan(user.Id);
+            }
+
+            await Task.CompletedTask;
+        }
+
+        private IUser GetBanningUserFromAuditLog(IAsyncEnumerable<IReadOnlyCollection<RestAuditLogEntry>> auditLog, ulong bannedId)
+        {
+            IUser banningUser = null;
+            
+            auditLog.ForEach(logEntries =>
+            {
+                foreach (var logEntry in logEntries)
+                {
+                    if (logEntry.Action == ActionType.Ban)
+                    {
+                        var banAuditLogData = logEntry.Data as BanAuditLogData;
+                        LoggerService.Write($"LogEntry: {banAuditLogData.Target.Username} by {logEntry.User.Username} " +
+                                            $"for {logEntry.Action.ToString()}");
+                        
+                        if (banAuditLogData.Target.Id == bannedId)
+                        {
+                            banningUser = logEntry.User;
+                            break;
+                        }
+                    }
+                }
+            });
+
+            return banningUser;
+        }
+        
         private async void OnBanCheckAsync(object state)
         {
             try
@@ -114,7 +198,7 @@ namespace app.Services
                         Name = (string)data["name"][i],
                         ByUId = (ulong)(long)data["byuid"][i],
                         ByName = (string)data["byname"][i],
-                        ExpiresOn = (int)data["expires_on"][i],
+                        ExpiresOn = (long)data["expires_on"][i],
                         BannedOn = (string)data["banned_on"][i],
                         Reason = (string)data["reason"][i],
                         Expired = "N"

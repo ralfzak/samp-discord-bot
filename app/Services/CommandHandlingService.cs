@@ -95,9 +95,7 @@ namespace app.Services
             }
         }
 
-        private bool ChannelAllowsCommands(ulong channelId)
-        {
-            return channelId != Program.ADVERT_CHAN_ID;
-        }
+        private bool ChannelAllowsCommands(ulong channelId) 
+            => channelId != Program.ADVERT_CHAN_ID;
     }
 }

@@ -1,12 +1,10 @@
 ﻿using app.Models;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
 using System.Linq;
+using app.Helpers;
 
 namespace app.Services
 {
@@ -776,7 +774,7 @@ namespace app.Services
                 int minDistance = int.MaxValue;
                 foreach (string thread in WIKI_THREADS)
                 {
-                    int distance = LevenshteinDistance.Compute(atr.ToLower(), thread.ToLower());
+                    int distance = StringHelper.ComputeLevenshteinDistance(atr.ToLower(), thread.ToLower());
                     if ((distance <= 2) && (distance < minDistance))
                     {
                         article = thread;

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System;
 
-namespace app.Services
+namespace app.Helpers
 {
-    public static class LevenshteinDistance
+    public class StringHelper
     {
-        public static int Compute(string s, string t)
+        public static int ComputeLevenshteinDistance(string s, string t)
         {
             int n = s.Length;
             int m = t.Length;
@@ -49,24 +47,6 @@ namespace app.Services
             }
             // Step 7
             return d[n, m];
-        }
-    }
-
-    public static class StringService
-    {
-        public static string Trim(string s)
-        {
-            if (s.Length >= 350)
-            {
-                StringBuilder sb = new StringBuilder();
-
-                sb.Append(s.Remove(350, s.Length - 350));
-                sb.Append("...");
-
-                return sb.ToString();
-            }
-
-            return s;
         }
     }
 }

@@ -113,7 +113,7 @@ namespace app.Modules
                     "[**Info:**](https://forum.sa-mp.com/) This command lists a list of banned account based on a " +
                     "search criteria. Check channel pins.")
 
-                .AddField("/banlift",
+                .AddField("/unban",
                     "[**Parameters:**](https://forum.sa-mp.com/) <userid, username>" +
                     "\n" +
                     "[**Info:**](https://forum.sa-mp.com/) This command lifts a list of bans given a certain criteria. " +

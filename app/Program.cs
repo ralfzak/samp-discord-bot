@@ -64,7 +64,7 @@ namespace app
                 await client.StartAsync();
 
                 await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
-                await services.GetRequiredService<EventHandlingService>().InitializeAsync();
+                await services.GetRequiredService<VerificationService>().InitializeAsync();
                 await services.GetRequiredService<BanningService>().InitializeAsync();
                 await services.GetRequiredService<ServerAdPurgeService>().InitializeAsync();
 
@@ -90,7 +90,7 @@ namespace app
                 })
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandlingService>() // for handling cmds
-                .AddSingleton<EventHandlingService>() // for handling events
+                .AddSingleton<VerificationService>() // for handling user events
                 .AddSingleton<BanningService>() // for ban timer check
                 .AddSingleton<ServerAdPurgeService>() // purge check
                 .AddSingleton<HttpClient>()

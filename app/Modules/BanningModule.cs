@@ -152,10 +152,10 @@ namespace app.Modules
         }
 
         // Server 
-        [Command("banlift")]
-        [Name("banlift")]
-        [Summary("/banlift")]
-        public async Task Banlift(string user = "")
+        [Command("unban")]
+        [Name("unban")]
+        [Summary("/unban")]
+        public async Task Unban(string user = "")
         {
             if (Context.Channel.Id != Program.ADMIN_CHAN_ID)
             {
@@ -163,7 +163,7 @@ namespace app.Modules
                 return;
             }
 
-            LoggerService.Write($"{Context.User.Username}: /banlift {user}");
+            LoggerService.Write($"{Context.User.Username}: /unban {user}");
             if (Context.Guild == null)
             {
                 await ReplyAsync(MessageHelper.COMMAND_SERVER_ONLY);
@@ -172,7 +172,7 @@ namespace app.Modules
 
             if (user == null)
             {
-                await ReplyAsync("/banlift <userid, username>" + 
+                await ReplyAsync("/unban <userid, username>" + 
                                  "\n" + 
                                  "Search by a ID (*Open the ban list, Right click, Copy ID*)");
                 return;
@@ -203,7 +203,7 @@ namespace app.Modules
                                      $"**{ban.BannedOn}** for **{ban.Reason}**. Ban is permanent. Lifted.");
 
                 BanningService.RemoveBan(ban.UId);
-                LoggerService.Write($"{Context.User.Username}: /banlift {user} - lifted {ban.UId}");
+                LoggerService.Write($"{Context.User.Username}: /unban {user} - lifted {ban.UId}");
             }
 
         }
