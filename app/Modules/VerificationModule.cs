@@ -45,7 +45,7 @@ namespace app.Modules
                                  "try modifying your status, if not, join and then try your luck verifying!");
                 return;
             }
-
+            
             // Check if the user is already verified or not
             var userVerifiedInDb = UserService.IsUserVerified(user.Id);
             if (userVerifiedInDb)
@@ -425,8 +425,7 @@ namespace app.Modules
             UserService.DeleteUserVerification(user.Id);
 
             var verifiedRole = Context.Client.Guilds.FirstOrDefault(g => g.Id == Program.GUILD_ID)
-                .Roles
-                .FirstOrDefault(r => r.Id == Program.VERIFIED_ROLE_ID);
+                .Roles.FirstOrDefault(r => r.Id == Program.VERIFIED_ROLE_ID);
             await guildUser.RemoveRoleAsync(verifiedRole);
 
             await ReplyAsync($"I've sent {guildUser.Username} to doom!");

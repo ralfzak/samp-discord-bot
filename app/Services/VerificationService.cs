@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace app.Services
 {
@@ -14,8 +17,46 @@ namespace app.Services
         WAITING_CONFIRM = 1
     }
 
-    public static class VerificationService
+    public class VerificationService
     {
+        private readonly DiscordSocketClient _discord;
+
+        public VerificationService(IServiceProvider services)
+        {
+            _discord = services.GetRequiredService<DiscordSocketClient>();
+            
+            _discord.UserJoined += OnUserJoinServer;
+            _discord.UserLeft += OnUserLeaveServer;
+
+            LoggerService.Write("Binded the user (connect / disconnect) verification events!");
+        }
+
+        public async Task InitializeAsync()
+        {
+            await Task.CompletedTask;
+        }
+
+        public async Task OnUserJoinServer(SocketGuildUser user)
+        {
+            if (UserService.IsUserVerified(user.Id))
+            {
+                var verifiedRole = _discord.Guilds.FirstOrDefault(g => g.Id == Program.GUILD_ID)
+                    .Roles.FirstOrDefault(r => r.Id == Program.VERIFIED_ROLE_ID);
+                
+                LoggerService.Write($"> JOIN VERIFIED: {user.Id} - ROLE SET");
+                await user.AddRoleAsync(verifiedRole);
+            }
+
+            CacheService.ClearCache(user.Id);
+            await Task.CompletedTask;
+        }
+
+        public async Task OnUserLeaveServer(SocketGuildUser user)
+        {
+            CacheService.ClearCache(user.Id);
+            await Task.CompletedTask;
+        }
+        
         public static async Task<string> GetForumProfileContentAsync(int profileID)
         {
             string url = $"{Program.FORUM_PROFILE_URL}{profileID}";
