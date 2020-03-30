@@ -36,7 +36,7 @@ namespace app.Modules
             LoggerService.Write($"{user.Username}: /verify {option}");
 
             // Check if user is on server
-            var guildUser = Context.Client.Guilds.FirstOrDefault(g => g.Id == Program.GUILD_ID).GetUser(user.Id);
+            var guildUser = Context.Client.GetGuild(Program.GUILD_ID).GetUser(user.Id);
             if (guildUser == null)
             {
                 LoggerService.Write($"{user.Username}: /verify {option} - cannot find user on server");
@@ -130,8 +130,8 @@ namespace app.Modules
                     CacheService.ClearCache(user.Id);
                     UserService.StoreUserVerification(user.Id, cachedProfile, forumNameTokenized, user.Username);
 
-                    var discordServer = Context.Client.Guilds.FirstOrDefault(g => g.Id == Program.GUILD_ID);
-                    var verifiedRole = discordServer.Roles.FirstOrDefault(r => r.Id == Program.VERIFIED_ROLE_ID);
+                    var discordServer = Context.Client.GetGuild(Program.GUILD_ID);
+                    var verifiedRole = discordServer.GetRole(Program.VERIFIED_ROLE_ID);
                     await guildUser.AddRoleAsync(verifiedRole);
 
                     await ReplyAsync(VerificationHelper.GetVerificationSuccessMessage(user.Mention, cachedProfile));
@@ -368,9 +368,7 @@ namespace app.Modules
 
             UserService.StoreUserVerification(user.Id, forumid, forumName, user.Username);
 
-            var verifiedRole = 
-                Context.Client.Guilds.FirstOrDefault(g => g.Id == Program.GUILD_ID)
-                    .Roles.FirstOrDefault(r => r.Id == Program.VERIFIED_ROLE_ID);
+            var verifiedRole = Context.Client.GetGuild( Program.GUILD_ID).GetRole(Program.VERIFIED_ROLE_ID);
             await guildUser.AddRoleAsync(verifiedRole);
 
             await ReplyAsync($"I've set {guildUser.Username} verified as commanded!");
@@ -424,8 +422,7 @@ namespace app.Modules
 
             UserService.DeleteUserVerification(user.Id);
 
-            var verifiedRole = Context.Client.Guilds.FirstOrDefault(g => g.Id == Program.GUILD_ID)
-                .Roles.FirstOrDefault(r => r.Id == Program.VERIFIED_ROLE_ID);
+            var verifiedRole = Context.Client.GetGuild(Program.GUILD_ID).GetRole(Program.VERIFIED_ROLE_ID);
             await guildUser.RemoveRoleAsync(verifiedRole);
 
             await ReplyAsync($"I've sent {guildUser.Username} to doom!");

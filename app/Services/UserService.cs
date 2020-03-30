@@ -8,9 +8,9 @@ namespace app.Services
     {
         private static Dictionary<string, long> COOLDOWN_MAP = new Dictionary<string, long>();
 
-        private static string GetMapKey(ulong user_id, string channel)
+        private static string GetMapKey(ulong userId, string channel)
         {
-            return $"{user_id}-{channel}";
+            return $"{userId}-{channel}";
         }
 
         private static bool IsOnCooldown(long ticks)
@@ -18,9 +18,9 @@ namespace app.Services
             return (new TimeSpan(ticks).Subtract(new TimeSpan(DateTime.UtcNow.Ticks)).Ticks > 0) || false;
         }
 
-        public static void SetUserCooldown(ulong user_id, string cmd, int seconds)
+        public static void SetUserCooldown(ulong userId, string cmd, int seconds)
         {
-            string key = GetMapKey(user_id, cmd);
+            string key = GetMapKey(userId, cmd);
             long ticksUTC = (DateTime.UtcNow.AddSeconds(seconds).Ticks);
 
             if (COOLDOWN_MAP.ContainsKey(key))
@@ -30,9 +30,9 @@ namespace app.Services
             else COOLDOWN_MAP.Add(key, ticksUTC);
         }
 
-        public static bool IsUserOnCooldown(ulong user_id, string cmd)
+        public static bool IsUserOnCooldown(ulong userId, string cmd)
         {
-            string key = GetMapKey(user_id, cmd);
+            string key = GetMapKey(userId, cmd);
 
             // remove all keys with low cooldown
             if (COOLDOWN_MAP.Count > 0)
@@ -56,14 +56,14 @@ namespace app.Services
             return false;
         }
 
-        public static long[] GetUserIDsFromForumInfo(string forum_info)
+        public static long[] GetUserIDsFromForumInfo(string forumInfo)
         {
             List<long> user_ids = new List<long>();
 
             int fid = -1;
             string fname = "-";
-            if (!Int32.TryParse(forum_info, out fid)) {
-                fname = forum_info;
+            if (!Int32.TryParse(forumInfo, out fid)) {
+                fname = forumInfo;
             }
 
             var data = DataService.Get(
@@ -85,7 +85,7 @@ namespace app.Services
             return user_ids.ToArray();
         }
 
-        public static void GetUserForumProfileID(ulong user_id, out int fid, out string fname)
+        public static void GetUserForumProfileID(ulong userId, out int fid, out string fname)
         {
             fid = -1;
             fname = string.Empty;
@@ -94,7 +94,7 @@ namespace app.Services
                 "SELECT `forumid`, `forum_name` FROM `verifications` WHERE `userid`=@uid LIMIT 1;", 
                 new Dictionary<string, object>()
                 {
-                    {"@uid", user_id}
+                    {"@uid", userId}
                 });
 
             if (data.Count > 0)
@@ -104,14 +104,14 @@ namespace app.Services
             }
         }
 
-        public static bool IsForumProfileLinked(int profile_id)
+        public static bool IsForumProfileLinked(int profileId)
         {
             ulong userid = 0;
 
             var data = DataService.Get("SELECT `userid` FROM `verifications` WHERE `forumid`=@fid LIMIT 1;",
                 new Dictionary<string, object>()
                 {
-                    {"@fid", profile_id}
+                    {"@fid", profileId}
                 });
 
             if (data.Count > 0)
@@ -122,16 +122,16 @@ namespace app.Services
             return (userid != 0) || false;
         }
 
-        public static bool IsUserVerified(ulong user_id)
+        public static bool IsUserVerified(ulong userId)
         {
             int fid = -1;
             string fname = string.Empty;
 ;
-            GetUserForumProfileID(user_id, out fid, out fname);
+            GetUserForumProfileID(userId, out fid, out fname);
             return (fid != -1);
         }
 
-        public static void StoreUserVerification(ulong uid, int fid, string forum_name, string discord_user)
+        public static void StoreUserVerification(ulong uid, int fid, string forumName, string discordUser)
         {
             DataService.Put(
                 "INSERT INTO verifications (`forumid`, `userid`, `forum_name`, `by`) VALUES (@fid, @uid, @fname, @by)",
@@ -139,8 +139,8 @@ namespace app.Services
                 {
                     {"@fid", fid},
                     {"@uid", uid},
-                    {"@fname", forum_name},
-                    {"@by", discord_user}
+                    {"@fname", forumName},
+                    {"@by", discordUser}
                 });
         }
 

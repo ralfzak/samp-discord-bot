@@ -40,8 +40,7 @@ namespace app.Services
         {
             if (UserService.IsUserVerified(user.Id))
             {
-                var verifiedRole = _discord.Guilds.FirstOrDefault(g => g.Id == Program.GUILD_ID)
-                    .Roles.FirstOrDefault(r => r.Id == Program.VERIFIED_ROLE_ID);
+                var verifiedRole = _discord.GetGuild(Program.GUILD_ID).GetRole(Program.VERIFIED_ROLE_ID);
                 
                 LoggerService.Write($"> JOIN VERIFIED: {user.Id} - ROLE SET");
                 await user.AddRoleAsync(verifiedRole);

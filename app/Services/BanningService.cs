@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using app.Helpers;
 using app.Models;
 using Discord;
