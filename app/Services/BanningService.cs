@@ -223,7 +223,7 @@ namespace app.Services
                         Name = (string)data["name"][i],
                         ByUId = (ulong)(long)data["byuid"][i],
                         ByName = (string)data["byname"][i],
-                        ExpiresOn = (int)data["expires_on"][i],
+                        ExpiresOn =(long)data["expires_on"][i],
                         BannedOn = (string)data["banned_on"][i],
                         Reason = (string)data["reason"][i],
                         Expired = "N"
