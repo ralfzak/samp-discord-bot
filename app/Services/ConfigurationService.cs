@@ -31,7 +31,7 @@ namespace app.Services
             {
                 return configuration[key];
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return "";
             }
