@@ -66,6 +66,7 @@ namespace app
                 await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
                 await services.GetRequiredService<VerificationService>().InitializeAsync();
                 await services.GetRequiredService<BanningService>().InitializeAsync();
+                await services.GetRequiredService<BotStatusPlayerCountService>().InitializeAsync();
                 await services.GetRequiredService<ServerAdPurgeService>().InitializeAsync();
 
                 await Task.Delay(-1);
@@ -92,6 +93,7 @@ namespace app
                 .AddSingleton<CommandHandlingService>() // for handling cmds
                 .AddSingleton<VerificationService>() // for handling user events
                 .AddSingleton<BanningService>() // for ban timer check
+                .AddSingleton<BotStatusPlayerCountService>() // for update player count timer
                 .AddSingleton<ServerAdPurgeService>() // purge check
                 .AddSingleton<HttpClient>()
                 .BuildServiceProvider();
