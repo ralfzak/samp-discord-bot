@@ -11,6 +11,7 @@ using System.IO;
 
 namespace app.Services
 {
+    #pragma warning disable 4014,1998
     class ServerAdPurgeService
     {
         private readonly DiscordSocketClient _discord;
@@ -26,6 +27,7 @@ namespace app.Services
             _discord.MessageDeleted += OnMessageDeletedAsync;
 
             _purgeTimer = new System.Threading.Timer(this.OnPurgeCheck, null, 53000, 605000);
+
             LoggerService.Write("The server ad purge check has been attached to OnPurgeCheck!");
         }
 
@@ -39,12 +41,8 @@ namespace app.Services
 
             if (message.Channel.Id != Program.ADVERT_CHAN_ID)
                 return;
-
-            LoggerService.Write($"Storing message id {message.Id} sent by " +
-                                $"{message.Author.Username}#{message.Author.Discriminator} to Server Adv Channel.");
+            
             StoreAdvertisementMessage(message.Id, message.Author.Id);
-
-            await Task.CompletedTask;
         }        
         
         private async Task OnMessageDeletedAsync(Cacheable<IMessage, ulong> cacheable, ISocketMessageChannel socketMessageChannel)
@@ -55,18 +53,12 @@ namespace app.Services
             var message = cacheable.Value;
             if (message.Channel.Id != Program.ADVERT_CHAN_ID)
                 return;
-
-            LoggerService.Write($"Removing advertisement message id {message.Id} sent by " +
-                                $"{message.Author.Username}#{message.Author.Discriminator} from DB because message " +
-                                "bas been deleted.");
             
             RemoveAdvertisementMessage(message.Id);
-            await Task.CompletedTask;
         }
 
         public async Task InitializeAsync()
         {
-            await Task.CompletedTask;
         }
 
         private async void OnPurgeCheck(object state)
@@ -74,7 +66,6 @@ namespace app.Services
             try
             {
                 GetAdvertisementMessagesToPurge(out var msgs, out var users);
-                LoggerService.Write($"[OnPurgeCheck] invoked: {msgs.Count} expired messages ready to be purged");
 
                 if (msgs.Count > 0)
                 {
@@ -85,23 +76,18 @@ namespace app.Services
                     foreach (var msgid in msgs)
                     {
                         RemoveAdvertisementMessage(msgid);
-                        await advChannel.DeleteMessageAsync(msgid);
+                        advChannel.DeleteMessageAsync(msgid);
                     }
 
-                    await _discord
-                        .GetGuild(Program.GUILD_ID)
-                        .GetTextChannel(Program.ADMIN_CHAN_ID)
-                        .SendMessageAsync($"Purging {msgs.Count} message(s) from " +
-                                          $"<#{Program.ADVERT_CHAN_ID}> by: {mentionedUsers}");
+                    _discord.GetGuild(Program.GUILD_ID).GetTextChannel(Program.ADMIN_CHAN_ID)
+                        .SendMessageAsync($"Purging {msgs.Count} message(s) from <#{Program.ADVERT_CHAN_ID}> by: {mentionedUsers}");
                 }
             }
             catch (Exception e)
             {
                 LoggerService.Write(e.ToString());
 
-                await _discord
-                    .GetGuild(Program.GUILD_ID)
-                    .GetTextChannel(Program.ADMIN_CHAN_ID)
+                _discord.GetGuild(Program.GUILD_ID).GetTextChannel(Program.ADMIN_CHAN_ID)
                     .SendMessageAsync($"Exception in OnPurgeCheck: {e.Message}");
 
                 if (e.Message.Contains("404"))
@@ -115,9 +101,7 @@ namespace app.Services
         {
             messages = new List<ulong>();
             users = new List<ulong>();
-            var data = DataService.Get(
-                "SELECT `mid`, `uid` FROM `advert_messages` WHERE FROM_UNIXTIME(UNIX_TIMESTAMP(`sent_on`)+21600) <= NOW()", 
-                null);
+            var data = DataService.Get("SELECT `mid`, `uid` FROM `advert_messages` WHERE FROM_UNIXTIME(UNIX_TIMESTAMP(`sent_on`)+21600) <= NOW()", null);
 
             if (data.Count > 0)
             {
@@ -136,20 +120,16 @@ namespace app.Services
 
         private void RemoveAdvertisementMessage()
         {
-            DataService.Drop(
-                "DELETE FROM `advert_messages` WHERE FROM_UNIXTIME(UNIX_TIMESTAMP(`sent_on`)+21600) <= NOW()", 
-                new Dictionary<string, object>());
+            DataService.Drop("DELETE FROM `advert_messages` WHERE FROM_UNIXTIME(UNIX_TIMESTAMP(`sent_on`)+21600) <= NOW()", new Dictionary<string, object>());
         }
 
         private static void StoreAdvertisementMessage(ulong messageid, ulong userid)
         {
-            DataService.Put(
-                $"INSERT INTO `advert_messages` (`mid`, `uid`) VALUES (@msgid, @userid)", 
-                new Dictionary<string, object>()
-                {
-                    {"@msgid", messageid},
-                    {"@userid", userid}
-                });
+            DataService.Put($"INSERT INTO `advert_messages` (`mid`, `uid`) VALUES (@msgid, @userid)", new Dictionary<string, object>()
+            {
+                {"@msgid", messageid},
+                {"@userid", userid}
+            });
         }
     }
 }

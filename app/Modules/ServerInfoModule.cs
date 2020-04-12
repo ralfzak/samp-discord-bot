@@ -9,6 +9,7 @@ using app.Helpers;
 
 namespace app.Modules
 {
+    #pragma warning disable 4014,1998
     public class ServerInfoModule : ModuleBase<SocketCommandContext>
     {
         private const string NOT_VALID_SERVER = "This doesn't look like a valid server to me :thinking:.";
@@ -20,100 +21,70 @@ namespace app.Modules
         [Summary("/server <ip>[:port]")]
         public async Task Server(string ipPort = "")
         {
-            if (UserService.IsUserOnCooldown(Context.User.Id, "srv"))
-            {
-                LoggerService.Write($"[cooldown] user {Context.User.Username} {Context.User.Id} is on a cooldown, " +
-                                    "cmd blocked");
-                await Task.CompletedTask;
+            if (UserService.IsUserOnCooldown(Context.User.Id, "server"))
                 return;
-            }
-
-            LoggerService.Write($"{Context.User.Username}: /server - {ipPort}");
-            if (Context.Guild == null)
-            {
-                await ReplyAsync(MessageHelper.COMMAND_SERVER_ONLY);
-                return;
-            }
 
             if (Context.Channel.Id != Program.BOT_CHAN_ID && Context.Channel.Id != Program.ADMIN_CHAN_ID)
             {
-                await Context.User.SendMessageAsync($"This command only works on <#{Program.BOT_CHAN_ID}>.");
+                Context.User.SendMessageAsync($"This command only works on <#{Program.BOT_CHAN_ID}>.");
                 return;
             }
 
             if (ipPort == "")
             {
-                await ReplyAsync("/server <ip>[:port] - fetch SAMP server data");
+                ReplyAsync("`/server <ip>[:port]` - Fetch a SAMP server's live data");
                 return;
             }
 
             string ip = ipPort;
-            string defaultPort = "7777";
+            string _port = "7777";
             if (ipPort.Contains(':'))
             {
                 var temp = ipPort.Split(':');
                 ip = temp[0];
-                defaultPort = temp[1];
-
-                LoggerService.Write($"{Context.User.Username}: /server - {ipPort} - splitted {ip} {defaultPort}");
+                _port = temp[1];
             }
 
             ushort port = 7777;
-            if (!UInt16.TryParse(defaultPort, out port))
+            if (!UInt16.TryParse(_port, out port))
             {
-                LoggerService.Write($"{Context.User.Username}: /server - port not parsed");
-
-                await ReplyAsync(NOT_VALID_SERVER);
+                ReplyAsync(NOT_VALID_SERVER);
                 return;
             }
 
             if (!SAMPServerService.ValidateIPv4(ip) && !SAMPServerService.ValidateHostname(ip))
             {
-                LoggerService.Write($"{Context.User.Username}: /server - not ip not hostname");
-
-                await ReplyAsync(NOT_VALID_SERVER);
+                ReplyAsync(NOT_VALID_SERVER);
                 return;
             }
 
             if (!SAMPServerService.ValidateIPv4(ip) && SAMPServerService.ValidateHostname(ip))
             {
-                // not ip, but looks like a hostname. Try to get ip
+                // not ip, but looks like a hostname, query dns
                 try
                 {
                     IPAddress[] iPs = await Dns.GetHostAddressesAsync(ip);
-                    // should be first in the DNS entry (assuming)
                     if (iPs.Length == 0)
                     {
                         LoggerService.Write($"{Context.User.Username}: /server - hostname not resolved");
-                        UserService.SetUserCooldown(Context.User.Id, "srv", 8);
+                        UserService.SetUserCooldown(Context.User.Id, "server", 8);
 
-                        await ReplyAsync(NOT_VALID_SERVER);
+                        ReplyAsync(NOT_VALID_SERVER);
                         return;
                     }
-                    ip = iPs[0].ToString();
-
-                    LoggerService.Write($"{Context.User.Username}: /server - hostname found ip {ip}");
+                    ip = iPs[0].ToString(); // should be first in the DNS entry
                 }
                 catch (Exception)
                 {
-                    await ReplyAsync(FAILED_FETCH_SERVER_DATA);
+                    ReplyAsync(FAILED_FETCH_SERVER_DATA);
                     return;
                 }
             }
 
             SampServerResponseModel data = null;
             var generalInfo = new SAMPServerQueryService(ip, port, 'i', 1000).read();
-            if (generalInfo.Count == 0)
-            {
-                LoggerService.Write($"{Context.User.Username}: /server - 0 generalInfo size");
-                UserService.SetUserCooldown(Context.User.Id, "srv", 15);
-
-                await ReplyAsync(FAILED_FETCH_SERVER_DATA);
-                return;
-            }
-
             var rulesInfo = new SAMPServerQueryService(ip, port, 'r', 2000).read();
-            Boolean isHostedTab = await SAMPServerService.CheckGameMpWebsite(ip, port);
+            var isHostedTab = await SAMPServerService.CheckGameMpWebsite(ip, port);
 
             try
             {
@@ -125,26 +96,17 @@ namespace app.Modules
                     Version = rulesInfo["version"],
                     Hostname = generalInfo["hostname"],
                     Gamemode = generalInfo["gamemode"],
-                    HostedTab = (isHostedTab) ? "1" : "0",
+                    HostedTab = isHostedTab,
                     Players = generalInfo["players"],
                     MaxPlayers = generalInfo["maxplayers"]
                 };
             }
             catch (Exception e)
             {
-                LoggerService.Write($"{Context.User.Username} /server - key not found: {e}");
-                UserService.SetUserCooldown(Context.User.Id, "srv", 15);
+                LoggerService.Write($"{Context.User.Username}: /server - key not found: {e}");
+                UserService.SetUserCooldown(Context.User.Id, "server", 15);
 
-                await ReplyAsync(FAILED_FETCH_SERVER_DATA);
-                return;
-            }
-
-            if (data == null)
-            {
-                LoggerService.Write($"{Context.User.Username}: /server - null response");
-                UserService.SetUserCooldown(Context.User.Id, "srv", 15);
-
-                await ReplyAsync(FAILED_FETCH_SERVER_DATA);
+                ReplyAsync(FAILED_FETCH_SERVER_DATA);
                 return;
             }
 
@@ -162,13 +124,13 @@ namespace app.Modules
                 })
                 .AddField("Hostname", data.Hostname, true)
                 .AddField("Gamemode", data.Gamemode)
-                .AddField("Hosted Tab", (data.HostedTab == "1" ? ":white_check_mark:" : ":x:"), true)
+                .AddField("Hosted Tab", (data.HostedTab ? ":white_check_mark:" : ":x:"), true)
                 .AddField("Online Players", $"{data.Players}/{data.MaxPlayers}", true);
 
             var embed = builder.Build();
-            await ReplyAsync("", embed: embed);
+            ReplyAsync("", embed: embed);
 
-            UserService.SetUserCooldown(Context.User.Id, "srv", 60);
+            UserService.SetUserCooldown(Context.User.Id, "server", 60);
         }
     }
 }

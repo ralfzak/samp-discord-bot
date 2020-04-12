@@ -17,6 +17,7 @@ namespace app.Services
         WAITING_CONFIRM = 1
     }
 
+    #pragma warning disable 4014,1998
     public class VerificationService
     {
         private readonly DiscordSocketClient _discord;
@@ -43,17 +44,15 @@ namespace app.Services
                 var verifiedRole = _discord.GetGuild(Program.GUILD_ID).GetRole(Program.VERIFIED_ROLE_ID);
                 
                 LoggerService.Write($"> JOIN VERIFIED: {user.Id} - ROLE SET");
-                await user.AddRoleAsync(verifiedRole);
+                user.AddRoleAsync(verifiedRole);
             }
 
             CacheService.ClearCache(user.Id);
-            await Task.CompletedTask;
         }
 
         public async Task OnUserLeaveServer(SocketGuildUser user)
         {
             CacheService.ClearCache(user.Id);
-            await Task.CompletedTask;
         }
         
         public static async Task<string> GetForumProfileContentAsync(int profileID)
@@ -61,9 +60,12 @@ namespace app.Services
             string url = $"{Program.FORUM_PROFILE_URL}{profileID}";
             string result = string.Empty;
 
-            using (HttpClient client = new HttpClient()) {
-                using (HttpResponseMessage response = client.GetAsync(url).Result) {
-                    using (HttpContent content = response.Content) {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage response = client.GetAsync(url).Result)
+                {
+                    using (HttpContent content = response.Content)
+                    {
                         result = await content.ReadAsStringAsync();
                     }
                 }
@@ -78,12 +80,7 @@ namespace app.Services
             Match match = Regex.Match(profile_page, @"<title>SA-MP Forums - View Profile: (.*)</title>");
 
             if (match.Success && profile_page.Contains(token))
-            {
-                var fname = match.Groups[0].Value.Remove(0, 36).Replace("</title>", "");
-                LoggerService.Write($"[GetForumProfileIfContainsCodeAsync] fetching forumid {profile_id}: " +
-                                    $"got forumName as {fname}");
-                return fname;
-            }
+                return match.Groups[0].Value.Remove(0, 36).Replace("</title>", "");
 
             return string.Empty;
         }
@@ -94,12 +91,7 @@ namespace app.Services
             Match match = Regex.Match(profile_page, @"<title>SA-MP Forums - View Profile: (.*)</title>");
 
             if (match.Success)
-            {
-                var fname = match.Groups[0].Value.Remove(0, 36).Replace("</title>", "");
-                LoggerService.Write($"[GetForumProfileNameAsync] fetching forumid {profile_id}: " +
-                                    $"got forumName as {fname}");
-                return fname;
-            }
+                return match.Groups[0].Value.Remove(0, 36).Replace("</title>", "");
 
             return string.Empty;
         }

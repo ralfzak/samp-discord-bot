@@ -17,7 +17,7 @@
         public string WebURL { get; set; }
         public string Rank { get; set; }
         public string AvgPlayers { get; set; }
-        public string HostedTab { get; set; }
+        public bool HostedTab { get; set; }
         public string LastUpdate { get; set; }
         public string TotalServers { get; set; }
     }

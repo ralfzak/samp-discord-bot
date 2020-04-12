@@ -14,35 +14,6 @@ namespace app.Services
 {
     static class SAMPServerService
     {
-        public static async Task<SampServerResponseModel> GetInfoAsync(string ip, int port)
-        {
-            string url = $"http://ralfzak.me/api/samp.php?ip={ip}&port={port}";
-            var result = new SampServerResponseModel();
-
-            if (!ValidateIPv4(ip))
-                return result;
-
-            using (HttpClient client = new HttpClient())
-            {
-                using (HttpResponseMessage response = client.GetAsync(url).Result)
-                {
-                    using (HttpContent content = response.Content)
-                    {
-                        try
-                        {
-                            string res = await content.ReadAsStringAsync();
-                            result = JsonConvert.DeserializeObject<SampServerResponseModel>(res);
-                        }
-                        catch (Exception) {
-                            result = null;
-                        }
-                    }
-                }
-            }
-
-            return result;
-        }
-
         public static async Task<bool> CheckGameMpWebsite(string ip, int port)
         {
             string url = $"http://game-mp.com/";
@@ -126,8 +97,6 @@ namespace app.Services
 
                             writer.Write(iPort);
                             writer.Write(packetType);
-
-                            LoggerService.Write("[SAMPServerQueryService] Transmitting Packet: " + packetType);
                         }
                     }
                     svrConnect.SendTo(stream.ToArray(), serverEndPoint);

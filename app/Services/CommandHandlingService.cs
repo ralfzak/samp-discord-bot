@@ -11,6 +11,7 @@ using app.Helpers;
 
 namespace app.Services
 {
+    #pragma warning disable 4014,1998
     public class CommandHandlingService
     {
         private readonly CommandService _commands;
@@ -51,14 +52,9 @@ namespace app.Services
 
             // user cmd cooldown
             if (UserService.IsUserOnCooldown(rawMessage.Author.Id, ""))
-            {
-                LoggerService.Write($"[MessageReceivedAsync] user {rawMessage.Author.Username} {rawMessage.Author.Id} " +
-                                    $"is on a cooldown, msg blocked: {rawMessage.Content}");
-                await Task.CompletedTask;
                 return;
-            }
-            UserService.SetUserCooldown(rawMessage.Author.Id, "", 4);
 
+            UserService.SetUserCooldown(rawMessage.Author.Id, "", 4);
             var context = new SocketCommandContext(_discord, message);
             await _commands.ExecuteAsync(context, argPos, _services);
         }
@@ -74,24 +70,21 @@ namespace app.Services
             // the command failed
             if (result.Error.Value == CommandError.BadArgCount || result.Error.Value == CommandError.ParseFailed)
             {
-                await context.Channel.SendMessageAsync("Invalid command parameters. Check `/help`.");
+                context.Channel.SendMessageAsync("Invalid command parameters. Check `/help`.");
             }
             else if (result.Error.Value == CommandError.UnmetPrecondition)
             {
-                await context.Channel.SendMessageAsync(result.ErrorReason);
+                context.Channel.SendMessageAsync(result.ErrorReason);
             }
             else if (result.Error.Value == CommandError.ObjectNotFound || 
                      result.Error.Value == CommandError.MultipleMatches)
             {
-                await context.Channel.SendMessageAsync(result.ErrorReason);
+                context.Channel.SendMessageAsync(result.ErrorReason);
             }
             else
             {
-                await _discord
-                    .GetGuild(Program.GUILD_ID)
-                    .GetTextChannel(Program.ADMIN_CHAN_ID)
-                    .SendMessageAsync($"Failed cmd ({command.Value.Name}) by {context.User.Username} " +
-                                      $"- error: [{result.Error.ToString()}] {result.ErrorReason}");
+                _discord.GetGuild(Program.GUILD_ID).GetTextChannel(Program.ADMIN_CHAN_ID)
+                    .SendMessageAsync($"Failed cmd ({command.Value.Name}) by {context.User.Username} - error: [{result.Error.ToString()}] {result.ErrorReason}");
             }
         }
 

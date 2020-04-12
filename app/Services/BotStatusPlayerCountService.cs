@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace app.Services
 {
+    #pragma warning disable 4014,1998
     public class BotStatusPlayerCountService
     {
         private readonly DiscordSocketClient _discord;
@@ -27,22 +28,18 @@ namespace app.Services
             await Task.CompletedTask;
         }
         
-        private void OnPlayerCountUpdateCheck(object state)
+        private async void OnPlayerCountUpdateCheck(object state)
         {
             try
             {
                 GetSampPlayerServerCount(out long playersCount, out long serversCount);
                 
-                _discord.SetGameAsync("Grand Theft Auto San Andreas" +
-                                      $" - " +
-                                      $"Players Online: {playersCount}" + 
-                                      $" - " + 
-                                      $"Servers Online: {serversCount}");
+                _discord.SetGameAsync("Grand Theft Auto San Andreas - Players Online: {playersCount} - Servers Online: {serversCount}");
             }
             catch (Exception e)
             {
-                _discord.GetGuild(Program.GUILD_ID).GetTextChannel(Program.ADMIN_CHAN_ID).SendMessageAsync(
-                    $"Failed to parse player count and server count due to: {e.Message}");
+                _discord.GetGuild(Program.GUILD_ID).GetTextChannel(Program.ADMIN_CHAN_ID)
+                    .SendMessageAsync($"Failed to parse player count and server count due to: {e.Message}");
             }
         }
 
@@ -52,19 +49,17 @@ namespace app.Services
             serversCount = 0;
 
             var websiteContent = GetSampWebsiteContentAsync().Result;
-            Match playersCountMatch = Regex.Match(websiteContent, "<td><font size=\"2\">Players Online: <\\/font><font size=\"2\" color=\"#BBBBBB\"><b>([0-9]+)<\\/b><\\/font><\\/td>");
-            Match serversCountMatch = Regex.Match(websiteContent, "<td><font size=\"2\">Servers Online: <\\/font><font size=\"2\" color=\"#BBBBBB\"><b>([0-9]+)<\\/b><\\/font><\\/td>");
 
+            Match playersCountMatch = Regex.Match(websiteContent, "<td><font size=\"2\">Players Online: <\\/font><font size=\"2\" color=\"#BBBBBB\"><b>([0-9]+)<\\/b><\\/font><\\/td>");
             if (playersCountMatch.Success && websiteContent.Contains("Players Online:"))
             {
                 playersCount = Int64.Parse(playersCountMatch.Groups[0].Value.Remove(0, 76).Replace("</b></font></td>", ""));
-                LoggerService.Write($"[GetSampPlayerServerCount] fetching player count {playersCount}");
             }
-            
+
+            Match serversCountMatch = Regex.Match(websiteContent, "<td><font size=\"2\">Servers Online: <\\/font><font size=\"2\" color=\"#BBBBBB\"><b>([0-9]+)<\\/b><\\/font><\\/td>");
             if (serversCountMatch.Success && websiteContent.Contains("Servers Online:"))
             {
                 serversCount = Int64.Parse(serversCountMatch.Groups[0].Value.Remove(0, 76).Replace("</b></font></td>", ""));
-                LoggerService.Write($"[GetSampPlayerServerCount] fetching server count {serversCount}");
             }
         }
         
@@ -73,9 +68,12 @@ namespace app.Services
             string url = "https://www.sa-mp.com/";
             string result = string.Empty;
 
-            using (HttpClient client = new HttpClient()) {
-                using (HttpResponseMessage response = client.GetAsync(url).Result) {
-                    using (HttpContent content = response.Content) {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage response = client.GetAsync(url).Result)
+                {
+                    using (HttpContent content = response.Content)
+                    {
                         result = await content.ReadAsStringAsync();
                     }
                 }

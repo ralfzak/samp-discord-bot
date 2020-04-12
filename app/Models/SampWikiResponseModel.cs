@@ -2,7 +2,7 @@
 
 namespace app.Models
 {
-    class SampWikiResponseModel
+    public class SampWikiResponseModel
     {
         public string status { get; set; }
         public string description { get; set; }

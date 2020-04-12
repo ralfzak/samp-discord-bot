@@ -2,7 +2,7 @@ using System;
 
 namespace app.Helpers
 {
-    public class StringHelper
+    public static class StringHelper
     {
         public static int ComputeLevenshteinDistance(string s, string t)
         {

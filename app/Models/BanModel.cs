@@ -1,6 +1,6 @@
 ﻿namespace app.Models
 {
-    class BanModel
+    public class BanModel
     {
         public ulong UId;
         public string Name;

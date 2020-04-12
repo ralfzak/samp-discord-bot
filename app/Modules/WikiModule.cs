@@ -14,9 +14,9 @@ using System.Net;
 
 namespace app.Modules
 {
+    #pragma warning disable 4014,1998
     public class WikiModule : ModuleBase<SocketCommandContext>
     {
-        // Server 
         [Command("wiki")]
         [Name("wiki")]
         [Summary("/wiki")]
@@ -24,72 +24,54 @@ namespace app.Modules
         {
             // server cmd cooldown
             if (UserService.IsUserOnCooldown(Context.User.Id, "wiki"))
-            {
-                LoggerService.Write($"[cooldown] user {Context.User.Username} {Context.User.Id} is on a cooldown, " +
-                                    "cmd blocked");
-                await Task.CompletedTask;
                 return;
-            }
 
-            LoggerService.Write($"{Context.User.Username} /wiki - {input}");
-
-            if (Context.Guild == null)
+            if (Context.Channel.Id != Program.BOT_CHAN_ID && Context.Channel.Id != Program.ADMIN_CHAN_ID && Context.Channel.Id != Program.SCRIPTING_CHAN_ID)
             {
-                await ReplyAsync("This only works on the server.");
-                return;
-            }
-
-            if (Context.Channel.Id != Program.BOT_CHAN_ID && 
-                Context.Channel.Id != Program.ADMIN_CHAN_ID && 
-                Context.Channel.Id != Program.SCRIPTING_CHAN_ID)
-            {
-                await Context.User.SendMessageAsync($"This command only works on <#{Program.BOT_CHAN_ID}> " +
-                                                    $"and <#{Program.SCRIPTING_CHAN_ID}>");
+                Context.User.SendMessageAsync($"This command only works on <#{Program.BOT_CHAN_ID}> and <#{Program.SCRIPTING_CHAN_ID}>");
                 return;
             }
 
             if (input == "")
             {
-                await ReplyAsync("/wiki <callback/function/article> - fetch SAMP wiki article information");
+                ReplyAsync("`/wiki <callback/function/article>` - Fetch SAMP wiki article information");
                 return;
             }
 
-            string article = SAMPWikiService.GetClosestArticle(input);
-
+            var article = SAMPWikiService.GetClosestArticle(input);
             var articleInfo = await SAMPWikiService.GetInfoAsync(article);
-            if (object.ReferenceEquals(articleInfo, null))
+
+            if (ReferenceEquals(articleInfo, null))
             {
-                await ReplyAsync("Sorry! I haven't found any similar matches. " +
-                                 $"Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
                 return;
             }
 
             if (articleInfo.status == "article")
             {
-                await ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
+                ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
                 return;
             }
 
             if (articleInfo.status != "ok")
             {
-                await ReplyAsync("Sorry! I haven't found any similar matches. " +
-                                 $"Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
                 return;
             }
 
             if (articleInfo.parameters == "" || articleInfo.description == "")
             {
-                await ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
+                ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
                 return;
             }
 
-            // lets build our message based on what we have
             string URL = $"https://wiki.sa-mp.com/wiki/{article}";
             StringBuilder sbParam = new StringBuilder();
             StringBuilder sbExample = new StringBuilder();
 
             var builder = new EmbedBuilder()
-                .WithDescription("```cpp" +
+                .WithDescription(
+                    "```cpp" +
                     "\n" +
                     $"{article}{articleInfo.parameters}```\n{articleInfo.description}")
                 .WithColor(new Color(0xB34B00))
@@ -119,7 +101,7 @@ namespace app.Modules
             }
 
             var embed = builder.Build();
-            await ReplyAsync(null, embed: embed);
+            ReplyAsync(null, embed: embed);
 
             UserService.SetUserCooldown(Context.User.Id, "wiki", 15);
         }

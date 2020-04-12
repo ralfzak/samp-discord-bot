@@ -66,13 +66,11 @@ namespace app.Services
                 fname = forumInfo;
             }
 
-            var data = DataService.Get(
-                "SELECT `userid` FROM `verifications` WHERE `forumid`=@fid OR `forum_name`=@fname LIMIT 1;",
-                new Dictionary<string, object>()
-                {
-                    {"@fid", fid},
-                    {"@fname", fname}
-                });
+            var data = DataService.Get("SELECT `userid` FROM `verifications` WHERE `forumid`=@fid OR `forum_name`=@fname LIMIT 1;", new Dictionary<string, object>()
+            {
+                {"@fid", fid},
+                {"@fname", fname}
+            });
 
             if (data.Count > 0)
             {
@@ -90,12 +88,10 @@ namespace app.Services
             fid = -1;
             fname = string.Empty;
 
-            var data = DataService.Get(
-                "SELECT `forumid`, `forum_name` FROM `verifications` WHERE `userid`=@uid LIMIT 1;", 
-                new Dictionary<string, object>()
-                {
-                    {"@uid", userId}
-                });
+            var data = DataService.Get("SELECT `forumid`, `forum_name` FROM `verifications` WHERE `userid`=@uid LIMIT 1;", new Dictionary<string, object>()
+            {
+                {"@uid", userId}
+            });
 
             if (data.Count > 0)
             {
@@ -108,11 +104,10 @@ namespace app.Services
         {
             ulong userid = 0;
 
-            var data = DataService.Get("SELECT `userid` FROM `verifications` WHERE `forumid`=@fid LIMIT 1;",
-                new Dictionary<string, object>()
-                {
-                    {"@fid", profileId}
-                });
+            var data = DataService.Get("SELECT `userid` FROM `verifications` WHERE `forumid`=@fid LIMIT 1;", new Dictionary<string, object>()
+            {
+                {"@fid", profileId}
+            });
 
             if (data.Count > 0)
             {
@@ -133,25 +128,21 @@ namespace app.Services
 
         public static void StoreUserVerification(ulong uid, int fid, string forumName, string discordUser)
         {
-            DataService.Put(
-                "INSERT INTO verifications (`forumid`, `userid`, `forum_name`, `by`) VALUES (@fid, @uid, @fname, @by)",
-                new Dictionary<string, object>()
-                {
-                    {"@fid", fid},
-                    {"@uid", uid},
-                    {"@fname", forumName},
-                    {"@by", discordUser}
-                });
+            DataService.Put("INSERT INTO verifications (`forumid`, `userid`, `forum_name`, `by`) VALUES (@fid, @uid, @fname, @by)", new Dictionary<string, object>()
+            {
+                {"@fid", fid},
+                {"@uid", uid},
+                {"@fname", forumName},
+                {"@by", discordUser}
+            });
         }
 
         public static void DeleteUserVerification(ulong uid)
         {
-            DataService.Put(
-                "DELETE FROM verifications WHERE `userid`=@uid;",
-                new Dictionary<string, object>()
-                {
-                    {"@uid", uid}
-                });
+            DataService.Put("DELETE FROM verifications WHERE `userid`=@uid;", new Dictionary<string, object>()
+            {
+                {"@uid", uid}
+            });
         }
     }
 }

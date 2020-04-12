@@ -4,8 +4,7 @@
     {
         public static string GetVerificationCmdDescription(string mention)
         {
-            return $"Hi {mention}! The verification process is used to claim your ownership of a SA:MP forum account. " +
-                   "Provide your forum profile ID to start the process." +
+            return $"Hi {mention}! The verification process is used to claim your ownership of a SA:MP forum account. Provide your forum profile ID to start the process." +
                    "\n" +
                    "To initiate the process type `/verify <profile id>`" +
                    "\n" +
@@ -20,11 +19,9 @@
                    "\n" +
                    "To start the verification process, type: `/verify 218502`" +
                    "\n" +
-                   "Once you initiate the process, you will receive a token that you need to place in your " +
-                   "biography section on your profile." +
+                   "Once you initiate the process, you will receive a token that you need to place in your biography section on your profile." +
                    "\n" +
-                   "Once you place your token in the biography section, type `/verify done` so I can check your " +
-                   "profile and verify you!" +
+                   "Once you place your token in the biography section, type `/verify done` so I can check your profile and verify you!" +
                    "\n" +
                    "You may cancel this process anytime by typing `/verify cancel`." +
                    "\n" +
@@ -34,9 +31,7 @@
 
         public static string GetVerificationWaitingMessage(string mention, int profileid, string token)
         {
-            return $"Thanks {mention}! The verification process has been initiated. " + 
-                   "All you have to do now is to paste the below token in your profile biography and type " +
-                   "`/verify done` so I can have a quick look over it to verify you." +
+            return $"Thanks {mention}! The verification process has been initiated. All you have to do now is to paste the below token in your profile biography and type `/verify done` so I can have a quick look over it to verify you." +
                    "\n" +
                    "\n" +
                    $"Profile URL: https://forum.sa-mp.com/member.php?u={profileid}" +
@@ -44,11 +39,9 @@
                    $"Token: **{token}**" +
                    "\n" +
                    "\n" +
-                   "You can edit profile biography here: <http://forum.sa-mp.com/profile.php?do=editprofile> " +
-                   "in the 'Additional Information' section at the end of the page." +
+                   "You can edit profile biography here: <http://forum.sa-mp.com/profile.php?do=editprofile> in the 'Additional Information' section at the end of the page." +
                    "\n" +
-                   "Please make sure your \"About Me\" profile section is visible to *Everyone* so I can see it.  " +
-                   "You can change this setting here: <http://forum.sa-mp.com/profile.php?do=privacy>" +
+                   "Please make sure your \"About Me\" profile section is visible to *Everyone* so I can see it.  You can change this setting here: <http://forum.sa-mp.com/profile.php?do=privacy>" +
                    "\n" +
                    "\n" +
                    "Facing trouble? Ask for help on Discord!";
@@ -56,8 +49,7 @@
 
         public static string GetVerificationSuccessMessage(string mention, int profileid)
         {
-            return $"Good work {mention}! You have completed your verification process and now verified on " +
-                   "the SAMP discord server." +
+            return $"Good work {mention}! You have completed your verification process and now verified on the SAMP discord server." +
                    "\n" +
                    "\n" +
                    $"Linked Forum Profile: https://forum.sa-mp.com/member.php?u={profileid}" +
