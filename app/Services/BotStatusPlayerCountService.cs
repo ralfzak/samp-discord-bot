@@ -34,7 +34,7 @@ namespace app.Services
             {
                 GetSampPlayerServerCount(out long playersCount, out long serversCount);
                 
-                _discord.SetGameAsync("Grand Theft Auto San Andreas - Players Online: {playersCount} - Servers Online: {serversCount}");
+                _discord.SetGameAsync($"Grand Theft Auto San Andreas - Players Online: {playersCount} - Servers Online: {serversCount}");
             }
             catch (Exception e)
             {
