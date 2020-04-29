@@ -43,9 +43,6 @@ namespace app.Services
             if (message.Source != MessageSource.User)
                 return;
 
-            if (!ChannelAllowsCommands(message.Channel.Id))
-                return;
-
             var argPos = 0;
             if (!message.HasCharPrefix('/', ref argPos))
                 return;
@@ -87,8 +84,5 @@ namespace app.Services
                     .SendMessageAsync($"Failed cmd ({command.Value.Name}) by {context.User.Username} - error: [{result.Error.ToString()}] {result.ErrorReason}");
             }
         }
-
-        private bool ChannelAllowsCommands(ulong channelId) 
-            => channelId != Program.ADVERT_CHAN_ID;
     }
 }
