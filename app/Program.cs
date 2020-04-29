@@ -25,9 +25,6 @@ namespace app
         public static ulong SCRIPTING_CHAN_ID = 
             ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_SCRIPTING_CHAN_ID));
         
-        public static ulong ADVERT_CHAN_ID = 
-            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_ADVERT_CHAN_ID));
-        
         public static ulong BOT_CHAN_ID = 
             ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_BOT_CHAN_ID));
         
@@ -67,7 +64,6 @@ namespace app
                 await services.GetRequiredService<VerificationService>().InitializeAsync();
                 await services.GetRequiredService<BanningService>().InitializeAsync();
                 await services.GetRequiredService<BotStatusPlayerCountService>().InitializeAsync();
-                await services.GetRequiredService<ServerAdPurgeService>().InitializeAsync();
 
                 await Task.Delay(-1);
             }
@@ -94,7 +90,6 @@ namespace app
                 .AddSingleton<VerificationService>() // for handling user events
                 .AddSingleton<BanningService>() // for ban timer check
                 .AddSingleton<BotStatusPlayerCountService>() // for update player count timer
-                .AddSingleton<ServerAdPurgeService>() // purge check
                 .AddSingleton<HttpClient>()
                 .BuildServiceProvider();
         }
