@@ -3,16 +3,13 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using app.Models;
-using Newtonsoft.Json;
+using app.Core;
 
 namespace app.Services
 {
-    static class SAMPServerService
+    public static class ServerService
     {
         public static async Task<bool> CheckGameMpWebsite(string ip, int port)
         {
@@ -52,7 +49,7 @@ namespace app.Services
         }
     }
 
-    public class SAMPServerQueryService
+    public class ServerQueryService
     {
         private IPAddress serverIp;
         private IPEndPoint serverEndPoint;
@@ -61,7 +58,7 @@ namespace app.Services
         private string szIP;
         private ushort iPort;
 
-        public SAMPServerQueryService(string ip, ushort port, char packetType, int timeout = 500)
+        public ServerQueryService(string ip, ushort port, char packetType, int timeout = 500)
         {
             MemoryStream stream = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(stream);
@@ -78,7 +75,7 @@ namespace app.Services
                 szIP = ip;
                 iPort = port;
 
-                LoggerService.Write("[SAMPServerQueryService] Connecting to " + ip + ":" + port);
+                Logger.Write("[SAMPServerQueryService] Connecting to " + ip + ":" + port);
 
                 try
                 {
@@ -103,12 +100,12 @@ namespace app.Services
                 }
                 catch (Exception e)
                 {
-                    LoggerService.Write($"[SAMPServerQueryService] Failed to receive packet: {e}");
+                    Logger.Write($"[SAMPServerQueryService] Failed to receive packet: {e}");
                 }
             }
             catch (Exception e)
             {
-                LoggerService.Write($"[SAMPServerQueryService] Failed to connect to IP: {e}");
+                Logger.Write($"[SAMPServerQueryService] Failed to connect to IP: {e}");
             }
         }
 
@@ -172,11 +169,11 @@ namespace app.Services
                 }
 
                 foreach (var d in dData)
-                    LoggerService.Write($"[SAMPServerQueryService] {d.Key} {d.Value}");
+                    Logger.Write($"[SAMPServerQueryService] {d.Key} {d.Value}");
             }
             catch (Exception e)
             {
-                LoggerService.Write($"[SAMPServerQueryService] There's been a problem reading the data {e}");
+                Logger.Write($"[SAMPServerQueryService] There's been a problem reading the data {e}");
             }
 
             return dData;

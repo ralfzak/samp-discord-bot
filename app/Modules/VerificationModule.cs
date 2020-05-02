@@ -3,15 +3,32 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using app.Services;
-using System.Linq;
 using app.Helpers;
 using Discord.WebSocket;
+using app.Core;
 
 namespace app.Modules
 {
     #pragma warning disable 4014,1998
     public class VerificationModule : ModuleBase<SocketCommandContext>
     {
+        private readonly UserService _userService;
+        private readonly CacheService _cacheService;
+        private readonly VerificationService _verificationService;
+        private readonly ulong _guildId;
+        private readonly ulong _adminChannelId;
+        private readonly ulong _verifiedRoleId;
+
+        public VerificationModule(Configuration configuration, UserService userService, CacheService cacheService, VerificationService verificationService)
+        {
+            _userService = userService;
+            _cacheService = cacheService;
+            _verificationService = verificationService;
+            _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
+            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
+            _verifiedRoleId = UInt64.Parse(configuration.GetVariable("VERIFIED_ROLE_ID"));
+        }
+
         [Command("verify")]
         [Name("verify")]
         [Summary("/verify <option>")]
@@ -19,8 +36,7 @@ namespace app.Modules
         {
             var user = Context.User;
 
-            // Check if the user is already verified or not
-            if (UserService.IsUserVerified(user.Id))
+            if (_userService.IsUserVerified(user.Id))
             {
                 Context.Message.DeleteAsync();
                 user.SendMessageAsync("Your discord account is already verified!");
@@ -30,19 +46,18 @@ namespace app.Modules
             if (Context.Guild != null)
             {
                 Context.Message.DeleteAsync();
-                user.SendMessageAsync(VerificationHelper.GetVerificationCmdDescription(user.Mention));
+                user.SendMessageAsync(MessageHelper.GetVerificationCmdDescription(user.Mention));
                 return;
             }
 
-            // Check if user is on server
-            var guildUser = Context.Client.GetGuild(Program.GUILD_ID).GetUser(user.Id);
+            var guildUser = Context.Client.GetGuild(_guildId).GetUser(user.Id);
             if (guildUser == null)
             {
-                ReplyAsync($"I couldn't find you on {Context.Client.GetGuild(Program.GUILD_ID).Name}. If you are on the server, try changing your status, if not, join and then try your luck verifying!");
+                ReplyAsync($"I couldn't find you on {Context.Client.GetGuild(_guildId).Name}. If you are on the server, try changing your status, if not, join and then try your luck verifying!");
                 return;
             }
 
-            var userVerificationState = CacheService.GetUserVerificationState(user.Id);
+            var userVerificationState = _cacheService.GetUserVerificationState(user.Id);
             switch (option.ToLower().Trim())
             {
                 case "done":
@@ -52,19 +67,19 @@ namespace app.Modules
                         return;
                     }
 
-                    int cachedProfile = CacheService.GetUserForumId(user.Id);
-                    string cachedToken = CacheService.GetUserToken(user.Id);
+                    int cachedProfile = _cacheService.GetUserForumId(user.Id);
+                    string cachedToken = _cacheService.GetUserToken(user.Id);
                     if (cachedProfile == -1 || cachedToken == "" || userVerificationState != VERIFICATION_STATES.WAITING_CONFIRM)
                     {
-                        CacheService.ClearCache(user.Id);
+                        _cacheService.ClearCache(user.Id);
                         ReplyAsync("Your verification process hasn't been initiated, type `/verify` to start your verification process.");
                         return;
                     }
 
-                    string forumNameTokenized = await VerificationService.GetForumProfileIfContainsCodeAsync(cachedProfile, cachedToken);
+                    string forumNameTokenized = await _verificationService.GetForumProfileIfContainsCodeAsync(cachedProfile, cachedToken);
                     if (forumNameTokenized == string.Empty)
                     {
-                        UserService.SetUserCooldown(user.Id, "", 15);
+                        _userService.SetUserCooldown(user.Id, "", 15);
                         ReplyAsync("I couldn't find the token in your profile. Make sure your profile is set to public and the token is in your biography section." +
                             "\n" +
                             ":no_entry: You are allowed to check again in 15 seconds.");
@@ -72,24 +87,24 @@ namespace app.Modules
                     }
 
                     // if for some reason something is fucked and the forum id is found as linked, deny process and clear everything
-                    if (UserService.IsForumProfileLinked(cachedProfile))
+                    if (_userService.IsForumProfileLinked(cachedProfile))
                     {
-                        CacheService.ClearCache(user.Id);
+                        _cacheService.ClearCache(user.Id);
                         ReplyAsync("Sorry! This profile is already found to be linked with a discord account!");
                         return;
                     }
 
-                    CacheService.ClearCache(user.Id);
-                    UserService.StoreUserVerification(user.Id, cachedProfile, forumNameTokenized, user.Username);
+                    _cacheService.ClearCache(user.Id);
+                    _userService.StoreUserVerification(user.Id, cachedProfile, forumNameTokenized, user.Username);
 
-                    var discordServer = Context.Client.GetGuild(Program.GUILD_ID);
+                    var discordServer = Context.Client.GetGuild(_guildId);
                     discordServer
-                        .GetTextChannel(Program.ADMIN_CHAN_ID)
+                        .GetTextChannel(_adminChannelId)
                         .SendMessageAsync($"{guildUser.Mention} ({guildUser.Username}) has successfully verified to **{forumNameTokenized}** <{Program.FORUM_PROFILE_URL}{cachedProfile}>");
 
-                    ReplyAsync(VerificationHelper.GetVerificationSuccessMessage(user.Mention, cachedProfile));
+                    ReplyAsync(MessageHelper.GetVerificationSuccessMessage(user.Mention, cachedProfile));
 
-                    guildUser.AddRoleAsync(discordServer.GetRole(Program.VERIFIED_ROLE_ID));
+                    guildUser.AddRoleAsync(discordServer.GetRole(_verifiedRoleId));
                     break;
 
                 case "cancel":
@@ -99,7 +114,7 @@ namespace app.Modules
                         return;
                     }
                     
-                    CacheService.ClearCache(user.Id);
+                    _cacheService.ClearCache(user.Id);
                     ReplyAsync("Session successfully cleared. You can start the verification process again by typing `/verify <profile id>`");
                     break;
 
@@ -112,15 +127,14 @@ namespace app.Modules
 
                     if (option == string.Empty)
                     {
-                        ReplyAsync(VerificationHelper.GetVerificationCmdDescription(user.Mention));
+                        ReplyAsync(MessageHelper.GetVerificationCmdDescription(user.Mention));
                         return;
                     }
 
-                    // if param is an int
                     int profile_id = -1;
                     if (!Int32.TryParse(option, out profile_id))
                     {
-                        ReplyAsync(VerificationHelper.GetVerificationCmdDescription(user.Mention));
+                        ReplyAsync(MessageHelper.GetVerificationCmdDescription(user.Mention));
                         return;
                     }
 
@@ -130,20 +144,20 @@ namespace app.Modules
                         return;
                     }
                     
-                    if (UserService.IsForumProfileLinked(profile_id))
+                    if (_userService.IsForumProfileLinked(profile_id))
                     {
-                        CacheService.ClearCache(user.Id);
+                        _cacheService.ClearCache(user.Id);
                         await ReplyAsync("This profile is already linked to a discord account!");
                         return;
                     }
 
                     string token = TokenService.Generate(10);
 
-                    CacheService.SetUserVerificationState(user.Id, VERIFICATION_STATES.WAITING_CONFIRM);
-                    CacheService.SetUserToken(user.Id, token);
-                    CacheService.SetUserForumId(user.Id, profile_id);
+                    _cacheService.SetUserVerificationState(user.Id, VERIFICATION_STATES.WAITING_CONFIRM);
+                    _cacheService.SetUserToken(user.Id, token);
+                    _cacheService.SetUserForumId(user.Id, profile_id);
 
-                    ReplyAsync(VerificationHelper.GetVerificationWaitingMessage(user.Mention, profile_id, token));
+                    ReplyAsync(MessageHelper.GetVerificationWaitingMessage(user.Mention, profile_id, token));
                     break;
             }
         }
@@ -170,7 +184,7 @@ namespace app.Modules
 
             int profileid = -1;
             string profileName = "";
-            UserService.GetUserForumProfileID(guildUser.Id, out profileid, out profileName);
+            _userService.GetUserForumProfileID(guildUser.Id, out profileid, out profileName);
             if (profileid == -1)
             {
                 ReplyAsync($"{guildUser.Mention} is not verified yet.");
@@ -194,7 +208,7 @@ namespace app.Modules
             if (Context.Guild == null)
                 return;
 
-            if (Context.Channel.Id != Program.ADMIN_CHAN_ID)
+            if (Context.Channel.Id != _adminChannelId)
                 return;
 
             if (forumInfo == "")
@@ -203,7 +217,7 @@ namespace app.Modules
                 return;
             }
 
-            var userids = UserService.GetUserIDsFromForumInfo(forumInfo);
+            var userids = _userService.GetUserIDsFromForumInfo(forumInfo);
             if (userids.Length < 1)
             {
                 ReplyAsync("No such user.");
@@ -214,7 +228,7 @@ namespace app.Modules
             {
                 int profileid = -1;
                 string profileName = "";
-                UserService.GetUserForumProfileID((ulong)uid, out profileid, out profileName);
+                _userService.GetUserForumProfileID((ulong)uid, out profileid, out profileName);
 
                 ReplyAsync($"**{profileName}** ({Program.FORUM_PROFILE_URL}{profileid}) is <@{uid}>");
             }
@@ -228,7 +242,7 @@ namespace app.Modules
             if (Context.Guild == null)
                 return;
 
-            if (Context.Channel.Id != Program.ADMIN_CHAN_ID)
+            if (Context.Channel.Id != _adminChannelId)
                 return;
 
             if (user == null)
@@ -245,27 +259,27 @@ namespace app.Modules
                 return;
             }
 
-            if (UserService.IsUserVerified(user.Id))
+            if (_userService.IsUserVerified(user.Id))
             {
                 ReplyAsync($"{user.Username} is already verified.");
                 return;
             }
 
             string forumName = "";
-            if ( (forumid != 0) && UserService.IsForumProfileLinked(forumid) )
+            if ( (forumid != 0) && _userService.IsForumProfileLinked(forumid) )
             {
                 ReplyAsync($"Forum ID <{Program.FORUM_PROFILE_URL}{forumid}> is already linked to a user.");
                 return;
             }
             
             if (forumid != 0)
-                forumName = await VerificationService.GetForumProfileNameAsync(forumid);
+                forumName = await _verificationService.GetForumProfileNameAsync(forumid);
 
-            UserService.StoreUserVerification(user.Id, forumid, forumName, user.Username);
+            _userService.StoreUserVerification(user.Id, forumid, forumName, user.Username);
 
-            var verifiedRole = Context.Client.GetGuild( Program.GUILD_ID).GetRole(Program.VERIFIED_ROLE_ID);
-
+            var verifiedRole = Context.Client.GetGuild(_guildId).GetRole(_verifiedRoleId);
             guildUser.AddRoleAsync(verifiedRole);
+
             ReplyAsync($"I've set {guildUser.Username} verified as commanded!");
         }
 
@@ -274,12 +288,10 @@ namespace app.Modules
         [Summary("/funverify [@]<user>")]
         public async Task Funverify(IUser user = null)
         {
-            LoggerService.Write($"{Context.User.Username}: /funverify ");
-
             if (Context.Guild == null)
                 return;
 
-            if (Context.Channel.Id != Program.ADMIN_CHAN_ID)
+            if (Context.Channel.Id != _adminChannelId)
                 return;
 
             if (user == null)
@@ -296,17 +308,17 @@ namespace app.Modules
                 return;
             }
 
-            if (!UserService.IsUserVerified(user.Id))
+            if (!_userService.IsUserVerified(user.Id))
             {
                 ReplyAsync($"{user.Username} is not verified.");
                 return;
             }
 
-            UserService.DeleteUserVerification(user.Id);
+            _userService.DeleteUserVerification(user.Id);
 
-            var verifiedRole = Context.Client.GetGuild(Program.GUILD_ID).GetRole(Program.VERIFIED_ROLE_ID);
-
+            var verifiedRole = Context.Client.GetGuild(_guildId).GetRole(_verifiedRoleId);
             guildUser.RemoveRoleAsync(verifiedRole);
+
             ReplyAsync($"I've sent {guildUser.Username} to doom!");
         }
     }

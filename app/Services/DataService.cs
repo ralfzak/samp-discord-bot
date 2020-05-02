@@ -1,21 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using app.Core;
 using MySql.Data.MySqlClient;
 
 namespace app.Services
 {
-    public static class DataService
+    public class DataService
     {
-        private static string CONNECTION_STRING = 
-            $"server={Program.DB_SERVER};" +
-            $"port=3306;" +
-            $"database={Program.DB_DB};" +
-            $"user={Program.DB_USER};" +
-            $"password={Program.DB_PASS};";
+        private static string connectionString;
+        private readonly Configuration _configuration;
+
+        public DataService(Configuration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public async Task InitializeAsync()
+        {
+            DataService.connectionString =
+                $"server={_configuration.GetVariable("DB_SERVER")};" +
+                $"database={_configuration.GetVariable("DB_DB")};" +
+                $"user={_configuration.GetVariable("DB_USER")};" +
+                $"password={_configuration.GetVariable("DB_PASS")};" +
+                $"port=3306;";
+
+            await Task.CompletedTask;
+        }
 
         private static MySqlConnection GetConnection()
         {
-            return new MySqlConnection(CONNECTION_STRING);
+            return new MySqlConnection(connectionString);
         }
         
         public static Dictionary<string, List<object>> Get(string query, Dictionary<string, object> parameters)

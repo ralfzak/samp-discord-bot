@@ -5,7 +5,7 @@ using Discord.Commands;
 using app.Services;
 using app.Models;
 using System.Net;
-using app.Helpers;
+using app.Core;
 
 namespace app.Modules
 {
@@ -14,19 +14,30 @@ namespace app.Modules
     {
         private const string NOT_VALID_SERVER = "This doesn't look like a valid server to me :thinking:.";
         private const string FAILED_FETCH_SERVER_DATA = "Sorry! I Couldn't fetch this server's data.";
-        
+
+        private readonly UserService _userService;
+        private readonly ulong _botChannelId;
+        private readonly ulong _adminChannelId;
+
+        public ServerInfoModule(Configuration configuration, UserService userService)
+        {
+            _userService = userService;
+            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
+            _botChannelId = UInt64.Parse(configuration.GetVariable("BOT_CHAN_ID"));
+        }
+
         [Command("server")]
         [Alias("srv")]
         [Name("server")]
         [Summary("/server <ip>[:port]")]
         public async Task Server(string ipPort = "")
         {
-            if (UserService.IsUserOnCooldown(Context.User.Id, "server"))
+            if (_userService.IsUserOnCooldown(Context.User.Id, "server"))
                 return;
 
-            if (Context.Channel.Id != Program.BOT_CHAN_ID && Context.Channel.Id != Program.ADMIN_CHAN_ID)
+            if (Context.Channel.Id != _botChannelId && Context.Channel.Id != _adminChannelId)
             {
-                Context.User.SendMessageAsync($"This command only works on <#{Program.BOT_CHAN_ID}>.");
+                Context.User.SendMessageAsync($"This command only works on <#{_botChannelId}>.");
                 return;
             }
 
@@ -52,13 +63,13 @@ namespace app.Modules
                 return;
             }
 
-            if (!SAMPServerService.ValidateIPv4(ip) && !SAMPServerService.ValidateHostname(ip))
+            if (!ServerService.ValidateIPv4(ip) && !ServerService.ValidateHostname(ip))
             {
                 ReplyAsync(NOT_VALID_SERVER);
                 return;
             }
 
-            if (!SAMPServerService.ValidateIPv4(ip) && SAMPServerService.ValidateHostname(ip))
+            if (!ServerService.ValidateIPv4(ip) && ServerService.ValidateHostname(ip))
             {
                 // not ip, but looks like a hostname, query dns
                 try
@@ -66,8 +77,8 @@ namespace app.Modules
                     IPAddress[] iPs = await Dns.GetHostAddressesAsync(ip);
                     if (iPs.Length == 0)
                     {
-                        LoggerService.Write($"{Context.User.Username}: /server - hostname not resolved");
-                        UserService.SetUserCooldown(Context.User.Id, "server", 8);
+                        Logger.Write($"{Context.User.Username}: /server - hostname not resolved");
+                        _userService.SetUserCooldown(Context.User.Id, "server", 8);
 
                         ReplyAsync(NOT_VALID_SERVER);
                         return;
@@ -81,14 +92,14 @@ namespace app.Modules
                 }
             }
 
-            SampServerResponseModel data = null;
-            var generalInfo = new SAMPServerQueryService(ip, port, 'i', 1000).read();
-            var rulesInfo = new SAMPServerQueryService(ip, port, 'r', 2000).read();
-            var isHostedTab = await SAMPServerService.CheckGameMpWebsite(ip, port);
+            ServerResponseModel data = null;
+            var generalInfo = new ServerQueryService(ip, port, 'i', 1000).read();
+            var rulesInfo = new ServerQueryService(ip, port, 'r', 2000).read();
+            var isHostedTab = await ServerService.CheckGameMpWebsite(ip, port);
 
             try
             {
-                data = new SampServerResponseModel()
+                data = new ServerResponseModel()
                 {
                     WebURL = rulesInfo["weburl"],
                     IP = ip,
@@ -103,8 +114,8 @@ namespace app.Modules
             }
             catch (Exception e)
             {
-                LoggerService.Write($"{Context.User.Username}: /server - key not found: {e}");
-                UserService.SetUserCooldown(Context.User.Id, "server", 15);
+                Logger.Write($"{Context.User.Username}: /server - key not found: {e}");
+                _userService.SetUserCooldown(Context.User.Id, "server", 15);
 
                 ReplyAsync(FAILED_FETCH_SERVER_DATA);
                 return;
@@ -130,7 +141,7 @@ namespace app.Modules
             var embed = builder.Build();
             ReplyAsync("", embed: embed);
 
-            UserService.SetUserCooldown(Context.User.Id, "server", 60);
+            _userService.SetUserCooldown(Context.User.Id, "server", 60);
         }
     }
 }

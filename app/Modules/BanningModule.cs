@@ -4,18 +4,28 @@ using app.Helpers;
 using Discord;
 using Discord.Commands;
 using app.Services;
+using app.Core;
 
 namespace app.Modules
 {
     #pragma warning disable 4014,1998
     public class BanningModule : ModuleBase<SocketCommandContext>
     {
+        private readonly BanningService _banningService;
+        private readonly ulong _adminChannelId;
+
+        public BanningModule(Configuration configuration, BanningService banningService)
+        {
+            _banningService = banningService;
+            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
+        }
+
         [Command("ban")]
         [Name("ban")]
         [Summary("/ban")]
         public async Task Ban(IUser user = null, int days = 0, int hours = 0, int sendMessageToUser = 0, [RemainderAttribute]string reason = MessageHelper.NO_REASON_GIVEN)
         {
-            if (Context.Channel.Id != Program.ADMIN_CHAN_ID)
+            if (Context.Channel.Id != _adminChannelId)
                 return;
 
             if (user == null)
@@ -69,7 +79,7 @@ namespace app.Modules
                     dmChannel.SendMessageAsync($"You have been banned from **{Context.Guild.Name}** for **{reason}**. This ban is permanent.");
             }
             
-            BanningService.StoreBan(guildUser.Id, guildUser.Username, Context.User.Id, Context.User.Username, timeToAdd, reason, isTimedBan);
+            _banningService.StoreBan(guildUser.Id, guildUser.Username, Context.User.Id, Context.User.Username, timeToAdd, reason, isTimedBan);
             Context.Guild.AddBanAsync(guildUser, 0, $"{reason} by {Context.User.Username} (use /banlookup for more information");
         }
 
@@ -78,11 +88,8 @@ namespace app.Modules
         [Summary("/banlookup")]
         public async Task Banlookup(string user = "")
         {
-            if (Context.Channel.Id != Program.ADMIN_CHAN_ID)
-            {
-                await Task.CompletedTask;
+            if (Context.Channel.Id != _adminChannelId)
                 return;
-            }
 
             if (user == null)
             {
@@ -92,7 +99,7 @@ namespace app.Modules
                 return;
             }
 
-            var bans = BanningService.GetBans(user);
+            var bans = _banningService.GetBans(user);
             if (bans.Count == 0)
             {
                 ReplyAsync("No bans found.");
@@ -116,7 +123,7 @@ namespace app.Modules
         [Summary("/unban")]
         public async Task Unban(string user = "")
         {
-            if (Context.Channel.Id != Program.ADMIN_CHAN_ID)
+            if (Context.Channel.Id != _adminChannelId)
                 return;
 
             if (user == null)
@@ -129,7 +136,7 @@ namespace app.Modules
                 return;
             }
 
-            var bans = BanningService.GetBans(user);
+            var bans = _banningService.GetBans(user);
             if (bans.Count == 0)
             {
                 ReplyAsync("No bans found to lift.");
@@ -145,7 +152,7 @@ namespace app.Modules
                 }
                 else ReplyAsync($"<@{ban.UId}> ({ban.Name}) by <@{ban.ByUId}> ({ban.ByName}) on **{ban.BannedOn}** for **{ban.Reason}**. Ban is permanent. Lifted.");
 
-                BanningService.RemoveBan(ban.UId);
+                _banningService.RemoveBan(ban.UId);
                 Context.Guild.RemoveBanAsync(ban.UId);
             }
         }

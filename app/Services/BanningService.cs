@@ -1,129 +1,13 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Discord.WebSocket;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using app.Helpers;
+using app.Core;
 using app.Models;
-using Discord;
-using Discord.Rest;
 
 namespace app.Services
 {
-    #pragma warning disable 4014,1998
     public class BanningService
     {
-        private readonly DiscordSocketClient _discord;
-        private readonly IServiceProvider _services;
-        private System.Threading.Timer _banTimer;
-
-        public BanningService(IServiceProvider services)
-        {
-            _discord = services.GetRequiredService<DiscordSocketClient>();
-            _services = services;
-            
-            _banTimer = new System.Threading.Timer(this.OnBanCheckAsync, null, 60000, 600000);
-            _discord.UserBanned += OnUserBanned;
-            _discord.UserUnbanned += OnUserUnbanned;
-            
-            LoggerService.Write("The banning check has been hooked to BanTimer and ban monitoring events hooked!");
-        }
-
-        public async Task InitializeAsync()
-        {
-            await Task.CompletedTask;
-        }
-        
-        private async Task OnUserBanned(SocketUser user, SocketGuild server)
-        {
-            var banData = server.GetBanAsync(user.Id);
-            var banningUser = GetBanningUserFromAuditLog(server.GetAuditLogsAsync(3), user.Id);
-            var banReason = banData.Result.Reason ?? MessageHelper.NO_REASON_GIVEN;
-            
-            LoggerService.Write($"[OnUserBanned] {banningUser.Username} banned {user.Username} for {banReason}");
-            
-            // int daysToBan = 30 * 6;
-            // int timeToAdd = (daysToBan * 86400);
-            StoreBan(banData.Result.User.Id, banData.Result.User.Username, banningUser.Id, banningUser.Username, 0, banReason, 0);
-
-            // send user message
-            try
-            {
-                var dmChannel = await user.GetOrCreateDMChannelAsync();
-                // var expiresOn = DateTime.Now.AddSeconds(timeToAdd).ToString("dddd, dd MMMM yyyy");
-                    
-                // await dmChannel.SendMessageAsync($"You have been banned from **{server.Name}**. This ban will expire on {expiresOn}.");
-                dmChannel.SendMessageAsync($"You have been banned from **{server.Name}**. This ban is permanent.");
-            }
-            catch (Exception e)
-            {
-                LoggerService.Write($"Failed to send ban DM to {user.Username} : {e.Message}");
-            }
-        }
-
-        private async Task OnUserUnbanned(SocketUser user, SocketGuild server)
-        {
-            LoggerService.Write($"[OnUserUnbanned] {user.Username}");
-            
-            var banData = GetBans(user.Id.ToString());
-            if (banData.Count > 0)
-            {
-                LoggerService.Write($"[OnUserUnbanned] {banData[0].Name} banned by {banData[0].ByName} for {banData[0].Reason}. Lifting...");
-                RemoveBan(user.Id);
-            }
-        }
-
-        private IUser GetBanningUserFromAuditLog(IAsyncEnumerable<IReadOnlyCollection<RestAuditLogEntry>> auditLog, ulong bannedId)
-        {
-            IUser banningUser = null;
-            auditLog.ForEach(logEntries =>
-            {
-                foreach (var logEntry in logEntries)
-                {
-                    if (logEntry.Action == ActionType.Ban)
-                    {
-                        var banAuditLogData = logEntry.Data as BanAuditLogData;
-                        if (banAuditLogData.Target.Id == bannedId)
-                        {
-                            banningUser = logEntry.User;
-                            break;
-                        }
-                    }
-                }
-            });
-            return banningUser;
-        }
-        
-        private async void OnBanCheckAsync(object state)
-        {
-            try
-            {
-                var expiredBans = GetExpiredBans();
-                LoggerService.Write($"[OnBanCheck] invoked: {expiredBans.Count} expired bans");
-
-                if (expiredBans.Count > 0)
-                {
-                    foreach (var ban in expiredBans)
-                    {
-                        // send chan message & lift
-                        await _discord.GetGuild(Program.GUILD_ID).RemoveBanAsync(ban.UId);
-
-                        _discord.GetGuild(Program.GUILD_ID).GetTextChannel(Program.ADMIN_CHAN_ID)
-                            .SendMessageAsync($"Lifted expired ban on <@{ban.UId}> ({ban.Name}) that was issued on {ban.BannedOn} by <@{ban.ByUId}> ({ban.ByName}) for {ban.Reason}.");
-
-                        RemoveBan(ban.UId);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                LoggerService.Write($"Exception in OnBanCheckAsync: {e.Message}");
-            }
-        }
-
-        public static void StoreBan(ulong uid, string name, ulong byuid, string byname, int secondsadd, string reason, int timedban)
+        public void StoreBan(ulong uid, string name, ulong byuid, string byname, int secondsadd, string reason, int timedban)
         {
             DataService.Put(
                 "INSERT INTO `bans` (`uid`, `name`, `byuid`, `byname`, `expires_on`, `expired`, `reason`) VALUES (@userid, @username, @byuserid, @byusername, ((UNIX_TIMESTAMP(NOW()) + @secondsadd) * @timedban), 'N', @reasonban)", 
@@ -139,20 +23,20 @@ namespace app.Services
                     { "@timedban", timedban }
                 });
 
-            LoggerService.Write($"[StoreBan] {uid} {name} {byuid} {byname} {secondsadd} {reason} {timedban}");
+            Logger.Write($"[StoreBan] {uid} {name} {byuid} {byname} {secondsadd} {reason} {timedban}");
         }
 
-        public static void RemoveBan(ulong uid)
+        public void RemoveBan(ulong uid)
         {
             DataService.Update("UPDATE `bans` SET `expired` = 'Y' WHERE `uid`=@userid", new Dictionary<string, object>()
             {
                 {"@userid", uid}
             });
 
-            LoggerService.Write($"[RemoveBan] {uid}");
+            Logger.Write($"[RemoveBan] {uid}");
         }
 
-        public static List<BanModel> GetBans(string search)
+        public List<BanModel> GetBans(string search)
         {
             List<BanModel> bans = new List<BanModel>();
             string nameUidSearch = "`name`=@search";
@@ -185,10 +69,11 @@ namespace app.Services
                     });
                 }
             }
+
             return bans;
         }
 
-        public static List<BanModel> GetExpiredBans()
+        public List<BanModel> GetExpiredBans()
         {
             List<BanModel> bans = new List<BanModel>();
             var data = DataService.Get("SELECT `uid`, `name`, `byuid`, `byname`, `expires_on`, DATE_FORMAT(banned_on, '%D %M %Y') `banned_on`, `reason` FROM `bans` WHERE `expires_on` < UNIX_TIMESTAMP(NOW()) AND `expires_on` != 0 AND `expired` = 'N'", null);
@@ -209,6 +94,7 @@ namespace app.Services
                     });
                 }
             }
+
             return bans;
         }
     }

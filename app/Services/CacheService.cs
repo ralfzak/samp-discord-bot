@@ -3,67 +3,72 @@ using System.Collections.Generic;
 
 namespace app.Services
 {
-    public static class CacheService
+    public class CacheService
     {
-        private static Dictionary<string, string> CACHE_MAP = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _cacheMap;
 
-        public static int GetUserForumId(ulong user_id)
+        public CacheService()
+        {
+            _cacheMap = new Dictionary<string, string>();
+        }
+
+        public int GetUserForumId(ulong user_id)
         {
             string key = $"FORUMID-{user_id}";
-            return (CACHE_MAP.ContainsKey(key)) ? Int32.Parse(CACHE_MAP[key]) : -1;
+            return (_cacheMap.ContainsKey(key)) ? Int32.Parse(_cacheMap[key]) : -1;
         }
 
-        public static void SetUserForumId(ulong user_id, int id)
+        public void SetUserForumId(ulong user_id, int id)
         {
             string key = $"FORUMID-{user_id}";
-            if (CACHE_MAP.ContainsKey(key))
+            if (_cacheMap.ContainsKey(key))
             {
-                CACHE_MAP[key] = id.ToString();
+                _cacheMap[key] = id.ToString();
             }
-            else CACHE_MAP.Add(key, id.ToString());
+            else _cacheMap.Add(key, id.ToString());
         }
 
-        public static string GetUserToken(ulong user_id)
+        public string GetUserToken(ulong user_id)
         {
             string key = $"TOKEN-{user_id}";
-            return (CACHE_MAP.ContainsKey(key)) ? CACHE_MAP[key] : "";
+            return (_cacheMap.ContainsKey(key)) ? _cacheMap[key] : "";
         }
 
-        public static void SetUserToken(ulong user_id, string token)
+        public void SetUserToken(ulong user_id, string token)
         {
             string key = $"TOKEN-{user_id}";
-            if (CACHE_MAP.ContainsKey(key))
+            if (_cacheMap.ContainsKey(key))
             {
-                CACHE_MAP[key] = token;
+                _cacheMap[key] = token;
             }
-            else CACHE_MAP.Add(key, token);
+            else _cacheMap.Add(key, token);
         }
 
-        public static VERIFICATION_STATES GetUserVerificationState(ulong user_id)
+        public VERIFICATION_STATES GetUserVerificationState(ulong user_id)
         {
             string key = $"STATE-{user_id}";
-            return (CACHE_MAP.ContainsKey(key)) ? ((VERIFICATION_STATES)Int32.Parse(CACHE_MAP[key])) : VERIFICATION_STATES.NONE;
+            return (_cacheMap.ContainsKey(key)) ? ((VERIFICATION_STATES)Int32.Parse(_cacheMap[key])) : VERIFICATION_STATES.NONE;
         }
 
-        public static void SetUserVerificationState(ulong userId, VERIFICATION_STATES state)
+        public void SetUserVerificationState(ulong userId, VERIFICATION_STATES state)
         {
             string key = $"STATE-{userId}";
-            if (CACHE_MAP.ContainsKey(key))
+            if (_cacheMap.ContainsKey(key))
             {
-                CACHE_MAP[key] = ((int)state).ToString();
+                _cacheMap[key] = ((int)state).ToString();
             }
-            else CACHE_MAP.Add(key, ((int)state).ToString());
+            else _cacheMap.Add(key, ((int)state).ToString());
         }
 
-        public static void ClearCache(ulong user_id)
+        public void ClearCache(ulong user_id)
         {
             string[] keys = { $"STATE-{user_id}", $"FORUMID-{user_id}", $"TOKEN-{user_id}" };
 
             foreach (string key in keys)
             {
-                if (CACHE_MAP.ContainsKey(key))
+                if (_cacheMap.ContainsKey(key))
                 {
-                    CACHE_MAP.Remove(key);
+                    _cacheMap.Remove(key);
                 }
             }
         }

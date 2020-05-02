@@ -1,6 +1,6 @@
 ﻿namespace app.Models
 {
-    public class SampServerResponseModel
+    public class ServerResponseModel
     {
         public string ServerID { get; set; }
         public string IP { get; set; }
