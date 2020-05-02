@@ -32,7 +32,7 @@ namespace app.Services
 
         public void DropCommandLogEntry()
         {
-            DataService.Drop("DROP FROM `command_log` WHERE `on` < FROM_UNIXTIME(UNIX_TIMESTAMP(NOW()) - 18000)", null);
+            DataService.Drop("DROP FROM `command_log` WHERE `on` < FROM_UNIXTIME(UNIX_TIMESTAMP(NOW()) - 18000)", new Dictionary<string, object>());
         }
     }
 }
