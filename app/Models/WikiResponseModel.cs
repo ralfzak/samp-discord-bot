@@ -2,20 +2,20 @@
 
 namespace app.Models
 {
-    public class SampWikiResponseModel
+    public class WikiResponseModel
     {
         public string status { get; set; }
         public string description { get; set; }
         public string parameters { get; set; }
-        public List<SampWikiResponseModelParameter> param { get; set; }
+        public List<WikiResponseModelParameter> param { get; set; }
         public List<string> examples { get; set; }
 
-        public SampWikiResponseModel()
+        public WikiResponseModel()
         {
-            param = new List<SampWikiResponseModelParameter>();
+            param = new List<WikiResponseModelParameter>();
         }
 
-        public class SampWikiResponseModelParameter
+        public class WikiResponseModelParameter
         {
             public string name { get; set; }
             public string desc { get; set; }

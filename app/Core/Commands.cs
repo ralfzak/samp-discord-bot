@@ -8,26 +8,33 @@ using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
 using app.Helpers;
+using app.Services;
 
-namespace app.Services
+namespace app.Core
 {
     #pragma warning disable 4014,1998
-    public class CommandHandlingService
+    public class Commands
     {
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
+        private readonly UserService _userService;
+        private readonly ulong _guildId;
+        private readonly ulong _adminChannelId;
 
-        public CommandHandlingService(IServiceProvider services)
+        public Commands(IServiceProvider services, Configuration configuration, UserService userService)
         {
+            _services = services;
+            _userService = userService;
             _commands = services.GetRequiredService<CommandService>();
             _discord = services.GetRequiredService<DiscordSocketClient>();
-            _services = services;
+            _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
+            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
 
             _commands.CommandExecuted += CommandExecutedAsync;
             _discord.MessageReceived += MessageReceivedAsync;
 
-            LoggerService.Write("Binded the commands events!");
+            Logger.Write("Binded the commands events!");
         }
 
         public async Task InitializeAsync()
@@ -47,11 +54,10 @@ namespace app.Services
             if (!message.HasCharPrefix('/', ref argPos))
                 return;
 
-            // user cmd cooldown
-            if (UserService.IsUserOnCooldown(rawMessage.Author.Id, ""))
+            if (_userService.IsUserOnCooldown(rawMessage.Author.Id, ""))
                 return;
 
-            UserService.SetUserCooldown(rawMessage.Author.Id, "", 4);
+            _userService.SetUserCooldown(rawMessage.Author.Id, "", 4);
             var context = new SocketCommandContext(_discord, message);
             await _commands.ExecuteAsync(context, argPos, _services);
         }
@@ -80,7 +86,7 @@ namespace app.Services
             }
             else
             {
-                _discord.GetGuild(Program.GUILD_ID).GetTextChannel(Program.ADMIN_CHAN_ID)
+                _discord.GetGuild(_guildId).GetTextChannel(_adminChannelId)
                     .SendMessageAsync($"Failed cmd ({command.Value.Name}) by {context.User.Username} - error: [{result.Error.ToString()}] {result.ErrorReason}");
             }
         }

@@ -1,12 +1,12 @@
 {
-  "botToken": "",
-  "guildId": "",
-  "verifiedRoleId": "",
-  "scriptingChannelId": "",
-  "botChannelId": "",
-  "adminChannelId": "",
-  "dbServer": "",
-  "dbDatabase": "",
-  "dbUser": "",
-  "dbPassword":  ""
+  "BOT_TOKEN": "",
+  "GUILD_ID": "",
+  "SCRIPTING_CHAN_ID": "",
+  "BOT_CHAN_ID": "",
+  "ADMIN_CHAN_ID": "",
+  "VERIFIED_ROLE_ID": "",
+  "DB_SERVER": "",
+  "DB_DB": "",
+  "DB_USER": "",
+  "DB_PASS": ""
 }

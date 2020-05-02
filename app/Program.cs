@@ -6,42 +6,15 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using app.Services;
+using app.Modules;
+using app.Core;
+using app.Handlers;
 
 namespace app
 {
     class Program
     {
         public static string FORUM_PROFILE_URL = "https://forum.sa-mp.com/member.php?u=";
-
-        private static string BOT_TOKEN = 
-            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_BOT_TOKEN);
-        
-        public static ulong GUILD_ID = 
-            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_GUILD_ID));
-
-        public static ulong VERIFIED_ROLE_ID = 
-            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_VERIFIED_ROLE_ID));
-
-        public static ulong SCRIPTING_CHAN_ID = 
-            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_SCRIPTING_CHAN_ID));
-        
-        public static ulong BOT_CHAN_ID = 
-            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_BOT_CHAN_ID));
-        
-        public static ulong ADMIN_CHAN_ID = 
-            ulong.Parse(ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_ADMIN_CHAN_ID));
-
-        public static string DB_SERVER =
-            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_DB_SERVER);
-
-        public static string DB_DB =
-            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_DB_DB);
-
-        public static string DB_USER =
-            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_DB_USER);
-
-        public static string DB_PASS =
-            ConfigurationService.GetConfigurationString(ConfigurationService.CONFIG_KEY_DB_PASS);
 
         static void Main(string[] args)
         {
@@ -53,17 +26,21 @@ namespace app
             using (var services = ConfigureServices())
             {
                 var client = services.GetRequiredService<DiscordSocketClient>();
+                var configuration = services.GetRequiredService<Configuration>();
 
                 client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
-                await client.LoginAsync(TokenType.Bot, BOT_TOKEN);
+                await client.LoginAsync(TokenType.Bot, configuration.GetVariable("BOT_TOKEN"));
                 await client.StartAsync();
 
-                await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
-                await services.GetRequiredService<VerificationService>().InitializeAsync();
-                await services.GetRequiredService<BanningService>().InitializeAsync();
-                await services.GetRequiredService<BotStatusPlayerCountService>().InitializeAsync();
+                await services.GetRequiredService<Commands>().InitializeAsync();
+
+                await services.GetRequiredService<BanningHandler>().InitializeAsync();
+                await services.GetRequiredService<VerifiedRoleHandler>().InitializeAsync();
+                await services.GetRequiredService<BotStatusHandler>().InitializeAsync();
+
+                await services.GetRequiredService<DataService>().InitializeAsync();
 
                 await Task.Delay(-1);
             }
@@ -85,12 +62,28 @@ namespace app
                         MessageCacheSize = 50
                     });
                 })
-                .AddSingleton<CommandService>()
-                .AddSingleton<CommandHandlingService>() // for handling cmds
-                .AddSingleton<VerificationService>() // for handling user events
-                .AddSingleton<BanningService>() // for ban timer check
-                .AddSingleton<BotStatusPlayerCountService>() // for update player count timer
                 .AddSingleton<HttpClient>()
+                .AddSingleton<CommandService>()
+                .AddSingleton<Configuration>()
+                .AddSingleton<Commands>()
+
+                .AddSingleton<BanningHandler>()
+                .AddSingleton<BotStatusHandler>()
+                .AddSingleton<VerifiedRoleHandler>()
+
+                .AddSingleton<BanningModule>()
+                .AddSingleton<HelpModule>()
+                .AddSingleton<ServerInfoModule>()
+                .AddSingleton<VerificationModule>()
+                .AddSingleton<WikiModule>()
+
+                .AddSingleton<BanningService>()
+                .AddSingleton<CacheService>()
+                .AddSingleton<DataService>()
+                .AddSingleton<UserService>()
+                .AddSingleton<VerificationService>()
+                .AddSingleton<WikiService>()
+
                 .BuildServiceProvider();
         }
     }

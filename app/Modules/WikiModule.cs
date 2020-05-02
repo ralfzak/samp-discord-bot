@@ -1,34 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using System.IO;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using app.Services;
 using System.Linq;
-using app.Helpers;
-using Discord.WebSocket;
-using System.Threading;
-using System.Net;
+using app.Core;
 
 namespace app.Modules
 {
     #pragma warning disable 4014,1998
     public class WikiModule : ModuleBase<SocketCommandContext>
     {
+        private readonly UserService _userService;
+        private readonly WikiService _wikiService;
+        private readonly ulong _botChannelId;
+        private readonly ulong _adminChannelId;
+        private readonly ulong _scriptingChannelId;
+
+        public WikiModule(Configuration configuration, UserService userService, WikiService wikiService)
+        {
+            _userService = userService;
+            _wikiService = wikiService;
+            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
+            _botChannelId = UInt64.Parse(configuration.GetVariable("BOT_CHAN_ID"));
+            _scriptingChannelId = UInt64.Parse(configuration.GetVariable("SCRIPTING_CHAN_ID"));
+        }
+
         [Command("wiki")]
         [Name("wiki")]
         [Summary("/wiki")]
         public async Task Wiki(string input = "")
         {
-            // server cmd cooldown
-            if (UserService.IsUserOnCooldown(Context.User.Id, "wiki"))
+            if (_userService.IsUserOnCooldown(Context.User.Id, "wiki"))
                 return;
 
-            if (Context.Channel.Id != Program.BOT_CHAN_ID && Context.Channel.Id != Program.ADMIN_CHAN_ID && Context.Channel.Id != Program.SCRIPTING_CHAN_ID)
+            if (Context.Channel.Id != _botChannelId && Context.Channel.Id != _adminChannelId && Context.Channel.Id != _scriptingChannelId)
             {
-                Context.User.SendMessageAsync($"This command only works on <#{Program.BOT_CHAN_ID}> and <#{Program.SCRIPTING_CHAN_ID}>");
+                Context.User.SendMessageAsync($"This command only works on <#{_botChannelId}> and <#{_scriptingChannelId}>");
                 return;
             }
 
@@ -38,8 +47,8 @@ namespace app.Modules
                 return;
             }
 
-            var article = SAMPWikiService.GetClosestArticle(input);
-            var articleInfo = await SAMPWikiService.GetInfoAsync(article);
+            var article = _wikiService.GetClosestArticle(input);
+            var articleInfo = await _wikiService.GetInfoAsync(article);
 
             if (ReferenceEquals(articleInfo, null))
             {
@@ -103,7 +112,7 @@ namespace app.Modules
             var embed = builder.Build();
             ReplyAsync(null, embed: embed);
 
-            UserService.SetUserCooldown(Context.User.Id, "wiki", 15);
+            _userService.SetUserCooldown(Context.User.Id, "wiki", 15);
         }
     }
 }

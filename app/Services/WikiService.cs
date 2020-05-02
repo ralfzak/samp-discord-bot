@@ -8,9 +8,9 @@ using app.Helpers;
 
 namespace app.Services
 {
-    static class SAMPWikiService
+    public class WikiService
     {
-        private static string[] WIKI_THREADS = { // credits to southclaws
+        private static readonly string[] WIKI_THREADS = { // credits to southclaws
 	        "AddCharModel",
             "AddMenuItem",
             "AddPlayerClass",
@@ -734,10 +734,10 @@ namespace app.Services
             "Words"
         };
 
-        public static async Task<SampWikiResponseModel> GetInfoAsync(string article)
+        public async Task<WikiResponseModel> GetInfoAsync(string article)
         {
             string url = $"http://ralfzak.me/api/sampwiki/wiki.php?p={article}";
-            SampWikiResponseModel result;
+            WikiResponseModel result;
 
             using (HttpClient client = new HttpClient())
             {
@@ -748,7 +748,7 @@ namespace app.Services
                         try
                         {
                             string res = await content.ReadAsStringAsync();
-                            result = JsonConvert.DeserializeObject<SampWikiResponseModel>(res);
+                            result = JsonConvert.DeserializeObject<WikiResponseModel>(res);
                         }
                         catch (Exception)
                         {
@@ -761,7 +761,7 @@ namespace app.Services
             return result;
         }
 
-        public static string GetClosestArticle(string atr)
+        public string GetClosestArticle(string atr)
         {
             string article = atr;
 

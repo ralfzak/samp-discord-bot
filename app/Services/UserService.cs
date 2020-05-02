@@ -4,59 +4,64 @@ using System.Linq;
 
 namespace app.Services
 {
-    public static class UserService
+    public class UserService
     {
-        private static Dictionary<string, long> COOLDOWN_MAP = new Dictionary<string, long>();
+        private Dictionary<string, long> _cooldownMap;
 
-        private static string GetMapKey(ulong userId, string channel)
+        public UserService()
+        {
+            _cooldownMap = new Dictionary<string, long>();
+        }
+
+        private string GetMapKey(ulong userId, string channel)
         {
             return $"{userId}-{channel}";
         }
 
-        private static bool IsOnCooldown(long ticks)
+        private bool IsOnCooldown(long ticks)
         {
             return (new TimeSpan(ticks).Subtract(new TimeSpan(DateTime.UtcNow.Ticks)).Ticks > 0) || false;
         }
 
-        public static void SetUserCooldown(ulong userId, string cmd, int seconds)
+        public void SetUserCooldown(ulong userId, string cmd, int seconds)
         {
             string key = GetMapKey(userId, cmd);
             long ticksUTC = (DateTime.UtcNow.AddSeconds(seconds).Ticks);
 
-            if (COOLDOWN_MAP.ContainsKey(key))
+            if (_cooldownMap.ContainsKey(key))
             {
-                COOLDOWN_MAP[key] = ticksUTC;
+                _cooldownMap[key] = ticksUTC;
             }
-            else COOLDOWN_MAP.Add(key, ticksUTC);
+            else _cooldownMap.Add(key, ticksUTC);
         }
 
-        public static bool IsUserOnCooldown(ulong userId, string cmd)
+        public bool IsUserOnCooldown(ulong userId, string cmd)
         {
             string key = GetMapKey(userId, cmd);
 
             // remove all keys with low cooldown
-            if (COOLDOWN_MAP.Count > 0)
+            if (_cooldownMap.Count > 0)
             {
-                var expiredKeys = COOLDOWN_MAP
+                var expiredKeys = _cooldownMap
                     .Where(kp => (IsOnCooldown(kp.Value) && kp.Key != key))
                     .Select(kp => kp.Key)
                     .ToList();
+
                 foreach (var k in expiredKeys)
                 {
-                    COOLDOWN_MAP.Remove(k);
+                    _cooldownMap.Remove(k);
                 }
             }
-
-            // check if command is on cooldown
-            if (COOLDOWN_MAP.ContainsKey(key))
+            
+            if (_cooldownMap.ContainsKey(key))
             {
-                return IsOnCooldown(COOLDOWN_MAP[key]) || false;
+                return IsOnCooldown(_cooldownMap[key]) || false;
             }
 
             return false;
         }
 
-        public static long[] GetUserIDsFromForumInfo(string forumInfo)
+        public long[] GetUserIDsFromForumInfo(string forumInfo)
         {
             List<long> user_ids = new List<long>();
 
@@ -83,7 +88,7 @@ namespace app.Services
             return user_ids.ToArray();
         }
 
-        public static void GetUserForumProfileID(ulong userId, out int fid, out string fname)
+        public void GetUserForumProfileID(ulong userId, out int fid, out string fname)
         {
             fid = -1;
             fname = string.Empty;
@@ -100,7 +105,7 @@ namespace app.Services
             }
         }
 
-        public static bool IsForumProfileLinked(int profileId)
+        public bool IsForumProfileLinked(int profileId)
         {
             ulong userid = 0;
 
@@ -117,7 +122,7 @@ namespace app.Services
             return (userid != 0) || false;
         }
 
-        public static bool IsUserVerified(ulong userId)
+        public bool IsUserVerified(ulong userId)
         {
             int fid = -1;
             string fname = string.Empty;
@@ -126,7 +131,7 @@ namespace app.Services
             return (fid != -1);
         }
 
-        public static void StoreUserVerification(ulong uid, int fid, string forumName, string discordUser)
+        public void StoreUserVerification(ulong uid, int fid, string forumName, string discordUser)
         {
             DataService.Put("INSERT INTO verifications (`forumid`, `userid`, `forum_name`, `by`) VALUES (@fid, @uid, @fname, @by)", new Dictionary<string, object>()
             {
@@ -137,7 +142,7 @@ namespace app.Services
             });
         }
 
-        public static void DeleteUserVerification(ulong uid)
+        public void DeleteUserVerification(ulong uid)
         {
             DataService.Put("DELETE FROM verifications WHERE `userid`=@uid;", new Dictionary<string, object>()
             {

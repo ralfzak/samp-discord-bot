@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace app.Services
+namespace app.Core
 {
-    class LoggerService
+    class Logger
     {
         public static void Write(string s)
         {

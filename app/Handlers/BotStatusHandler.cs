@@ -4,23 +4,29 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Discord;
+using app.Core;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
 
-namespace app.Services
+namespace app.Handlers
 {
     #pragma warning disable 4014,1998
-    public class BotStatusPlayerCountService
+    public class BotStatusHandler
     {
         private readonly DiscordSocketClient _discord;
-        private System.Threading.Timer _updateTimer;
+        private readonly Timer _updateTimer;
+        private readonly ulong _guildId;
+        private readonly ulong _adminChanId;
 
-        public BotStatusPlayerCountService(IServiceProvider services)
+        public BotStatusHandler(IServiceProvider services, Configuration configuration)
         {
             _discord = services.GetRequiredService<DiscordSocketClient>();
-            _updateTimer = new System.Threading.Timer(this.OnPlayerCountUpdateCheck, null, 10000, 603000);
+            _updateTimer = new Timer(this.OnPlayerCountUpdateCheck, null, 10000, 603000);
+            _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
+            _adminChanId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
 
-            LoggerService.Write("The SA-MP player status count has been hooked to OnPlayerCountUpdateCheck!");
+            Logger.Write("The SA-MP player status count has been hooked to OnPlayerCountUpdateCheck!");
         }
         
         public async Task InitializeAsync()
@@ -33,12 +39,11 @@ namespace app.Services
             try
             {
                 GetSampPlayerServerCount(out long playersCount, out long serversCount);
-                
                 _discord.SetGameAsync($"Grand Theft Auto San Andreas - Players Online: {playersCount} - Servers Online: {serversCount}");
             }
             catch (Exception e)
             {
-                _discord.GetGuild(Program.GUILD_ID).GetTextChannel(Program.ADMIN_CHAN_ID)
+                _discord.GetGuild(_guildId).GetTextChannel(_adminChanId)
                     .SendMessageAsync($"Failed to parse player count and server count due to: {e.Message}");
             }
         }

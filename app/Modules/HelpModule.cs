@@ -1,28 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
 using System.Threading.Tasks;
+using app.Core;
 using Discord;
 using Discord.Commands;
-using app.Services;
-using System.Linq;
-using app.Helpers;
-using Discord.WebSocket;
-using System.Threading;
 
 namespace app.Modules
 {
     #pragma warning disable 4014,1998    
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
+        private readonly ulong _adminChannelId;
+        private readonly ulong _botChannelId;
+        private readonly ulong _scriptingChannelId;
+
+        public HelpModule(Configuration configuration)
+        {
+            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
+            _botChannelId = UInt64.Parse(configuration.GetVariable("BOT_CHAN_ID"));
+            _scriptingChannelId = UInt64.Parse(configuration.GetVariable("SCRIPTING_CHAN_ID"));
+        }
+
         [Command("help")]
         [Alias("cmds", "commands")]
         [Name("help")]
         [Summary("/help")]
         public async Task Help()
         {
-            if (Context.Channel.Id != Program.ADMIN_CHAN_ID)
+            if (Context.Channel.Id != _adminChannelId)
             {
                 Context.Message.DeleteAsync();
                 Context.User.SendMessageAsync("", embed: GetPublicHelpList());
@@ -33,7 +37,7 @@ namespace app.Modules
             }
         }
 
-        public static Embed GetPublicHelpList()
+        private Embed GetPublicHelpList()
         {
             var builder = new EmbedBuilder()
                 .WithTitle("General Commands")
@@ -58,19 +62,19 @@ namespace app.Modules
                     "\n" +
                     "[**Info:**](https://forum.sa-mp.com/) This command fetches SAMP server data for a given server." +
                     "\n" +
-                    $"[**Availability:**](https://forum.sa-mp.com/) Only on <#{Program.BOT_CHAN_ID}>.")
+                    $"[**Availability:**](https://forum.sa-mp.com/) Only on <#{_botChannelId}>.")
 
             .AddField("/wiki",
                     "[**Parameters:**](https://forum.sa-mp.com/) <callback/function/article>" +
                     "\n" +
                     "[**Info:**](https://forum.sa-mp.com/) This command fetches articles from the official SAMP Wiki." +
                     "\n" +
-                    $"[**Availability:**](https://forum.sa-mp.com/) Only on <#{Program.BOT_CHAN_ID}> and <#{Program.SCRIPTING_CHAN_ID}>.");
+                    $"[**Availability:**](https://forum.sa-mp.com/) Only on <#{_botChannelId}> and <#{_scriptingChannelId}>.");
 
             return builder.Build();
         }
 
-        public static Embed GetAdminHelpList()
+        private Embed GetAdminHelpList()
         {
             var builder = new EmbedBuilder()
                 .WithTitle("Admin Commands")
