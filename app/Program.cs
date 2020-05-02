@@ -39,6 +39,7 @@ namespace app
                 await services.GetRequiredService<BanningHandler>().InitializeAsync();
                 await services.GetRequiredService<VerifiedRoleHandler>().InitializeAsync();
                 await services.GetRequiredService<BotStatusHandler>().InitializeAsync();
+                await services.GetRequiredService<MessageHandler>().InitializeAsync();
 
                 await services.GetRequiredService<DataService>().InitializeAsync();
 
@@ -69,6 +70,7 @@ namespace app
 
                 .AddSingleton<BanningHandler>()
                 .AddSingleton<BotStatusHandler>()
+                .AddSingleton<MessageHandler>()
                 .AddSingleton<VerifiedRoleHandler>()
 
                 .AddSingleton<BanningModule>()
@@ -80,6 +82,7 @@ namespace app
                 .AddSingleton<BanningService>()
                 .AddSingleton<CacheService>()
                 .AddSingleton<DataService>()
+                .AddSingleton<MessageService>()
                 .AddSingleton<UserService>()
                 .AddSingleton<VerificationService>()
                 .AddSingleton<WikiService>()
