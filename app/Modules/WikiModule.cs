@@ -14,14 +14,16 @@ namespace app.Modules
     {
         private readonly UserService _userService;
         private readonly WikiService _wikiService;
+        private readonly MessageService _messageService;
         private readonly ulong _botChannelId;
         private readonly ulong _adminChannelId;
         private readonly ulong _scriptingChannelId;
 
-        public WikiModule(Configuration configuration, UserService userService, WikiService wikiService)
+        public WikiModule(Configuration configuration, UserService userService, WikiService wikiService, MessageService messageService)
         {
             _userService = userService;
             _wikiService = wikiService;
+            _messageService = messageService;
             _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
             _botChannelId = UInt64.Parse(configuration.GetVariable("BOT_CHAN_ID"));
             _scriptingChannelId = UInt64.Parse(configuration.GetVariable("SCRIPTING_CHAN_ID"));
@@ -43,7 +45,8 @@ namespace app.Modules
 
             if (input == "")
             {
-                ReplyAsync("`/wiki <callback/function/article>` - Fetch SAMP wiki article information");
+                var response = await ReplyAsync("`/wiki <callback/function/article>` - Fetch SAMP wiki article information");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }
 
@@ -52,25 +55,29 @@ namespace app.Modules
 
             if (ReferenceEquals(articleInfo, null))
             {
-                ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                var response = await ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }
 
             if (articleInfo.status == "article")
             {
-                ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
+                var response = await ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }
 
             if (articleInfo.status != "ok")
             {
-                ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                var response = await ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }
 
             if (articleInfo.parameters == "" || articleInfo.description == "")
             {
-                ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
+                var response = await ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }
 
@@ -110,7 +117,8 @@ namespace app.Modules
             }
 
             var embed = builder.Build();
-            ReplyAsync(null, embed: embed);
+            var responseMessage = await ReplyAsync(null, embed: embed);
+            _messageService.LogCommand(Context.Message.Id, responseMessage.Id, Context.User.Id);
 
             _userService.SetUserCooldown(Context.User.Id, "wiki", 15);
         }

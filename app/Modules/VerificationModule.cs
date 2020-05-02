@@ -15,14 +15,16 @@ namespace app.Modules
         private readonly UserService _userService;
         private readonly CacheService _cacheService;
         private readonly VerificationService _verificationService;
+        private readonly MessageService _messageService;
         private readonly ulong _guildId;
         private readonly ulong _adminChannelId;
         private readonly ulong _verifiedRoleId;
 
-        public VerificationModule(Configuration configuration, UserService userService, CacheService cacheService, VerificationService verificationService)
+        public VerificationModule(Configuration configuration, UserService userService, CacheService cacheService, VerificationService verificationService, MessageService messageService)
         {
             _userService = userService;
             _cacheService = cacheService;
+            _messageService = messageService;
             _verificationService = verificationService;
             _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
             _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
@@ -178,7 +180,8 @@ namespace app.Modules
             var guildUser = Context.Guild.GetUser(user.Id);
             if (guildUser == null)
             {
-                ReplyAsync("User not found.");
+                var response = await ReplyAsync("User not found.");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }
 
@@ -187,17 +190,20 @@ namespace app.Modules
             _userService.GetUserForumProfileID(guildUser.Id, out profileid, out profileName);
             if (profileid == -1)
             {
-                ReplyAsync($"{guildUser.Mention} is not verified yet.");
+                var response = await ReplyAsync($"{guildUser.Mention} is not verified yet.");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }
 
             if (profileid == 0)
             {
-                ReplyAsync($"{guildUser.Mention} is verified but not linked to a forum account, creepy eh?");
+                var response = await ReplyAsync($"{guildUser.Mention} is verified but not linked to a forum account, creepy eh?");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }
 
-            ReplyAsync($"{guildUser.Mention} is **{profileName}**: {Program.FORUM_PROFILE_URL}{profileid}");
+            var responseMessage = await ReplyAsync($"{guildUser.Mention} is **{profileName}**: {Program.FORUM_PROFILE_URL}{profileid}");
+            _messageService.LogCommand(Context.Message.Id, responseMessage.Id, Context.User.Id);
         }
 
         [Command("rvwhois")]
