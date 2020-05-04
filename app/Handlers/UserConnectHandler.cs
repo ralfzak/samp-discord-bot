@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace app.Handlers
 {
     #pragma warning disable 4014, 1998
-    public class VerifiedRoleHandler
+    public class UserConnectHandler
     {
         private readonly DiscordSocketClient _discord;
         private readonly UserService _userService;
@@ -18,7 +18,7 @@ namespace app.Handlers
         private readonly ulong _guildId;
         private readonly ulong _verifiedRoleId;
 
-        public VerifiedRoleHandler(IServiceProvider services, Configuration configuration, CacheService cacheService, UserService userService)
+        public UserConnectHandler(IServiceProvider services, Configuration configuration, CacheService cacheService, UserService userService)
         {
             _discord = services.GetRequiredService<DiscordSocketClient>();
             _userService = userService;
@@ -39,14 +39,29 @@ namespace app.Handlers
 
         public async Task OnUserJoinServer(SocketGuildUser user)
         {
+            var message = $"Hi {user.Mention}!  Welcome to **{user.Guild.Name}**.\n\n";
+
             if (_userService.IsUserVerified(user.Id))
             {
                 var verifiedRole = _discord.GetGuild(_guildId).GetRole(_verifiedRoleId);
+                message +=
+                    "You have already verified your discord account and linked it to your forum profile! You have been set a Verified role, woohoo! :partying_face:";
 
                 Logger.Write($"{user.Id} has joined the server, verified role set");
                 user.AddRoleAsync(verifiedRole);
             }
+            else message += "You can link your forum account to your discord profile and get a Verified role.  Type `/verify` below to start the process!";
 
+            try
+            {
+                var dm = await user.GetOrCreateDMChannelAsync();
+                dm.SendMessageAsync(message);
+            }
+            catch (Exception e)
+            {
+                Logger.Write($"[OnUserJoinServer] {user.Id} failed to send welcome msg: {e.Message}");
+            }
+            
             _cacheService.ClearCache(user.Id);
         }
 
