@@ -60,7 +60,7 @@ namespace app
                 {
                     return new DiscordSocketClient(new DiscordSocketConfig
                     {
-                        MessageCacheSize = 50
+                        MessageCacheSize = 150
                     });
                 })
                 .AddSingleton<HttpClient>()
