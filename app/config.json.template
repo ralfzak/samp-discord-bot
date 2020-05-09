@@ -1,6 +1,7 @@
 {
   "BOT_TOKEN": "",
   "GUILD_ID": "",
+  "MY_ID": "",
   "SCRIPTING_CHAN_ID": "",
   "BOT_CHAN_ID": "",
   "ADMIN_CHAN_ID": "",

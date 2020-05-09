@@ -17,6 +17,7 @@ namespace app.Modules
         private readonly VerificationService _verificationService;
         private readonly MessageService _messageService;
         private readonly ulong _guildId;
+        private readonly ulong _myId;
         private readonly ulong _adminChannelId;
         private readonly ulong _verifiedRoleId;
 
@@ -27,6 +28,7 @@ namespace app.Modules
             _messageService = messageService;
             _verificationService = verificationService;
             _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
+            _myId = UInt64.Parse(configuration.GetVariable("MY_ID"));
             _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
             _verifiedRoleId = UInt64.Parse(configuration.GetVariable("VERIFIED_ROLE_ID"));
         }
@@ -181,6 +183,13 @@ namespace app.Modules
             if (guildUser == null)
             {
                 var response = await ReplyAsync("User not found.");
+                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                return;
+            }
+
+            if (user.Id == _myId) // me
+            {
+                var response = await ReplyAsync($"{user.Mention}(穆伍兹) also known as Woozi is the blind leader of the Mountain Cloud Boys.");
                 _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
                 return;
             }

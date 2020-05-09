@@ -7,32 +7,56 @@ namespace app.Services
 {
     public class MessageService
     {
-        public void LogCommand(ulong commandId, ulong responseId, ulong userId)
+        private readonly Dictionary<ulong, MessageData> entryMap;
+        
+        public MessageService()
         {
-            DataService.Put("INSERT INTO `command_log` (`command_id`, `response_id`, `user_id`) VALUES (@commandId, @responseId, @userId)",
-                new Dictionary<string, object>
-                {
-                    {"@commandId", commandId},
-                    {"@responseId", responseId},
-                    {"@userId", userId}
-                });
+            entryMap = new Dictionary<ulong, MessageData>();
+        }
+
+        public void LogCommand(ulong commandId, ulong responseId)
+        {
+            var data = new MessageData()
+            {
+                responseId = responseId,
+                sentOn = DateTime.Now
+            };
+
+            entryMap.Add(commandId, data);
         }
 
         public ulong GetResponseFromCommandLogEntry(ulong commandId)
         {
-            var data = DataService.Get(
-                $"SELECT `response_id` FROM `command_log` WHERE `command_id` = @search",
-                new Dictionary<string, object>()
-                {
-                    {"@search", commandId}
-                });
+            if (entryMap.ContainsKey(commandId))
+            {
+                var entry = entryMap[commandId];
+                entryMap.Remove(commandId);
 
-            return (data.Count > 0) ? (ulong)(long)data["response_id"][0] : 0;
+                return entry.responseId;
+            }
+
+            return 0;
         }
 
         public void DropCommandLogEntry()
         {
-            DataService.Drop("DELETE FROM `command_log` WHERE `on` < FROM_UNIXTIME(UNIX_TIMESTAMP(NOW()) - 18000)", new Dictionary<string, object>());
+            var expired = new List<ulong>();
+
+            foreach (var kvp in entryMap)
+            {
+                if (kvp.Value.sentOn < (DateTime.Now.AddHours(-5)))
+                {
+                    expired.Add(kvp.Key);
+                }
+            }
+
+            expired.ForEach(id => entryMap.Remove(id));
+        }
+
+        private class MessageData
+        {
+            public ulong responseId;
+            public DateTime sentOn;
         }
     }
 }
