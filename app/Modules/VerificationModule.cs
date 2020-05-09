@@ -183,14 +183,14 @@ namespace app.Modules
             if (guildUser == null)
             {
                 var response = await ReplyAsync("User not found.");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
             if (user.Id == _myId) // me
             {
                 var response = await ReplyAsync($"{user.Mention}(穆伍兹) also known as Woozi is the blind leader of the Mountain Cloud Boys.");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
@@ -200,19 +200,19 @@ namespace app.Modules
             if (profileid == -1)
             {
                 var response = await ReplyAsync($"{guildUser.Mention} is not verified yet.");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
             if (profileid == 0)
             {
                 var response = await ReplyAsync($"{guildUser.Mention} is verified but not linked to a forum account, creepy eh?");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
             var responseMessage = await ReplyAsync($"{guildUser.Mention} is **{profileName}**: {Program.FORUM_PROFILE_URL}{profileid}");
-            _messageService.LogCommand(Context.Message.Id, responseMessage.Id, Context.User.Id);
+            _messageService.LogCommand(Context.Message.Id, responseMessage.Id);
         }
 
         [Command("rvwhois")]

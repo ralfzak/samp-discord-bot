@@ -46,7 +46,7 @@ namespace app.Modules
             if (input == "")
             {
                 var response = await ReplyAsync("`/wiki <callback/function/article>` - Fetch SAMP wiki article information");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
@@ -56,28 +56,28 @@ namespace app.Modules
             if (ReferenceEquals(articleInfo, null))
             {
                 var response = await ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
             if (articleInfo.status == "article")
             {
                 var response = await ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
             if (articleInfo.status != "ok")
             {
                 var response = await ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
             if (articleInfo.parameters == "" || articleInfo.description == "")
             {
                 var response = await ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
@@ -118,7 +118,7 @@ namespace app.Modules
 
             var embed = builder.Build();
             var responseMessage = await ReplyAsync(null, embed: embed);
-            _messageService.LogCommand(Context.Message.Id, responseMessage.Id, Context.User.Id);
+            _messageService.LogCommand(Context.Message.Id, responseMessage.Id);
 
             _userService.SetUserCooldown(Context.User.Id, "wiki", 15);
         }

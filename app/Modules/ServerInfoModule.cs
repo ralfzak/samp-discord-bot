@@ -46,7 +46,7 @@ namespace app.Modules
             if (ipPort == "")
             {
                 var response = await ReplyAsync("`/server <ip>[:port]` - Fetch a SAMP server's live data");
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
@@ -63,14 +63,14 @@ namespace app.Modules
             if (!UInt16.TryParse(_port, out port))
             {
                 var response = await ReplyAsync(NOT_VALID_SERVER);
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
             if (!ServerService.ValidateIPv4(ip) && !ServerService.ValidateHostname(ip))
             {
                 var response = await ReplyAsync(NOT_VALID_SERVER);
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
@@ -86,7 +86,7 @@ namespace app.Modules
                         _userService.SetUserCooldown(Context.User.Id, "server", 8);
 
                         var response = await ReplyAsync(NOT_VALID_SERVER);
-                        _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                        _messageService.LogCommand(Context.Message.Id, response.Id);
                         return;
                     }
                     ip = iPs[0].ToString(); // should be first in the DNS entry
@@ -94,7 +94,7 @@ namespace app.Modules
                 catch (Exception)
                 {
                     var response = await ReplyAsync(FAILED_FETCH_SERVER_DATA);
-                    _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                    _messageService.LogCommand(Context.Message.Id, response.Id);
                     return;
                 }
             }
@@ -125,7 +125,7 @@ namespace app.Modules
                 _userService.SetUserCooldown(Context.User.Id, "server", 15);
 
                 var response = await ReplyAsync(FAILED_FETCH_SERVER_DATA);
-                _messageService.LogCommand(Context.Message.Id, response.Id, Context.User.Id);
+                _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
@@ -149,7 +149,7 @@ namespace app.Modules
             var embed = builder.Build();
 
             var responseMessage = await ReplyAsync("", embed: embed);
-            _messageService.LogCommand(Context.Message.Id, responseMessage.Id, Context.User.Id);
+            _messageService.LogCommand(Context.Message.Id, responseMessage.Id);
 
             _userService.SetUserCooldown(Context.User.Id, "server", 60);
         }
