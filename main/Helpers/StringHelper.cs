@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 
 namespace main.Helpers
 {
@@ -47,6 +48,18 @@ namespace main.Helpers
             }
             // Step 7
             return d[n, m];
+        }
+        
+        public static string GenerateRandom(int length)
+        {
+            Random random = new Random();
+
+            return 
+                new string(
+                    Enumerable.Repeat("abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", length)
+                        .Select(s => s[random.Next(s.Length)])
+                        .ToArray()
+                );
         }
     }
 }

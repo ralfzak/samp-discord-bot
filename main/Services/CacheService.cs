@@ -12,31 +12,31 @@ namespace main.Services
             _cacheMap = new Dictionary<string, string>();
         }
 
-        public int GetUserForumId(ulong user_id)
+        public int GetUserForumId(ulong userId)
         {
-            string key = $"FORUMID-{user_id}";
+            string key = $"FORUMID-{userId}";
             return (_cacheMap.ContainsKey(key)) ? Int32.Parse(_cacheMap[key]) : -1;
         }
 
-        public void SetUserForumId(ulong user_id, int id)
+        public void SetUserForumId(ulong userId, int forumId)
         {
-            string key = $"FORUMID-{user_id}";
+            string key = $"FORUMID-{userId}";
             if (_cacheMap.ContainsKey(key))
             {
-                _cacheMap[key] = id.ToString();
+                _cacheMap[key] = forumId.ToString();
             }
-            else _cacheMap.Add(key, id.ToString());
+            else _cacheMap.Add(key, forumId.ToString());
         }
 
-        public string GetUserToken(ulong user_id)
+        public string GetUserToken(ulong userId)
         {
-            string key = $"TOKEN-{user_id}";
+            string key = $"TOKEN-{userId}";
             return (_cacheMap.ContainsKey(key)) ? _cacheMap[key] : "";
         }
 
-        public void SetUserToken(ulong user_id, string token)
+        public void SetUserToken(ulong userId, string token)
         {
-            string key = $"TOKEN-{user_id}";
+            string key = $"TOKEN-{userId}";
             if (_cacheMap.ContainsKey(key))
             {
                 _cacheMap[key] = token;
@@ -44,9 +44,9 @@ namespace main.Services
             else _cacheMap.Add(key, token);
         }
 
-        public VERIFICATION_STATES GetUserVerificationState(ulong user_id)
+        public VERIFICATION_STATES GetUserVerificationState(ulong userId)
         {
-            string key = $"STATE-{user_id}";
+            string key = $"STATE-{userId}";
             return (_cacheMap.ContainsKey(key)) ? ((VERIFICATION_STATES)Int32.Parse(_cacheMap[key])) : VERIFICATION_STATES.NONE;
         }
 
@@ -60,9 +60,9 @@ namespace main.Services
             else _cacheMap.Add(key, ((int)state).ToString());
         }
 
-        public void ClearCache(ulong user_id)
+        public void ClearCache(ulong userId)
         {
-            string[] keys = { $"STATE-{user_id}", $"FORUMID-{user_id}", $"TOKEN-{user_id}" };
+            string[] keys = { $"STATE-{userId}", $"FORUMID-{userId}", $"TOKEN-{userId}" };
 
             foreach (string key in keys)
             {

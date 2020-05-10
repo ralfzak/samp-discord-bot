@@ -155,7 +155,7 @@ namespace main.Modules
                         return;
                     }
 
-                    string token = TokenService.Generate(10);
+                    string token = StringHelper.GenerateRandom(10);
 
                     _cacheService.SetUserVerificationState(user.Id, VERIFICATION_STATES.WAITING_CONFIRM);
                     _cacheService.SetUserToken(user.Id, token);
