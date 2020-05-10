@@ -1,5 +1,7 @@
 .vs
-app/config.json
-app/bin
-app/obj
+main/config.json
+main/bin
+main/obj
+domain/bin
+domain/obj
 .idea/
