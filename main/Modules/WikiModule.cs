@@ -55,7 +55,7 @@ namespace main.Modules
 
             if (ReferenceEquals(articleInfo, null))
             {
-                var response = await ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                var response = await ReplyAsync($"Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
                 _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
@@ -69,7 +69,7 @@ namespace main.Modules
 
             if (articleInfo.status != "ok")
             {
-                var response = await ReplyAsync("Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                var response = await ReplyAsync($"Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
                 _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
