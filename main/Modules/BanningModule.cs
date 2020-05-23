@@ -112,10 +112,10 @@ namespace main.Modules
             {
                 if (ban.ExpiresOn != null)
                 {
-                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.ToHumanReadableString()}** for **{ban.Reason}**. Ban expires on **{ban.ExpiresOn?.ToHumanReadableString()}**.");
+                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.DateTime.ToHumanReadableString()}** for **{ban.Reason}**. Ban expires on **{ban.ExpiresOn?.ToHumanReadableString()}**.");
                 }
                 else
-                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.ToHumanReadableString()}** for **{ban.Reason}**. Ban is permanent.");
+                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.DateTime.ToHumanReadableString()}** for **{ban.Reason}**. Ban is permanent.");
             });
         }
         
@@ -148,9 +148,9 @@ namespace main.Modules
             {
                 if (ban.ExpiresOn != null) 
                 {
-                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.ToHumanReadableString()}** for **{ban.Reason}**. Ban expires on **{ban.ExpiresOn?.ToHumanReadableString()}**. Lifted.");
+                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.DateTime.ToHumanReadableString()}** for **{ban.Reason}**. Ban expires on **{ban.ExpiresOn?.ToHumanReadableString()}**. Lifted.");
                 }
-                else ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.ToHumanReadableString()}** for **{ban.Reason}**. Ban is permanent. Lifted.");
+                else ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.DateTime.ToHumanReadableString()}** for **{ban.Reason}**. Ban is permanent. Lifted.");
 
                 _banningService.RemoveBan(ban.Userid);
                 Context.Guild.RemoveBanAsync(ban.Userid);

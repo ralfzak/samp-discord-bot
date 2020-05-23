@@ -75,6 +75,8 @@ namespace main.Services
                 ForumName = forumName,
                 VerifiedBy = verifiedBy
             });
+            
+            _databaseContext.SaveChangesAsync();
         }
 
         public void DeleteUserVerification(ulong userId)
@@ -84,6 +86,8 @@ namespace main.Services
             
             if (verification != null)
                 _databaseContext.Verifications.Remove(verification);
+            
+            _databaseContext.SaveChangesAsync();
         }
         
         public async Task<string> GetForumProfileContentAsync(int profileID)

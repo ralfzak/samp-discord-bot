@@ -37,6 +37,8 @@ namespace main.Services
             
             _databaseContext.Bans.Add(ban);
 
+            _databaseContext.SaveChangesAsync();
+            
             Logger.Write($"[StoreBan] {uid} {name} {byuid} {byname} {secondsadd} {reason}");
         }
 
@@ -47,6 +49,8 @@ namespace main.Services
 
             if (ban != null)
                 _databaseContext.Bans.Remove(ban);
+
+            _databaseContext.SaveChangesAsync();
             
             Logger.Write($"[RemoveBan] {userid}");
         }

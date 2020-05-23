@@ -4,6 +4,6 @@ main/bin
 main/obj
 domain/bin
 domain/obj
-tests/bin
-tests/obj
+test/bin
+test/obj
 .idea/

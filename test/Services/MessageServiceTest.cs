@@ -4,7 +4,7 @@ using Moq;
 using System;
 using Xunit;
 
-namespace tests.Services
+namespace test.Services
 {
     public class MessageServiceTest
     {

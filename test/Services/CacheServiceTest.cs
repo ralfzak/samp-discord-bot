@@ -1,7 +1,7 @@
 using main.Services;
 using Xunit;
 
-namespace tests.Services
+namespace test.Services
 {
     public class CacheServiceTest
     {

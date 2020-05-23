@@ -119,7 +119,7 @@ namespace main.Handlers
                         await _discord.GetGuild(_guildId).RemoveBanAsync(ban.Userid);
 
                         _discord.GetGuild(_guildId).GetTextChannel(_adminChannelId)
-                            .SendMessageAsync($"Lifted expired ban on <@{ban.Userid}> ({ban.Name}) that was issued on **{ban.BannedOn.ToHumanReadableString()}** by <@{ban.ByUserid}> ({ban.ByName}) for {ban.Reason}.");
+                            .SendMessageAsync($"Lifted expired ban on <@{ban.Userid}> ({ban.Name}) that was issued on **{ban.BannedOn.DateTime.ToHumanReadableString()}** by <@{ban.ByUserid}> ({ban.ByName}) for {ban.Reason}.");
 
                         _banningService.RemoveBan(ban.Userid);
                     }
