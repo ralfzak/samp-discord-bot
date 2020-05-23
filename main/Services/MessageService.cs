@@ -7,10 +7,12 @@ namespace main.Services
 {
     public class MessageService
     {
+        private ITimeProvider _timeProvider;
         private readonly Dictionary<ulong, MessageData> entryMap;
-        
-        public MessageService()
+
+        public MessageService(ITimeProvider timeProvider)
         {
+            _timeProvider = timeProvider;
             entryMap = new Dictionary<ulong, MessageData>();
         }
 
@@ -19,7 +21,7 @@ namespace main.Services
             var data = new MessageData()
             {
                 responseId = responseId,
-                sentOn = DateTime.Now
+                sentOn = _timeProvider.UtcNow
             };
 
             entryMap.Add(commandId, data);
@@ -44,7 +46,7 @@ namespace main.Services
 
             foreach (var kvp in entryMap)
             {
-                if (kvp.Value.sentOn < (DateTime.Now.AddHours(-5)))
+                if (kvp.Value.sentOn < (_timeProvider.UtcNow.AddHours(-5)))
                 {
                     expired.Add(kvp.Key);
                 }

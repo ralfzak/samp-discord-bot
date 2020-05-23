@@ -10,9 +10,11 @@ namespace main.Services
     public class BanningService
     {
         private DatabaseContext _databaseContext;
+        private ITimeProvider _timeProvider;
 
-        public BanningService(DatabaseContext databaseContext)
+        public BanningService(ITimeProvider timeProvider, DatabaseContext databaseContext)
         {
+            _timeProvider = timeProvider;
             _databaseContext = databaseContext;
         }
         
@@ -24,7 +26,7 @@ namespace main.Services
                 Name = name,
                 ByUserid = byuid,
                 ByName = byname,
-                ExpiresOn = DateTime.UtcNow.AddSeconds(secondsadd),
+                ExpiresOn = _timeProvider.UtcNow.AddSeconds(secondsadd),
                 Reason = reason
             };
 
@@ -51,22 +53,22 @@ namespace main.Services
 
         public List<Bans> GetBans(string search)
         {
-            if (UInt64.TryParse(search, out ulong v))
+            if (UInt64.TryParse(search, out ulong searchId))
             {
                 return _databaseContext.Bans
-                    .Where(b => b.Userid == v && b.IsExpired == "N")
+                    .Where(b => b.Userid == searchId && b.IsExpired == "N")
                     .ToList();
             }
             
             return _databaseContext.Bans
-                .Where(b => b.Name == search && b.IsExpired == "N")
+                .Where(b => b.Name.Contains(search) && b.IsExpired == "N")
                 .ToList();
         }
 
         public List<Bans> GetExpiredBans()
         {
             return _databaseContext.Bans
-                .Where(b => b.ExpiresOn != null && b.IsExpired == "N" && b.ExpiresOn < DateTime.UtcNow)
+                .Where(b => b.ExpiresOn != null && b.IsExpired == "N" && b.ExpiresOn < _timeProvider.UtcNow)
                 .ToList();
         }
     }

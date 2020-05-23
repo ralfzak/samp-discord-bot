@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using domain.Models;
+using main.Core;
 
 namespace main.Services
 {
     public class UserService
     {
+        private ITimeProvider _timeProvider;
         private Dictionary<string, long> _cooldownMap;
 
-        public UserService()
+        public UserService(ITimeProvider timeProvider)
         {
+            _timeProvider = timeProvider;
             _cooldownMap = new Dictionary<string, long>();
         }
 
@@ -21,13 +24,13 @@ namespace main.Services
 
         private bool IsOnCooldown(long ticks)
         {
-            return (new TimeSpan(ticks).Subtract(new TimeSpan(DateTime.UtcNow.Ticks)).Ticks > 0) || false;
+            return (_timeProvider.GetElapsedFromEpoch(ticks) > 0) || false;
         }
 
         public void SetUserCooldown(ulong userId, string cmd, int seconds)
         {
             string key = GetMapKey(userId, cmd);
-            long ticksUTC = (DateTime.UtcNow.AddSeconds(seconds).Ticks);
+            long ticksUTC = (_timeProvider.UtcNow.AddSeconds(seconds).Ticks);
 
             if (_cooldownMap.ContainsKey(key))
             {

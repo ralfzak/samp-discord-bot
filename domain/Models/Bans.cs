@@ -5,6 +5,7 @@ namespace domain.Models
 {
     public partial class Bans
     {
+        public ulong Id { get; set; }
         public ulong Userid { get; set; }
         public string Name { get; set; }
         public ulong ByUserid { get; set; }

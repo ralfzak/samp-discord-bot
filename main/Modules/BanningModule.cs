@@ -11,11 +11,13 @@ namespace main.Modules
     #pragma warning disable 4014,1998
     public class BanningModule : ModuleBase<SocketCommandContext>
     {
+        private readonly ITimeProvider _timeProvider;
         private readonly BanningService _banningService;
         private readonly ulong _adminChannelId;
 
-        public BanningModule(Configuration configuration, BanningService banningService)
+        public BanningModule(ITimeProvider timeProvider, Configuration configuration, BanningService banningService)
         {
+            _timeProvider = timeProvider;
             _banningService = banningService;
             _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
         }
@@ -65,11 +67,11 @@ namespace main.Modules
 
             if (isTimedBan == 1)
             {
-                var expiresOn = DateTime.Now.AddSeconds(timeToAdd).ToString("dddd, dd MMMM yyyy");
-                ReplyAsync($"Banned <@{guildUser.Id}> ({guildUser.Username}) for {reason}. Ban will expire on {expiresOn}.");
+                var expiresOn = _timeProvider.UtcNow.AddSeconds(timeToAdd);
+                ReplyAsync($"Banned <@{guildUser.Id}> ({guildUser.Username}) for {reason}. Ban will expire on **{expiresOn.ToHumanReadableString()}**.");
                 
                 if (sendMessageToUser == 1)
-                    dmChannel.SendMessageAsync($"You have been banned from **{Context.Guild.Name}** for **{reason}**. This ban will expire on {expiresOn}.");
+                    dmChannel.SendMessageAsync($"You have been banned from **{Context.Guild.Name}** for **{reason}**. This ban will expire on **{expiresOn.ToHumanReadableString()}**.");
             }
             else
             {
@@ -80,7 +82,7 @@ namespace main.Modules
             }
             
             _banningService.StoreBan(guildUser.Id, guildUser.Username, Context.User.Id, Context.User.Username, timeToAdd*isTimedBan, reason);
-            Context.Guild.AddBanAsync(guildUser, 0, $"{reason} by {Context.User.Username} (use /banlookup for more information");
+            Context.Guild.AddBanAsync(guildUser, 0, $"By {Context.User.Username} for {reason}");
         }
 
         [Command("banlookup")]
@@ -110,11 +112,10 @@ namespace main.Modules
             {
                 if (ban.ExpiresOn != null)
                 {
-                    var expiresOnDate = ban.ExpiresOn?.ToString("dddd, dd MMMM yyyy");
-                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn}** for **{ban.Reason}**. Ban expires on **{expiresOnDate}**.");
+                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.ToHumanReadableString()}** for **{ban.Reason}**. Ban expires on **{ban.ExpiresOn?.ToHumanReadableString()}**.");
                 }
                 else
-                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn}** for **{ban.Reason}**. Ban is permanent.");
+                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.ToHumanReadableString()}** for **{ban.Reason}**. Ban is permanent.");
             });
         }
         
@@ -145,12 +146,11 @@ namespace main.Modules
 
             foreach (var ban in bans)
             {
-                if (ban.ExpiresOn != null)
+                if (ban.ExpiresOn != null) 
                 {
-                    var expiryDate = ban.ExpiresOn?.ToString("dddd, dd MMMM yyyy");
-                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn}** for **{ban.Reason}**. Ban expires on **{expiryDate}**. Lifted.");
+                    ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.ToHumanReadableString()}** for **{ban.Reason}**. Ban expires on **{ban.ExpiresOn?.ToHumanReadableString()}**. Lifted.");
                 }
-                else ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn}** for **{ban.Reason}**. Ban is permanent. Lifted.");
+                else ReplyAsync($"<@{ban.Userid}> ({ban.Name}) by <@{ban.ByUserid}> ({ban.ByName}) on **{ban.BannedOn.ToHumanReadableString()}** for **{ban.Reason}**. Ban is permanent. Lifted.");
 
                 _banningService.RemoveBan(ban.Userid);
                 Context.Guild.RemoveBanAsync(ban.Userid);
