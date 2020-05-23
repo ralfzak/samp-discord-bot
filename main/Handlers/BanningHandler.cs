@@ -18,15 +18,17 @@ namespace main.Handlers
     {
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
+        private readonly ITimeProvider _timeProvider;
         private readonly Timer _banTimer;
         private readonly BanningService _banningService;
         private readonly ulong _guildId;
         private readonly ulong _adminChannelId;
 
-        public BanningHandler(IServiceProvider services, Configuration configuration, BanningService banningService)
+        public BanningHandler(IServiceProvider services, ITimeProvider timeProvider, Configuration configuration, BanningService banningService)
         {
             _discord = services.GetRequiredService<DiscordSocketClient>();
             _services = services;
+            _timeProvider = timeProvider;
             _banningService = banningService;
             _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
             _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
@@ -59,9 +61,9 @@ namespace main.Handlers
             try
             {
                 var dmChannel = await user.GetOrCreateDMChannelAsync();
-                // var expiresOn = DateTime.Now.AddSeconds(timeToAdd).ToString("dddd, dd MMMM yyyy");
+                // var expiresOn = _timeProvider.UtcNow.AddSeconds(timeToAdd).ToHumanReadableString();
 
-                // await dmChannel.SendMessageAsync($"You have been banned from **{server.Name}**. This ban will expire on {expiresOn}.");
+                // await dmChannel.SendMessageAsync($"You have been banned from **{server.Name}**. This ban will expire on **{expiresOn}**.");
                 dmChannel.SendMessageAsync($"You have been banned from **{server.Name}**. This ban is permanent.");
             }
             catch (Exception e)
@@ -117,7 +119,7 @@ namespace main.Handlers
                         await _discord.GetGuild(_guildId).RemoveBanAsync(ban.Userid);
 
                         _discord.GetGuild(_guildId).GetTextChannel(_adminChannelId)
-                            .SendMessageAsync($"Lifted expired ban on <@{ban.Userid}> ({ban.Name}) that was issued on {ban.BannedOn} by <@{ban.ByUserid}> ({ban.ByName}) for {ban.Reason}.");
+                            .SendMessageAsync($"Lifted expired ban on <@{ban.Userid}> ({ban.Name}) that was issued on **{ban.BannedOn.DateTime.ToHumanReadableString()}** by <@{ban.ByUserid}> ({ban.ByName}) for {ban.Reason}.");
 
                         _banningService.RemoveBan(ban.Userid);
                     }

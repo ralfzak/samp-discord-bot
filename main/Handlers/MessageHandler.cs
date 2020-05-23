@@ -17,16 +17,12 @@ namespace main.Handlers
         private readonly DiscordSocketClient _discord;
         private readonly MessageService _messageService;
         private readonly Timer _event;
-        private readonly ulong _guildId;
-        private readonly ulong _adminChanId;
 
-        public MessageHandler(IServiceProvider services, Configuration configuration, MessageService messageService)
+        public MessageHandler(IServiceProvider services, MessageService messageService)
         {
             _discord = services.GetRequiredService<DiscordSocketClient>();
             _messageService = messageService;
             _event = new Timer(this.OnCommandLogPrune, null, 10000, 18000000);
-            _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
-            _adminChanId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
 
             _discord.MessageDeleted += OnMessageDelete;
 

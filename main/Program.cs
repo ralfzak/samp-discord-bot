@@ -76,6 +76,7 @@ namespace main
                     });
                 })
                 .AddDbContext<DatabaseContext>()
+                .AddSingleton<ITimeProvider, CurrentTimeProvider>()
                 .AddSingleton<HttpClient>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<Configuration>()

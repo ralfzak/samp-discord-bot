@@ -30,12 +30,15 @@ namespace domain.Models
         {
             modelBuilder.Entity<Bans>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.ToTable("bans");
 
                 entity.HasIndex(e => e.Userid)
                     .HasName("uid");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("bigint(20)");
 
                 entity.Property(e => e.BannedOn)
                     .HasColumnName("banned_on")
