@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using System.Linq;
 using main.Helpers;
 
-
 namespace main.Services
 {
     public class WikiService
