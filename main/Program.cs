@@ -11,6 +11,7 @@ using main.Modules;
 using main.Core;
 using main.Handlers;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace main
 {
@@ -45,6 +46,9 @@ namespace main
                 await services.GetRequiredService<UserConnectHandler>().InitializeAsync();
                 await services.GetRequiredService<BotStatusHandler>().InitializeAsync();
                 await services.GetRequiredService<MessageHandler>().InitializeAsync();
+
+                ServicePointManager.ServerCertificateValidationCallback 
+                    += (sender, cert, chain, sslPolicyErrors) => true;
 
                 await Task.Delay(-1);
             }
