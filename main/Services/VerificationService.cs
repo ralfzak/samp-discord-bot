@@ -95,15 +95,23 @@ namespace main.Services
             string url = $"{Program.FORUM_PROFILE_URL}{profileID}";
             string result = string.Empty;
 
-            using (HttpClient client = new HttpClient())
+            using (var handler = new HttpClientHandler())
             {
-                client.ServerCertificateValidationCallback
-                    += (sender, cert, chain, sslPolicyErrors) => true;
-                using (HttpResponseMessage response = client.GetAsync(url).Result)
-                {
-                    using (HttpContent content = response.Content)
+                handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+                handler.ServerCertificateCustomValidationCallback =
+                    (httpRequestMessage, cert, cetChain, policyErrors) =>
                     {
-                        result = await content.ReadAsStringAsync();
+                        return true;
+                    };
+
+                using (HttpClient client = new HttpClient(handler))
+                {
+                    using (HttpResponseMessage response = client.GetAsync(url).Result)
+                    {
+                        using (HttpContent content = response.Content)
+                        {
+                            result = await content.ReadAsStringAsync();
+                        }
                     }
                 }
             }
