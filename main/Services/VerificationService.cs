@@ -97,6 +97,8 @@ namespace main.Services
 
             using (HttpClient client = new HttpClient())
             {
+                client.ServerCertificateValidationCallback
+                    += (sender, cert, chain, sslPolicyErrors) => true;
                 using (HttpResponseMessage response = client.GetAsync(url).Result)
                 {
                     using (HttpContent content = response.Content)
