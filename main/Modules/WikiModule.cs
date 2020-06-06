@@ -83,7 +83,6 @@ namespace main.Modules
 
             string URL = $"https://wiki.sa-mp.com/wiki/{article}";
             StringBuilder sbParam = new StringBuilder();
-            StringBuilder sbExample = new StringBuilder();
 
             var builder = new EmbedBuilder()
                 .WithDescription(

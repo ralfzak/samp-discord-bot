@@ -23,9 +23,7 @@ namespace main.Modules
         }
 
         [Command("ban")]
-        [Name("ban")]
-        [Summary("/ban")]
-        public async Task Ban(IUser user = null, int days = 0, int hours = 0, int sendMessageToUser = 0, [RemainderAttribute]string reason = MessageHelper.NO_REASON_GIVEN)
+        public async Task Ban(IUser user = null, int days = 0, int hours = 0, int sendMessageToUser = 0, [RemainderAttribute]string reason = MessageHelper.NoReasonGiven)
         {
             if (Context.Channel.Id != _adminChannelId)
                 return;
@@ -43,7 +41,7 @@ namespace main.Modules
             var guildUser = Context.Guild.GetUser(user.Id);
             if (guildUser == null)
             {
-                ReplyAsync(MessageHelper.USER_NOT_FOUND);
+                ReplyAsync(MessageHelper.UserNotFound);
                 return;
             }
 
@@ -81,13 +79,17 @@ namespace main.Modules
                     dmChannel.SendMessageAsync($"You have been banned from **{Context.Guild.Name}** for **{reason}**. This ban is permanent.");
             }
             
-            _banningService.StoreBan(guildUser.Id, guildUser.Username, Context.User.Id, Context.User.Username, timeToAdd*isTimedBan, reason);
+            _banningService.StoreBan(
+                guildUser.Id, 
+                guildUser.Username, 
+                Context.User.Id, 
+                Context.User.Username, 
+                timeToAdd*isTimedBan, reason
+                );
             Context.Guild.AddBanAsync(guildUser, 0, $"By {Context.User.Username} for {reason}");
         }
 
         [Command("banlookup")]
-        [Name("banlookup")]
-        [Summary("/banlookup")]
         public async Task Banlookup(string user = "")
         {
             if (Context.Channel.Id != _adminChannelId)
@@ -120,8 +122,6 @@ namespace main.Modules
         }
         
         [Command("unban")]
-        [Name("unban")]
-        [Summary("/unban")]
         public async Task Unban(string user = "")
         {
             if (Context.Channel.Id != _adminChannelId)

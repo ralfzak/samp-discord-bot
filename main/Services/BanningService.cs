@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using domain.Models;
+using domain.Repo;
 using main.Core;
-using main.Models;
 
 namespace main.Services
 {
     public class BanningService
     {
-        private DatabaseContext _databaseContext;
+        private IBansRepository _bansRepository;
         private ITimeProvider _timeProvider;
 
-        public BanningService(ITimeProvider timeProvider, DatabaseContext databaseContext)
+        public BanningService(ITimeProvider timeProvider, IBansRepository bansRepository)
         {
             _timeProvider = timeProvider;
-            _databaseContext = databaseContext;
+            _bansRepository = bansRepository;
         }
         
         public void StoreBan(ulong uid, string name, ulong byuid, string byname, int secondsadd, string reason)
@@ -32,48 +30,19 @@ namespace main.Services
 
             if (secondsadd == 0)
             {
-                ban.ExpiresOn = null; // because c# is a bitch when it comes to operators
+                ban.ExpiresOn = null; // because c# is was not happy
             }
             
-            _databaseContext.Bans.Add(ban);
-
-            _databaseContext.SaveChangesAsync();
-            
-            Logger.Write($"[StoreBan] {uid} {name} {byuid} {byname} {secondsadd} {reason}");
+            _bansRepository.Create(ban);
         }
 
-        public void RemoveBan(ulong userid)
-        {
-            var ban = _databaseContext.Bans
-                .FirstOrDefault(b => b.Userid == userid);
+        public void RemoveBan(ulong userid) => 
+            _bansRepository.DeleteByUserId(userid);
 
-            if (ban != null)
-                _databaseContext.Bans.Remove(ban);
+        public List<Bans> GetBans(string search) => 
+            _bansRepository.GetBans(search);
 
-            _databaseContext.SaveChangesAsync();
-            
-            Logger.Write($"[RemoveBan] {userid}");
-        }
-
-        public List<Bans> GetBans(string search)
-        {
-            if (UInt64.TryParse(search, out ulong searchId))
-            {
-                return _databaseContext.Bans
-                    .Where(b => b.Userid == searchId && b.IsExpired == "N")
-                    .ToList();
-            }
-            
-            return _databaseContext.Bans
-                .Where(b => b.Name.Contains(search) && b.IsExpired == "N")
-                .ToList();
-        }
-
-        public List<Bans> GetExpiredBans()
-        {
-            return _databaseContext.Bans
-                .Where(b => b.ExpiresOn != null && b.IsExpired == "N" && b.ExpiresOn < _timeProvider.UtcNow)
-                .ToList();
-        }
+        public List<Bans> GetExpiredBans() => 
+            _bansRepository.GetExpiredBans();
     }
 }

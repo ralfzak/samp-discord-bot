@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
@@ -12,6 +10,8 @@ using main.Core;
 using main.Handlers;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using domain.Repo;
+using main.Core.Db;
 
 namespace main
 {
@@ -46,10 +46,7 @@ namespace main
                 await services.GetRequiredService<UserConnectHandler>().InitializeAsync();
                 await services.GetRequiredService<BotStatusHandler>().InitializeAsync();
                 await services.GetRequiredService<MessageHandler>().InitializeAsync();
-
-                ServicePointManager.ServerCertificateValidationCallback 
-                    += (sender, cert, chain, sslPolicyErrors) => true;
-
+                
                 await Task.Delay(-1);
             }
         }
@@ -72,16 +69,16 @@ namespace main
         private ServiceProvider ConfigureServices()
         {
             return new ServiceCollection()
-                .AddSingleton<DiscordSocketClient>(_ =>
+                .AddSingleton(_ => new DiscordSocketClient(new DiscordSocketConfig
                 {
-                    return new DiscordSocketClient(new DiscordSocketConfig
-                    {
-                        MessageCacheSize = 150
-                    });
-                })
+                    MessageCacheSize = 150
+                }))
                 .AddDbContext<DatabaseContext>()
+                .AddSingleton<IBansRepository, MysqlBansRepository>()
+                .AddSingleton<IVerificationsRepository, MysqlVerificationsRepository>()
+                
                 .AddSingleton<ITimeProvider, CurrentTimeProvider>()
-                .AddSingleton<HttpClient>()
+                .AddSingleton<IHttpClient, HttpClient>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<Configuration>()
                 .AddSingleton<Commands>()
@@ -100,6 +97,7 @@ namespace main
                 .AddSingleton<BanningService>()
                 .AddSingleton<CacheService>()
                 .AddSingleton<MessageService>()
+                .AddSingleton<StatsService>()
                 .AddSingleton<UserService>()
                 .AddSingleton<VerificationService>()
                 .AddSingleton<WikiService>()

@@ -104,6 +104,11 @@ namespace domain.Models
                 entity.Property(e => e.VerifiedOn)
                     .HasColumnName("verified_on")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                
+                entity.Property(e => e.DeletedOn)
+                    .HasColumnName("deleted_on");
+
+                entity.HasQueryFilter(v => v.DeletedOn != null);
             });
 
             OnModelCreatingPartial(modelBuilder);

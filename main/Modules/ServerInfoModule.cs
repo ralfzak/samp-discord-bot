@@ -12,8 +12,8 @@ namespace main.Modules
     #pragma warning disable 4014,1998
     public class ServerInfoModule : ModuleBase<SocketCommandContext>
     {
-        private const string NOT_VALID_SERVER = "This doesn't look like a valid server to me :thinking:.";
-        private const string FAILED_FETCH_SERVER_DATA = "Sorry! I Couldn't fetch this server's data.";
+        private const string NotValidServer = "This doesn't look like a valid server to me :thinking:.";
+        private const string FailedFetchServerData = "Sorry! I Couldn't fetch this server's data.";
 
         private readonly UserService _userService;
         private readonly MessageService _messageService;
@@ -30,7 +30,6 @@ namespace main.Modules
 
         [Command("server")]
         [Alias("srv")]
-        [Name("server")]
         [Summary("/server <ip>[:port]")]
         public async Task Server(string ipPort = "")
         {
@@ -50,56 +49,20 @@ namespace main.Modules
                 return;
             }
 
-            string ip = ipPort;
-            string _port = "7777";
-            if (ipPort.Contains(':'))
+            var (ip, port) = ("localhost", (ushort)7777);
+            try
             {
-                var temp = ipPort.Split(':');
-                ip = temp[0];
-                _port = temp[1];
+                (ip, port) = ParseIp(ipPort);
             }
-
-            ushort port = 7777;
-            if (!UInt16.TryParse(_port, out port))
+            catch (InvalidCastException)
             {
-                var response = await ReplyAsync(NOT_VALID_SERVER);
+                _userService.SetUserCooldown(Context.User.Id, "server", 5);
+                var response = await ReplyAsync(NotValidServer);
                 _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
-
-            if (!ServerService.ValidateIPv4(ip) && !ServerService.ValidateHostname(ip))
-            {
-                var response = await ReplyAsync(NOT_VALID_SERVER);
-                _messageService.LogCommand(Context.Message.Id, response.Id);
-                return;
-            }
-
-            if (!ServerService.ValidateIPv4(ip) && ServerService.ValidateHostname(ip))
-            {
-                // not ip, but looks like a hostname, query dns
-                try
-                {
-                    IPAddress[] iPs = await Dns.GetHostAddressesAsync(ip);
-                    if (iPs.Length == 0)
-                    {
-                        Logger.Write($"{Context.User.Username}: /server - hostname not resolved");
-                        _userService.SetUserCooldown(Context.User.Id, "server", 8);
-
-                        var response = await ReplyAsync(NOT_VALID_SERVER);
-                        _messageService.LogCommand(Context.Message.Id, response.Id);
-                        return;
-                    }
-                    ip = iPs[0].ToString(); // should be first in the DNS entry
-                }
-                catch (Exception)
-                {
-                    var response = await ReplyAsync(FAILED_FETCH_SERVER_DATA);
-                    _messageService.LogCommand(Context.Message.Id, response.Id);
-                    return;
-                }
-            }
-
-            ServerResponseModel data = null;
+            
+            ServerResponseModel data;
             var generalInfo = new ServerQueryService(ip, port, 'i', 3000).read();
             var rulesInfo = new ServerQueryService(ip, port, 'r', 3000).read();
             var isHostedTab = await ServerService.CheckGameMpWebsite(ip, port);
@@ -124,7 +87,7 @@ namespace main.Modules
                 Logger.Write($"{Context.User.Username}: /server - key not found: {e}");
                 _userService.SetUserCooldown(Context.User.Id, "server", 15);
 
-                var response = await ReplyAsync(FAILED_FETCH_SERVER_DATA);
+                var response = await ReplyAsync(FailedFetchServerData);
                 _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
@@ -152,6 +115,44 @@ namespace main.Modules
             _messageService.LogCommand(Context.Message.Id, responseMessage.Id);
 
             _userService.SetUserCooldown(Context.User.Id, "server", 60);
+        }
+
+        private (string ip, ushort port) ParseIp(string ipPort)
+        {
+            string ip = string.Empty;
+            string _port = "7777";
+            if (ipPort.Contains(':'))
+            {
+                var temp = ipPort.Split(':');
+                if (temp.Length != 2)
+                {
+                    throw new InvalidOperationException("Wrong format");
+                }
+                ip = temp[0];
+                _port = temp[1];
+            }
+
+            if (!UInt16.TryParse(_port, out ushort port))
+            {
+                throw new InvalidOperationException("Invalid port");
+            }
+
+            if (!ServerService.ValidateIPv4(ip) && !ServerService.ValidateHostname(ip))
+            {
+                throw new InvalidOperationException("Invalid IP");
+            }
+
+            if (!ServerService.ValidateIPv4(ip) && ServerService.ValidateHostname(ip))
+            {
+                IPAddress[] iPs = Dns.GetHostAddressesAsync(ip).Result;
+                if (iPs.Length == 0)
+                {
+                    throw new InvalidOperationException("Failed to find DNS entry");
+                }
+                ip = iPs[0].ToString();
+            }
+            
+            return (ip, port);
         }
     }
 }

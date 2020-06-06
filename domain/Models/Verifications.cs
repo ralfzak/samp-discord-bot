@@ -10,5 +10,6 @@ namespace domain.Models
         public string ForumName { get; set; }
         public string VerifiedBy { get; set; }
         public DateTime VerifiedOn { get; set; }
+        public DateTime DeletedOn { get; set; }
     }
 }
