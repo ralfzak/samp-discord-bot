@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Web;
 using HtmlAgilityPack;
@@ -91,8 +92,9 @@ namespace main.Services
         
         public WikiPageData GetPageData(string article)
         {
-            var title = GetClosestArticleName(article);
-            var url = $"https://wiki.sa-mp.com/wiki/{title}";
+            article = GetClosestArticleName(article);
+            var url = $"https://wiki.sa-mp.com/wiki/{article}";
+            Logger.Write(url);
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(
                 _httpClient.GetContent(url)
@@ -105,7 +107,7 @@ namespace main.Services
             
             return new WikiPageData
             {
-                Title = title,
+                Title = article,
                 Url = url,
                 Description = GetPageDescription(htmlDocument),
                 Arguments = GetPageArguments(htmlDocument),
@@ -204,7 +206,7 @@ namespace main.Services
                 foreach (string thread in WikiThreads)
                 {
                     int distance = StringHelper.ComputeLevenshteinDistance(article.ToLower(), thread.ToLower());
-                    if ((distance <= 2) && (distance < minDistance))
+                    if ((distance <= 4) && (distance < minDistance))
                     {
                         article = thread;
                         minDistance = distance;
