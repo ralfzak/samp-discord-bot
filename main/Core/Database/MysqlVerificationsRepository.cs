@@ -4,7 +4,7 @@ using domain.Models;
 using System.Linq;
 using domain.Repo;
 
-namespace main.Core.Db
+namespace domain.Database
 {
     public partial class MysqlVerificationsRepository : IVerificationsRepository
     {

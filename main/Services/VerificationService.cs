@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using domain.Models;
 using domain.Repo;
-using main.Core;
+using domain;
 
 namespace main.Services
 {

@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using main.Core;
+using domain;
 using Discord.WebSocket;
 using System.Threading;
 using main.Services;

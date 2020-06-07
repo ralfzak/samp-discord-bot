@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.WebSocket;
 using System.Linq;
-using main.Core;
+using domain;
 using main.Helpers;
 using Discord;
 using Discord.Rest;

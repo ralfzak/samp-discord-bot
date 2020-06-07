@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using main.Services;
-using main.Core;
+using domain;
 using main.Exceptions;
 using main.Models;
 

@@ -6,12 +6,12 @@ using Discord.Commands;
 using domain.Models;
 using main.Services;
 using main.Modules;
-using main.Core;
+using domain;
 using main.Handlers;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using domain.Repo;
-using main.Core.Db;
+using domain.Database;
 
 namespace main
 {

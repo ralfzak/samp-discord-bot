@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using domain.Models;
 using domain.Repo;
-using main.Core;
+using domain;
 
 namespace main.Services
 {
@@ -18,12 +18,13 @@ namespace main.Services
         
         public void StoreBan(ulong uid, string name, ulong byuid, string byname, int secondsadd, string reason)
         {
-            var ban = new Bans()
+            var ban = new Bans
             {
                 Userid = uid,
                 Name = name,
                 ByUserid = byuid,
                 ByName = byname,
+                IsExpired = "N",
                 ExpiresOn = _timeProvider.UtcNow.AddSeconds(secondsadd),
                 Reason = reason
             };

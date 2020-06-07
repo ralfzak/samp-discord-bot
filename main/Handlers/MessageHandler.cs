@@ -38,6 +38,5 @@ namespace main.Handlers
                 channel.DeleteMessageAsync(messageId);
             }
         }
-        
     }
 }

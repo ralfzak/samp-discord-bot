@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace main.Core
+namespace domain
 {
     /**
      * Responsible for handling HTTP(s) calls.

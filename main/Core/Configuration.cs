@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace main.Core
+namespace domain
 {
     public class Configuration
     {

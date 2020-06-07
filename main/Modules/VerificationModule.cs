@@ -5,7 +5,7 @@ using Discord.Commands;
 using main.Services;
 using main.Helpers;
 using Discord.WebSocket;
-using main.Core;
+using domain;
 
 namespace main.Modules
 {

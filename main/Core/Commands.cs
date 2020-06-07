@@ -10,7 +10,7 @@ using System.Linq;
 using main.Helpers;
 using main.Services;
 
-namespace main.Core
+namespace domain
 {
     #pragma warning disable 4014,1998
     public class Commands

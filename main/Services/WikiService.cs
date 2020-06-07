@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Web;
 using HtmlAgilityPack;
-using main.Core;
+using domain;
 using main.Exceptions;
 using main.Helpers;
 using HttpClient = System.Net.Http.HttpClient;
