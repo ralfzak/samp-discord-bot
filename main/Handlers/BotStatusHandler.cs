@@ -12,12 +12,13 @@ namespace main.Handlers
     {
         private readonly DiscordSocketClient _discord;
         private readonly StatsService _statsService;
+        private Timer _updateTimer;
 
         public BotStatusHandler(DiscordSocketClient discord, StatsService statsService)
         {
             _discord = discord;
             _statsService = statsService;
-            var updateTimer = new Timer(OnPlayerCountUpdateCheck, null, 10000, 603000);
+            _updateTimer = new Timer(OnPlayerCountUpdateCheck, null, 10000, 603000);
         }
         
         public async Task InitializeAsync()

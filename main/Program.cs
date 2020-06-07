@@ -97,6 +97,7 @@ namespace main
                 .AddSingleton<BanningService>()
                 .AddSingleton<CacheService>()
                 .AddSingleton<MessageService>()
+                .AddSingleton<SampServerService>()
                 .AddSingleton<StatsService>()
                 .AddSingleton<UserService>()
                 .AddSingleton<VerificationService>()

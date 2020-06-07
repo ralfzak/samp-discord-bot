@@ -28,8 +28,6 @@ namespace main.Handlers
 
             _discord.UserJoined += OnUserJoinServer;
             _discord.UserLeft += OnUserLeaveServer;
-
-            Logger.Write("Binded the user (connect / disconnect) verification events!");
         }
 
         public async Task InitializeAsync()

@@ -19,6 +19,7 @@ namespace main.Handlers
         private readonly BanningService _banningService;
         private readonly ulong _guildId;
         private readonly ulong _adminChannelId;
+        private Timer _banTimer;
 
         public BanningHandler(IServiceProvider services, Configuration configuration, BanningService banningService)
         {
@@ -26,7 +27,7 @@ namespace main.Handlers
             _banningService = banningService;
             _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
             _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
-            var banTimer = new Timer(OnBanCheckAsync, null, 60000, 600000);
+            _banTimer = new Timer(OnBanCheckAsync, null, 60000, 600000);
 
             _discord.UserBanned += OnUserBanned;
             _discord.UserUnbanned += OnUserUnbanned;

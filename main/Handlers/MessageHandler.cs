@@ -1,8 +1,6 @@
 ﻿using main.Services;
 using Discord;
 using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,16 +9,15 @@ namespace main.Handlers
     #pragma warning disable 4014, 1998
     class MessageHandler
     {
-        private readonly DiscordSocketClient _discord;
         private readonly MessageService _messageService;
+        private Timer _pruneTimer;
 
         public MessageHandler(DiscordSocketClient discord, MessageService messageService)
         {
-            _discord = discord;
             _messageService = messageService;
-            var pruneTimer = new Timer(OnCommandLogPrune, null, 10000, 18000000);
+            _pruneTimer = new Timer(OnCommandLogPrune, null, 10000, 18000000);
 
-            _discord.MessageDeleted += OnMessageDelete;
+            discord.MessageDeleted += OnMessageDelete;
         }
 
         private void OnCommandLogPrune(object state)
