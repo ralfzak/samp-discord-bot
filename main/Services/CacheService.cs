@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using main.Core;
 
 namespace main.Services
 {
@@ -44,13 +45,15 @@ namespace main.Services
             else _cacheMap.Add(key, token);
         }
 
-        public VERIFICATION_STATES GetUserVerificationState(ulong userId)
+        public VerificationStates GetUserVerificationState(ulong userId)
         {
             string key = $"STATE-{userId}";
-            return (_cacheMap.ContainsKey(key)) ? ((VERIFICATION_STATES)Int32.Parse(_cacheMap[key])) : VERIFICATION_STATES.NONE;
+            return (_cacheMap.ContainsKey(key)) 
+                ? ((VerificationStates)Int32.Parse(_cacheMap[key])) 
+                : VerificationStates.None;
         }
 
-        public void SetUserVerificationState(ulong userId, VERIFICATION_STATES state)
+        public void SetUserVerificationState(ulong userId, VerificationStates state)
         {
             string key = $"STATE-{userId}";
             if (_cacheMap.ContainsKey(key))

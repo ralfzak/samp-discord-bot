@@ -2,9 +2,9 @@ namespace main.Helpers
 {
     public static class MessageHelper
     {
-        public const string USER_NOT_FOUND = "User not found.";
-        public const string COMMAND_SERVER_ONLY = "This only works on the server.";
-        public const string NO_REASON_GIVEN = "No Reason Given";
+        public const string UserNotFound = "User not found.";
+        public const string CommandServerOnly = "This only works on the server.";
+        public const string NoReasonGiven = "No Reason Given";
 
         public static string GetVerificationCmdDescription(string mention)
         {

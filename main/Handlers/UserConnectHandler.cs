@@ -28,8 +28,6 @@ namespace main.Handlers
 
             _discord.UserJoined += OnUserJoinServer;
             _discord.UserLeft += OnUserLeaveServer;
-
-            Logger.Write("Binded the user (connect / disconnect) verification events!");
         }
 
         public async Task InitializeAsync()
@@ -47,8 +45,8 @@ namespace main.Handlers
                 message +=
                     "You have already verified your discord account and linked it to your forum profile! You have been set a Verified role, woohoo! :partying_face:";
 
-                Logger.Write($"{user.Id} has joined the server, verified role set");
                 user.AddRoleAsync(verifiedRole);
+                Logger.Write($"[OnUserJoinServer] {user.Id} has joined the server, verified role set");
             }
             else message += "You can link your forum account to your discord profile and get a Verified role.  Type `/verify` below to start the process!";
 

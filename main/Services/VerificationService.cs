@@ -1,52 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using main.Core;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Discord.WebSocket;
 using domain.Models;
-using Microsoft.Extensions.DependencyInjection;
+using domain.Repo;
+using main.Core;
 
 namespace main.Services
 {
-    public enum VERIFICATION_STATES
-    {
-        NONE = 0,
-        WAITING_CONFIRM = 1
-    }
-
     public class VerificationService
     {
-        private DatabaseContext _databaseContext;
+        private IVerificationsRepository _verificationsRepository;
+        private IHttpClient _httpClient;
         
-        public VerificationService(DatabaseContext databaseContext)
+        public VerificationService(IVerificationsRepository verificationsRepository, IHttpClient httpClient)
         {
-            _databaseContext = databaseContext;
-        }
-        
-        public List<ulong> GetUserIDsFromForumInfo(string forumInfo)
-        {
-            int forumId = -1;
-            string forumName = "-";
-            if (!Int32.TryParse(forumInfo, out forumId)) {
-                forumName = forumInfo;
-            }
-
-            return _databaseContext.Verifications
-                .Where(v => v.ForumId == forumId || v.ForumName == forumName)
-                .Select(v => v.Userid)
-                .ToList();
+            _verificationsRepository = verificationsRepository;
+            _httpClient = httpClient;
         }
 
-        public void GetUserForumProfileID(ulong userId, out int forumId, out string forumName)
-        {
-            var verification = _databaseContext.Verifications
-                .FirstOrDefault(v => v.Userid == userId);
-            
+        public List<ulong> GetUserIDsFromForumInfo(string forumInfo) =>
+            _verificationsRepository.FindByForumInfo(forumInfo).Select(v => v.Userid).ToList();
+
+        public void GetUserForumProfileId(ulong userId, out int forumId, out string forumName)
+        { 
             forumId = -1;
             forumName = string.Empty;
+            
+            var verification = _verificationsRepository.FindByUserId(userId);
             if (verification != null)
             {
                 forumId = verification.ForumId ?? -1;
@@ -54,91 +35,44 @@ namespace main.Services
             }
         }
 
-        public bool IsForumProfileLinked(int forumId)
-        {
-            return _databaseContext.Verifications
-                .FirstOrDefault(v => v.ForumId == forumId) != null;
-        }
+        public bool IsForumProfileLinked(int forumId) => 
+            _verificationsRepository.FindByForumId(forumId) != null;
 
-        public bool IsUserVerified(ulong userId)
-        {
-            GetUserForumProfileID(userId, out var forumId, out var forumName);
-            return (forumId != -1);
-        }
+        public bool IsUserVerified(ulong userId) =>
+            _verificationsRepository.FindByUserId(userId) != null;
 
-        public void StoreUserVerification(ulong userId, int forumId, string forumName, string verifiedBy)
-        {
-            _databaseContext.Verifications.Add(new Verifications()
+        public void StoreUserVerification(ulong userId, int forumId, string forumName, string verifiedBy) =>
+            _verificationsRepository.Create(new Verifications
             {
                 Userid = userId,
                 ForumId = forumId,
                 ForumName = forumName,
                 VerifiedBy = verifiedBy
             });
-            
-            _databaseContext.SaveChangesAsync();
-        }
 
-        public void DeleteUserVerification(ulong userId)
-        {
-            var verification = _databaseContext.Verifications
-                .FirstOrDefault(v => v.Userid == userId);
-            
-            if (verification != null)
-                _databaseContext.Verifications.Remove(verification);
-            
-            _databaseContext.SaveChangesAsync();
-        }
+        public void DeleteUserVerification(ulong userId) =>
+            _verificationsRepository.DeleteByUserId(userId);
         
-        public async Task<string> GetForumProfileContentAsync(int profileID)
+        private string GetForumProfileContentAsync(int profileId) => 
+            _httpClient.GetContent($"{Program.FORUM_PROFILE_URL}{profileId}");
+
+        public string GetForumProfileNameIfContainsToken(int profileId, string token)
         {
-            string url = $"{Program.FORUM_PROFILE_URL}{profileID}";
-            string result = string.Empty;
-
-            using (var handler = new HttpClientHandler())
-            {
-                handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-                handler.ServerCertificateCustomValidationCallback =
-                    (httpRequestMessage, cert, cetChain, policyErrors) =>
-                    {
-                        return true;
-                    };
-
-                using (HttpClient client = new HttpClient(handler))
-                {
-                    using (HttpResponseMessage response = client.GetAsync(url).Result)
-                    {
-                        using (HttpContent content = response.Content)
-                        {
-                            result = await content.ReadAsStringAsync();
-                        }
-                    }
-                }
-            }
-
-            return result;
+            string profilePage = GetForumProfileContentAsync(profileId);
+            return profilePage.Contains(token)
+                ? GetForumProfileNameFromContent(profilePage)
+                : string.Empty;
         }
 
-        public async Task<string> GetForumProfileIfContainsCodeAsync(int profile_id, string token)
+        public string GetForumProfileName(int profileId) =>
+            GetForumProfileNameFromContent(GetForumProfileContentAsync(profileId));
+        
+        private string GetForumProfileNameFromContent(string content)
         {
-            string profile_page = await GetForumProfileContentAsync(profile_id);
-            Match match = Regex.Match(profile_page, @"<title>SA-MP Forums - View Profile: (.*)</title>");
-
-            if (match.Success && profile_page.Contains(token))
-                return match.Groups[0].Value.Remove(0, 36).Replace("</title>", "");
-
-            return string.Empty;
-        }
-
-        public async Task<string> GetForumProfileNameAsync(int profile_id)
-        {
-            string profile_page = await GetForumProfileContentAsync(profile_id);
-            Match match = Regex.Match(profile_page, @"<title>SA-MP Forums - View Profile: (.*)</title>");
-
-            if (match.Success)
-                return match.Groups[0].Value.Remove(0, 36).Replace("</title>", "");
-
-            return string.Empty;
+            Match match = Regex.Match(content, @"<title>SA-MP Forums - View Profile: (.*)</title>");
+            return match.Success
+                ? match.Groups[0].Value.Remove(0, 36).Replace("</title>", "")
+                : string.Empty;
         }
     }
 }

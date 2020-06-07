@@ -34,8 +34,6 @@ namespace main.Modules
         }
 
         [Command("verify")]
-        [Name("verify")]
-        [Summary("/verify <option>")]
         public async Task Verify(string option = "")
         {
             var user = Context.User;
@@ -65,7 +63,7 @@ namespace main.Modules
             switch (option.ToLower().Trim())
             {
                 case "done":
-                    if (userVerificationState == VERIFICATION_STATES.NONE)
+                    if (userVerificationState == VerificationStates.None)
                     {
                         ReplyAsync("Your verification state is not known, type `/verify` to start your verification process.");
                         return;
@@ -73,15 +71,15 @@ namespace main.Modules
 
                     int cachedProfile = _cacheService.GetUserForumId(user.Id);
                     string cachedToken = _cacheService.GetUserToken(user.Id);
-                    if (cachedProfile == -1 || cachedToken == "" || userVerificationState != VERIFICATION_STATES.WAITING_CONFIRM)
+                    if (cachedProfile == -1 || cachedToken == "" || userVerificationState != VerificationStates.WaitingConfirm)
                     {
                         _cacheService.ClearCache(user.Id);
                         ReplyAsync("Your verification process hasn't been initiated, type `/verify` to start your verification process.");
                         return;
                     }
 
-                    string forumNameTokenized = await _verificationService.GetForumProfileIfContainsCodeAsync(cachedProfile, cachedToken);
-                    if (forumNameTokenized == string.Empty)
+                    string forumName = _verificationService.GetForumProfileNameIfContainsToken(cachedProfile, cachedToken);
+                    if (forumName == string.Empty)
                     {
                         _userService.SetUserCooldown(user.Id, "", 15);
                         ReplyAsync("I couldn't find the token in your profile. Make sure your profile is set to public and the token is in your biography section." +
@@ -99,12 +97,12 @@ namespace main.Modules
                     }
 
                     _cacheService.ClearCache(user.Id);
-                    _verificationService.StoreUserVerification(user.Id, cachedProfile, forumNameTokenized, user.Username);
+                    _verificationService.StoreUserVerification(user.Id, cachedProfile, forumName, user.Username);
 
                     var discordServer = Context.Client.GetGuild(_guildId);
                     discordServer
                         .GetTextChannel(_adminChannelId)
-                        .SendMessageAsync($"{guildUser.Mention} ({guildUser.Username}) has successfully verified to **{forumNameTokenized}** <{Program.FORUM_PROFILE_URL}{cachedProfile}>");
+                        .SendMessageAsync($"{guildUser.Mention} ({guildUser.Username}) has successfully verified to **{forumName}** <{Program.FORUM_PROFILE_URL}{cachedProfile}>");
 
                     ReplyAsync(MessageHelper.GetVerificationSuccessMessage(user.Mention, cachedProfile));
 
@@ -112,7 +110,7 @@ namespace main.Modules
                     break;
 
                 case "cancel":
-                    if (userVerificationState == VERIFICATION_STATES.NONE)
+                    if (userVerificationState == VerificationStates.None)
                     {
                         ReplyAsync("Nothing to cancel!");
                         return;
@@ -123,7 +121,7 @@ namespace main.Modules
                     break;
 
                 default:
-                    if (userVerificationState != VERIFICATION_STATES.NONE)
+                    if (userVerificationState != VerificationStates.None)
                     {
                         ReplyAsync("Your verification is awaiting you to place the token in your profile biography. `/verify done` once done or `/verify cancel` to cancel the process.");
                         return;
@@ -157,7 +155,7 @@ namespace main.Modules
 
                     string token = StringHelper.GenerateRandom(10);
 
-                    _cacheService.SetUserVerificationState(user.Id, VERIFICATION_STATES.WAITING_CONFIRM);
+                    _cacheService.SetUserVerificationState(user.Id, VerificationStates.WaitingConfirm);
                     _cacheService.SetUserToken(user.Id, token);
                     _cacheService.SetUserForumId(user.Id, profile_id);
 
@@ -167,15 +165,13 @@ namespace main.Modules
         }
 
         [Command("whois")]
-        [Name("whois")]
-        [Summary("/whois [@]<user>")]
         public async Task Whois(IUser user = null)
         {
             user = user ?? Context.User;
 
             if (Context.Guild == null)
             {
-                ReplyAsync(MessageHelper.COMMAND_SERVER_ONLY);
+                ReplyAsync(MessageHelper.CommandServerOnly);
                 return;
             }
 
@@ -196,7 +192,7 @@ namespace main.Modules
 
             int profileid = -1;
             string profileName = "";
-            _verificationService.GetUserForumProfileID(guildUser.Id, out profileid, out profileName);
+            _verificationService.GetUserForumProfileId(guildUser.Id, out profileid, out profileName);
             if (profileid == -1)
             {
                 var response = await ReplyAsync($"{guildUser.Mention} is not verified yet.");
@@ -216,8 +212,6 @@ namespace main.Modules
         }
 
         [Command("rvwhois")]
-        [Name("rvwhois")]
-        [Summary("/rvwhois <forum_id/forum_name>")]
         public async Task Rvwhois(string forumInfo = "")
         {
             if (Context.Guild == null)
@@ -243,15 +237,13 @@ namespace main.Modules
             {
                 int profileid = -1;
                 string profileName = "";
-                _verificationService.GetUserForumProfileID(uid, out profileid, out profileName);
+                _verificationService.GetUserForumProfileId(uid, out profileid, out profileName);
 
                 ReplyAsync($"**{profileName}** ({Program.FORUM_PROFILE_URL}{profileid}) is <@{uid}>");
             }
         }
         
         [Command("fverify")]
-        [Name("fverify")]
-        [Summary("/fverify [@]<user> [forumid]")]
         public async Task Fverify(IUser user = null, int forumid = 0)
         {
             if (Context.Guild == null)
@@ -266,8 +258,7 @@ namespace main.Modules
                 return;
             }
             
-            SocketGuildUser guildUser = null;
-            guildUser = Context.Guild.GetUser(user.Id);
+            var guildUser = Context.Guild.GetUser(user.Id);
             if (guildUser == null)
             {
                 ReplyAsync("Something went wrong, I could not find this user!");
@@ -288,7 +279,7 @@ namespace main.Modules
             }
             
             if (forumid != 0)
-                forumName = await _verificationService.GetForumProfileNameAsync(forumid);
+                forumName = _verificationService.GetForumProfileName(forumid);
 
             _verificationService.StoreUserVerification(user.Id, forumid, forumName, user.Username);
 
@@ -299,8 +290,6 @@ namespace main.Modules
         }
 
         [Command("funverify")]
-        [Name("funverify")]
-        [Summary("/funverify [@]<user>")]
         public async Task Funverify(IUser user = null)
         {
             if (Context.Guild == null)
@@ -315,8 +304,7 @@ namespace main.Modules
                 return;
             }
             
-            SocketGuildUser guildUser = null;
-            guildUser = Context.Guild.GetUser(user.Id);
+            var guildUser = Context.Guild.GetUser(user.Id);
             if (guildUser == null)
             {
                 ReplyAsync("Something went wrong, I cannot find this user!");

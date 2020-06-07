@@ -17,15 +17,11 @@ namespace main.Services
             _cooldownMap = new Dictionary<string, long>();
         }
 
-        private string GetMapKey(ulong userId, string channel)
-        {
-            return $"{userId}-{channel}";
-        }
+        private string GetMapKey(ulong userId, string channel) =>
+            $"{userId}-{channel}";
 
-        private bool IsOnCooldown(long ticks)
-        {
-            return (_timeProvider.GetElapsedFromEpoch(ticks) > 0) || false;
-        }
+        private bool IsOnCooldown(long ticks) =>
+            _timeProvider.GetElapsedFromEpoch(ticks) > 0;
 
         public void SetUserCooldown(ulong userId, string cmd, int seconds)
         {
@@ -39,7 +35,7 @@ namespace main.Services
             else _cooldownMap.Add(key, ticksUTC);
         }
 
-        public bool IsUserOnCooldown(ulong userId, string cmd)
+        public bool IsUserOnCooldown(ulong userId, string cmd = "")
         {
             string key = GetMapKey(userId, cmd);
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace domain.Models
 {
@@ -10,5 +9,6 @@ namespace domain.Models
         public string ForumName { get; set; }
         public string VerifiedBy { get; set; }
         public DateTime VerifiedOn { get; set; }
+        public DateTimeOffset? DeletedOn { get; set; }
     }
 }

@@ -1,16 +1,24 @@
 ﻿using main.Models;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Policy;
+using System.Web;
+using HtmlAgilityPack;
+using main.Core;
+using main.Exceptions;
 using main.Helpers;
+using HttpClient = System.Net.Http.HttpClient;
 
 namespace main.Services
 {
     public class WikiService
     {
-        private static readonly string[] WIKI_THREADS = {
+        private static readonly string[] WikiThreads = {
             "AddCharModel", "AddMenuItem", "AddPlayerClass", "AddPlayerClassEx", "AddSimpleModel", "AddSimpleModelTimed", "AddStaticPickup", "AddStaticVehicle", "AddStaticVehicleEx",
             "AddVehicleComponent", "AllowAdminTeleport", "AllowInteriorWeapons", "AllowPlayerTeleport", "ApplyActorAnimation", "ApplyAnimation", "Atan", "Attach3DTextLabelToPlayer",
             "Attach3DTextLabelToVehicle", "AttachCameraToObject", "AttachCameraToPlayerObject", "AttachObjectToObject", "AttachObjectToPlayer", "AttachObjectToVehicle", "AttachPlayerObjectToPlayer",
@@ -75,55 +83,136 @@ namespace main.Services
             "OnVehicleDeath", "OnVehicleMod", "OnVehiclePaintjob", "OnVehicleRespray", "OnVehicleSirenStateChange", "OnVehicleSpawn", "OnVehicleStreamIn", "OnVehicleStreamOut"
         };
 
-        public async Task<WikiResponseModel> GetInfoAsync(string article)
+        private readonly IHttpClient _httpClient;
+        
+        public WikiService(IHttpClient httpClient)
         {
-            string url = $"http://ralfzak.me/api/sampwiki/wiki.php?p={article}";
-            WikiResponseModel result;
+            _httpClient = httpClient;
+        }
+        
+        public WikiPageData GetPageData(string article)
+        {
+            article = GetClosestArticleName(article);
+            var url = $"https://wiki.sa-mp.com/wiki/{article}";
+            Logger.Write(url);
+            var htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(
+                _httpClient.GetContent(url)
+                );
 
-            using (HttpClient client = new HttpClient())
+            if (!IsValidWikiPage(article, htmlDocument))
             {
-                using (HttpResponseMessage response = client.GetAsync(url).Result)
+                throw new InvalidWikiPageException("Failed to parse headers");
+            }
+            
+            return new WikiPageData
+            {
+                Title = article,
+                Url = url,
+                Description = GetPageDescription(htmlDocument),
+                Arguments = GetPageArguments(htmlDocument),
+                ArgumentsDescriptions = GetPageArgumentsWithDescriptions(htmlDocument),
+                CodeExample = GetPageCodeExample(htmlDocument)
+            };
+        }
+
+        private Dictionary<string, string> GetPageArgumentsWithDescriptions(HtmlDocument htmlDocument)
+        {
+            var arguments = new Dictionary<string, string>();
+            var argumentNodes = htmlDocument.DocumentNode.SelectNodes("//div")
+                .Where(n => n.HasClass("param"));
+            
+            foreach (var argumentNode in argumentNodes)
+            {
+                try
                 {
-                    using (HttpContent content = response.Content)
-                    {
-                        try
-                        {
-                            string res = await content.ReadAsStringAsync();
-                            result = JsonConvert.DeserializeObject<WikiResponseModel>(res);
-                        }
-                        catch (Exception)
-                        {
-                            result = null;
-                        }
-                    }
+                    arguments.Add(
+                        argumentNode.ChildNodes["table"].ChildNodes["tr"].ChildNodes[0].InnerText,
+                        argumentNode.ChildNodes["table"].ChildNodes["tr"].ChildNodes[1].InnerText
+                    );
+                }
+                catch (Exception)
+                {
                 }
             }
 
-            return result;
+            return arguments;
         }
 
-        public string GetClosestArticle(string atr)
+        private string GetPageDescription(HtmlDocument htmlDocument)
         {
-            string article = atr;
-
             try
             {
-                article = WIKI_THREADS.First(a => a.ToLower() == atr.ToLower());
+                return htmlDocument.DocumentNode.SelectNodes("//div")
+                    .FirstOrDefault(n => n.HasClass("description")).InnerText;
+            }
+            catch (Exception)
+            {
+                return "Unknown Description";
+            }
+        }
+
+        private string GetPageCodeExample(HtmlDocument htmlDocument)
+        {
+            try
+            {
+                var codeExample = htmlDocument.DocumentNode.SelectNodes("//pre")
+                    .FirstOrDefault(n => n.HasClass("pawn")).InnerText;
+                
+                return HttpUtility.HtmlDecode(codeExample);
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+        
+        private string GetPageArguments(HtmlDocument htmlDocument)
+        {
+            try
+            {
+                return htmlDocument.DocumentNode.SelectNodes("//div")
+                    .FirstOrDefault(n => n.HasClass("parameters")).InnerText;
+            }
+            catch (Exception)
+            {
+                return "()";
+            }
+        }
+        
+        private bool IsValidWikiPage(string article, HtmlDocument htmlDocument)
+        {
+            try
+            {
+                return (htmlDocument.DocumentNode.SelectSingleNode("//h1").InnerText.ToLower() == article.ToLower()) 
+                       && (htmlDocument.DocumentNode.SelectNodes("//div")
+                           .FirstOrDefault(n => n.HasClass("scripting")) != null);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private string GetClosestArticleName(string article)
+        {
+            try
+            {
+                article = WikiThreads.First(a => a.ToLower() == article.ToLower());
             }
             catch (Exception)
             {
                 int minDistance = int.MaxValue;
-                foreach (string thread in WIKI_THREADS)
+                foreach (string thread in WikiThreads)
                 {
-                    int distance = StringHelper.ComputeLevenshteinDistance(atr.ToLower(), thread.ToLower());
-                    if ((distance <= 2) && (distance < minDistance))
+                    int distance = StringHelper.ComputeLevenshteinDistance(article.ToLower(), thread.ToLower());
+                    if ((distance <= 4) && (distance < minDistance))
                     {
                         article = thread;
                         minDistance = distance;
                     }
                 }
             }
-
             return article;
         }
     }

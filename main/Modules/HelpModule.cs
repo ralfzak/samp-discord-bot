@@ -22,8 +22,6 @@ namespace main.Modules
 
         [Command("help")]
         [Alias("cmds", "commands")]
-        [Name("help")]
-        [Summary("/help")]
         public async Task Help()
         {
             if (Context.Channel.Id != _adminChannelId)

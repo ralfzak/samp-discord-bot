@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace domain.Models
 {
@@ -87,6 +85,8 @@ namespace domain.Models
                     .HasColumnName("userid")
                     .HasColumnType("bigint(20)");
 
+                entity.Property(e => e.DeletedOn).HasColumnName("deleted_on");
+
                 entity.Property(e => e.ForumId)
                     .HasColumnName("forum_id")
                     .HasColumnType("int(11)");
@@ -104,6 +104,8 @@ namespace domain.Models
                 entity.Property(e => e.VerifiedOn)
                     .HasColumnName("verified_on")
                     .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                entity.HasQueryFilter(e => e.DeletedOn == null);
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -1,3 +1,4 @@
+using main.Core;
 using main.Services;
 using Xunit;
 
@@ -55,46 +56,46 @@ namespace test.Services
         public void Test_GetUserVerificationState_WithDifferentCacheEntries_ReturnsCorrectState()
         {
             var subject = Subject();
-            subject.SetUserVerificationState(1, VERIFICATION_STATES.WAITING_CONFIRM);
-            subject.SetUserVerificationState(2, VERIFICATION_STATES.WAITING_CONFIRM);
+            subject.SetUserVerificationState(1, VerificationStates.WaitingConfirm);
+            subject.SetUserVerificationState(2, VerificationStates.WaitingConfirm);
 
             var result = subject.GetUserVerificationState(1);
             
-            Assert.Equal(VERIFICATION_STATES.WAITING_CONFIRM, result);
+            Assert.Equal(VerificationStates.WaitingConfirm, result);
         }        
         
         [Fact]
         public void Test_GetUserVerificationState_WithNoCacheEntries_ReturnsStateNone()
         {
             var subject = Subject();
-            subject.SetUserVerificationState(1, VERIFICATION_STATES.WAITING_CONFIRM);
+            subject.SetUserVerificationState(1, VerificationStates.WaitingConfirm);
 
             var result = subject.GetUserVerificationState(2);
             
-            Assert.Equal(VERIFICATION_STATES.NONE, result);
+            Assert.Equal(VerificationStates.None, result);
         }        
         
         [Fact]
         public void Test_SetUserVerificationState_WithNoCacheEntries_AddsACacheValue()
         {
             var subject = Subject();
-            subject.SetUserVerificationState(1, VERIFICATION_STATES.WAITING_CONFIRM);
+            subject.SetUserVerificationState(1, VerificationStates.WaitingConfirm);
 
             var result = subject.GetUserVerificationState(1);
             
-            Assert.Equal(VERIFICATION_STATES.WAITING_CONFIRM, result);
+            Assert.Equal(VerificationStates.WaitingConfirm, result);
         }        
         
         [Fact]
         public void Test_SetUserVerificationState_WithExistingCacheEntry_UpdatesCacheValue()
         {
             var subject = Subject();
-            subject.SetUserVerificationState(1, VERIFICATION_STATES.NONE);
-            subject.SetUserVerificationState(1, VERIFICATION_STATES.WAITING_CONFIRM);
+            subject.SetUserVerificationState(1, VerificationStates.None);
+            subject.SetUserVerificationState(1, VerificationStates.WaitingConfirm);
 
             var result = subject.GetUserVerificationState(1);
             
-            Assert.Equal(VERIFICATION_STATES.WAITING_CONFIRM, result);
+            Assert.Equal(VerificationStates.WaitingConfirm, result);
         }
         
         [Fact]
@@ -149,19 +150,19 @@ namespace test.Services
             var subject = Subject();
             subject.SetUserForumId(1, 1);
             subject.SetUserToken(1, "1");
-            subject.SetUserVerificationState(1, VERIFICATION_STATES.WAITING_CONFIRM);
+            subject.SetUserVerificationState(1, VerificationStates.WaitingConfirm);
             subject.SetUserForumId(2, 2);
             subject.SetUserToken(2, "2");
-            subject.SetUserVerificationState(2, VERIFICATION_STATES.WAITING_CONFIRM);
+            subject.SetUserVerificationState(2, VerificationStates.WaitingConfirm);
             
             subject.ClearCache(1);
             
             Assert.Equal(-1, subject.GetUserForumId(1));
             Assert.Equal("", subject.GetUserToken(1));            
-            Assert.Equal(VERIFICATION_STATES.NONE, subject.GetUserVerificationState(1));            
+            Assert.Equal(VerificationStates.None, subject.GetUserVerificationState(1));            
             Assert.Equal(2, subject.GetUserForumId(2));
             Assert.Equal("2", subject.GetUserToken(2));
-            Assert.Equal(VERIFICATION_STATES.WAITING_CONFIRM, subject.GetUserVerificationState(2));
+            Assert.Equal(VerificationStates.WaitingConfirm, subject.GetUserVerificationState(2));
         }
         
         private CacheService Subject()

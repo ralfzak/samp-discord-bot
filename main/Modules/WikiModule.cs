@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using main.Services;
-using System.Linq;
 using main.Core;
+using main.Exceptions;
+using main.Models;
 
 namespace main.Modules
 {
@@ -30,14 +31,14 @@ namespace main.Modules
         }
 
         [Command("wiki")]
-        [Name("wiki")]
-        [Summary("/wiki")]
         public async Task Wiki(string input = "")
         {
             if (_userService.IsUserOnCooldown(Context.User.Id, "wiki"))
                 return;
 
-            if (Context.Channel.Id != _botChannelId && Context.Channel.Id != _adminChannelId && Context.Channel.Id != _scriptingChannelId)
+            if (Context.Channel.Id != _botChannelId && 
+                Context.Channel.Id != _adminChannelId && 
+                Context.Channel.Id != _scriptingChannelId)
             {
                 Context.User.SendMessageAsync($"This command only works on <#{_botChannelId}> and <#{_scriptingChannelId}>");
                 return;
@@ -50,74 +51,65 @@ namespace main.Modules
                 return;
             }
 
-            var article = _wikiService.GetClosestArticle(input);
-            var articleInfo = await _wikiService.GetInfoAsync(article);
-
-            if (ReferenceEquals(articleInfo, null))
+            WikiPageData articleData;
+            try
+            {
+                articleData = _wikiService.GetPageData(input);
+            }
+            catch (InvalidWikiPageException)
             {
                 var response = await ReplyAsync($"Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
                 _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
 
-            if (articleInfo.status == "article")
-            {
-                var response = await ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
-                _messageService.LogCommand(Context.Message.Id, response.Id);
-                return;
-            }
-
-            if (articleInfo.status != "ok")
-            {
-                var response = await ReplyAsync($"Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
-                _messageService.LogCommand(Context.Message.Id, response.Id);
-                return;
-            }
-
-            if (articleInfo.parameters == "" || articleInfo.description == "")
-            {
-                var response = await ReplyAsync($"Looks like a wiki article to me: https://wiki.sa-mp.com/wiki/{input}");
-                _messageService.LogCommand(Context.Message.Id, response.Id);
-                return;
-            }
-
-            string URL = $"https://wiki.sa-mp.com/wiki/{article}";
-            StringBuilder sbParam = new StringBuilder();
-            StringBuilder sbExample = new StringBuilder();
-
+            StringBuilder sbArguments = new StringBuilder();
             var builder = new EmbedBuilder()
-                .WithDescription(
-                    "```cpp" +
-                    "\n" +
-                    $"{article}{articleInfo.parameters}```\n{articleInfo.description}")
+                .WithDescription("```cpp" +
+                                 "\n" +
+                                 $"{articleData.Title}{articleData.Arguments}```" +
+                                 "\n" +
+                                 $"{articleData.Description}")
                 .WithColor(new Color(0xB34B00))
                 .WithAuthor(author => {
                     author
-                        .WithName($"SAMP Wiki - {article}")
-                        .WithUrl(URL)
+                        .WithName($"SAMP Wiki - {articleData.Title}")
+                        .WithUrl(articleData.Url)
                         .WithIconUrl("https://wiki.sa-mp.com/wroot/skins/common/images/wikilogo.gif");
                 });
 
-            if (articleInfo.param.Count() > 0)
+            if (articleData.ArgumentsDescriptions.Count > 0)
             {
-                foreach (var p in articleInfo.param)
+                foreach (var argument in articleData.ArgumentsDescriptions)
                 {
-                    var strToAdd = $"[{p.name}]({URL}): {p.desc}\n";
+                    var strToAdd = $"[{argument.Key}]({articleData.Url}): {argument.Value}\n";
 
-                    if (sbParam.Length + strToAdd.Length <= 1020)
-                        sbParam.Append(strToAdd);
+                    if (sbArguments.Length + strToAdd.Length <= 1020)
+                        sbArguments.Append(strToAdd);
                     else
                     {
-                        sbParam.Append("...");
+                        sbArguments.Append("...");
                         break;
                     }
                 }
 
-                builder.AddField("Parameters", sbParam.ToString().Replace("\n...", "..."));
+                builder.AddField(
+                    "Parameters", 
+                    sbArguments.ToString().Replace("\n...", "...")
+                    );
             }
 
-            var embed = builder.Build();
-            var responseMessage = await ReplyAsync(null, embed: embed);
+            if (articleData.CodeExample != string.Empty)
+            {
+                builder.AddField(
+                    "Sample", 
+                    "```cpp" +
+                    "\n" 
+                    + articleData.CodeExample +
+                    "\n```");
+            }
+
+            var responseMessage = await ReplyAsync(null, embed: builder.Build());
             _messageService.LogCommand(Context.Message.Id, responseMessage.Id);
 
             _userService.SetUserCooldown(Context.User.Id, "wiki", 15);

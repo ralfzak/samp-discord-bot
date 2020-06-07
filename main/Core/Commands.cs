@@ -19,22 +19,18 @@ namespace main.Core
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
         private readonly UserService _userService;
-        private readonly ulong _guildId;
-        private readonly ulong _adminChannelId;
+        private readonly MessageService _messageService;
 
-        public Commands(IServiceProvider services, Configuration configuration, UserService userService)
+        public Commands(IServiceProvider services, CommandService commands, DiscordSocketClient discord, MessageService messageService, UserService userService)
         {
             _services = services;
             _userService = userService;
-            _commands = services.GetRequiredService<CommandService>();
-            _discord = services.GetRequiredService<DiscordSocketClient>();
-            _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
-            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
+            _messageService = messageService;
+            _commands = commands;
+            _discord = discord;
 
             _commands.CommandExecuted += CommandExecutedAsync;
             _discord.MessageReceived += MessageReceivedAsync;
-
-            Logger.Write("Binded the commands events!");
         }
 
         public async Task InitializeAsync()
@@ -54,7 +50,7 @@ namespace main.Core
             if (!message.HasCharPrefix('/', ref argPos))
                 return;
 
-            if (_userService.IsUserOnCooldown(rawMessage.Author.Id, ""))
+            if (_userService.IsUserOnCooldown(rawMessage.Author.Id))
                 return;
 
             _userService.SetUserCooldown(rawMessage.Author.Id, "", 4);
@@ -70,24 +66,25 @@ namespace main.Core
             if (result.IsSuccess)
                 return;
 
-            // the command failed
             if (result.Error.Value == CommandError.BadArgCount || result.Error.Value == CommandError.ParseFailed)
             {
-                context.Channel.SendMessageAsync("Invalid command parameters. Check `/help`.");
+                var response = await context.Channel.SendMessageAsync("Invalid command parameters. Check `/help`.");
+                _messageService.LogCommand(context.Message.Id, response.Id);
             }
             else if (result.Error.Value == CommandError.UnmetPrecondition)
             {
-                context.Channel.SendMessageAsync(result.ErrorReason);
+                var response = await context.Channel.SendMessageAsync(result.ErrorReason);
+                _messageService.LogCommand(context.Message.Id, response.Id);
             }
             else if (result.Error.Value == CommandError.ObjectNotFound || 
                      result.Error.Value == CommandError.MultipleMatches)
             {
-                context.Channel.SendMessageAsync(result.ErrorReason);
+                var response = await context.Channel.SendMessageAsync(result.ErrorReason);
+                _messageService.LogCommand(context.Message.Id, response.Id);
             }
             else
             {
-                _discord.GetGuild(_guildId).GetTextChannel(_adminChannelId)
-                    .SendMessageAsync($"Failed cmd ({command.Value.Name}) by {context.User.Username} - error: [{result.Error.ToString()}] {result.ErrorReason}");
+                Logger.Write($"[{command.Value.Name}] Failed: {context.User.Username} - [{result.Error.ToString()}] {result.ErrorReason}");
             }
         }
     }
