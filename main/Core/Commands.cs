@@ -10,7 +10,7 @@ using System.Linq;
 using main.Helpers;
 using main.Services;
 
-namespace main.Core
+namespace domain
 {
     #pragma warning disable 4014,1998
     public class Commands
@@ -20,14 +20,18 @@ namespace main.Core
         private readonly IServiceProvider _services;
         private readonly UserService _userService;
         private readonly MessageService _messageService;
+        private readonly char _commandsPrefix;
 
-        public Commands(IServiceProvider services, CommandService commands, DiscordSocketClient discord, MessageService messageService, UserService userService)
+        public Commands(IServiceProvider services, CommandService commands, Configuration configuration, DiscordSocketClient discord, MessageService messageService, UserService userService)
         {
             _services = services;
             _userService = userService;
             _messageService = messageService;
             _commands = commands;
             _discord = discord;
+
+            var prefix = configuration.GetVariable("COMMANDS_PREFIX");
+            _commandsPrefix = prefix == "" ? '/' : prefix[0];
 
             _commands.CommandExecuted += CommandExecutedAsync;
             _discord.MessageReceived += MessageReceivedAsync;
@@ -47,7 +51,7 @@ namespace main.Core
                 return;
 
             var argPos = 0;
-            if (!message.HasCharPrefix('/', ref argPos))
+            if (!message.HasCharPrefix(_commandsPrefix, ref argPos))
                 return;
 
             if (_userService.IsUserOnCooldown(rawMessage.Author.Id))

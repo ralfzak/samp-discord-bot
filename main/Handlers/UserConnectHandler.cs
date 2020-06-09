@@ -1,4 +1,4 @@
-﻿using main.Core;
+﻿using domain;
 using main.Services;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;

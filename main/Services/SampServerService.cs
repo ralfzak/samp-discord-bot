@@ -3,8 +3,9 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Linq;
 using domain.Models;
-using main.Core;
+using domain;
 using main.Exceptions;
 
 namespace main.Services
@@ -20,7 +21,7 @@ namespace main.Services
         
         public (string ip, ushort port) ParseIpPort(string ipPort)
         {
-            string ip = string.Empty;
+            string ip = ipPort;
             string _port = "7777";
             if (ipPort.Contains(':'))
             {
@@ -45,17 +46,28 @@ namespace main.Services
 
             if (!ValidateIPv4(ip) && ValidateHostname(ip))
             {
-                IPAddress[] iPs = Dns.GetHostAddressesAsync(ip).Result;
-                if (iPs.Length == 0)
+                ip = GetDnsEntry(ip);
+                if (ip == string.Empty)
                 {
                     throw new InvalidIpParseException("Failed to find DNS entry");
                 }
-                ip = iPs[0].ToString();
             }
             
             return (ip, port);
         }
-        
+
+        private string GetDnsEntry(string ip)
+        {
+            try
+            {
+                return Dns.GetHostAddressesAsync(ip).Result[0].ToString();
+            }
+            catch (Exception)
+            {
+                return string.Empty;
+            }
+        }
+
         public SampServerData GetServerData(string ip, ushort port)
         {
             var generalInfo = SendAndReadPacketData(ip, port, (char)SampPackets.GeneralInfo, 2500);
@@ -83,7 +95,10 @@ namespace main.Services
         }
 
         private bool ValidateIPv4(string ip) =>
-            Uri.CheckHostName(ip) == UriHostNameType.IPv4;
+            Uri.CheckHostName(ip) == UriHostNameType.IPv4 &&
+            IPAddress.Parse(ip).AddressFamily == AddressFamily.InterNetwork &&
+            ip != string.Empty &&
+            ip.Count(i => i == '.') == 3;
 
         private bool ValidateHostname(string hostname) => 
             Uri.CheckHostName(hostname) == UriHostNameType.Dns;

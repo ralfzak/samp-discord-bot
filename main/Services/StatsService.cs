@@ -2,8 +2,8 @@
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using main.Core;
-using HttpClient = main.Core.HttpClient;
+using domain;
+using HttpClient = domain.HttpClient;
 
 namespace main.Services
 {
