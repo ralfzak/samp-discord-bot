@@ -1,5 +1,6 @@
 {
-  "BOT_TOKEN": "",
+  "BOT_TOKEN": "",  
+  "COMMANDS_PREFIX": "",
   "GUILD_ID": "",
   "MY_ID": "",
   "SCRIPTING_CHAN_ID": "",

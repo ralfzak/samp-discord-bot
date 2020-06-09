@@ -4,7 +4,7 @@ using main.Helpers;
 using Discord;
 using Discord.Commands;
 using main.Services;
-using main.Core;
+using domain;
 
 namespace main.Modules
 {

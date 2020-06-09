@@ -6,7 +6,7 @@ using main.Services;
 using main.Models;
 using System.Net;
 using domain.Models;
-using main.Core;
+using domain;
 using main.Exceptions;
 
 namespace main.Modules

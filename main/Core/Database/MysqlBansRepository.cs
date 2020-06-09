@@ -4,7 +4,7 @@ using domain.Models;
 using domain.Repo;
 using System.Linq;
 
-namespace main.Core.Db
+namespace domain.Database
 {
     /**
      * Persists [Bans] instances using [DatabaseContext].

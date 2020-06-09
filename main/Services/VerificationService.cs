@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using domain.Models;
 using domain.Repo;
-using main.Core;
+using domain;
 
 namespace main.Services
 {
@@ -52,9 +52,6 @@ namespace main.Services
 
         public void DeleteUserVerification(ulong userId) =>
             _verificationsRepository.DeleteByUserId(userId);
-        
-        private string GetForumProfileContentAsync(int profileId) => 
-            _httpClient.GetContent($"{Program.FORUM_PROFILE_URL}{profileId}");
 
         public string GetForumProfileNameIfContainsToken(int profileId, string token)
         {
@@ -66,6 +63,9 @@ namespace main.Services
 
         public string GetForumProfileName(int profileId) =>
             GetForumProfileNameFromContent(GetForumProfileContentAsync(profileId));
+        
+        private string GetForumProfileContentAsync(int profileId) => 
+            _httpClient.GetContent($"{Program.FORUM_PROFILE_URL}{profileId}");
         
         private string GetForumProfileNameFromContent(string content)
         {

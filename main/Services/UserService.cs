@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using domain.Models;
-using main.Core;
+using domain;
 
 namespace main.Services
 {
@@ -26,13 +26,13 @@ namespace main.Services
         public void SetUserCooldown(ulong userId, string cmd, int seconds)
         {
             string key = GetMapKey(userId, cmd);
-            long ticksUTC = (_timeProvider.UtcNow.AddSeconds(seconds).Ticks);
+            long ticksUtc = (_timeProvider.UtcNow.AddSeconds(seconds).Ticks);
 
             if (_cooldownMap.ContainsKey(key))
             {
-                _cooldownMap[key] = ticksUTC;
+                _cooldownMap[key] = ticksUtc;
             }
-            else _cooldownMap.Add(key, ticksUTC);
+            else _cooldownMap.Add(key, ticksUtc);
         }
 
         public bool IsUserOnCooldown(ulong userId, string cmd = "")

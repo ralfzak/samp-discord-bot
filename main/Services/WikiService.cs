@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Web;
 using HtmlAgilityPack;
-using main.Core;
+using domain;
 using main.Exceptions;
 using main.Helpers;
 using HttpClient = System.Net.Http.HttpClient;
@@ -94,7 +94,6 @@ namespace main.Services
         {
             article = GetClosestArticleName(article);
             var url = $"https://wiki.sa-mp.com/wiki/{article}";
-            Logger.Write(url);
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(
                 _httpClient.GetContent(url)
