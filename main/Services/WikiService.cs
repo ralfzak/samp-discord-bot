@@ -94,7 +94,6 @@ namespace main.Services
         {
             article = GetClosestArticleName(article);
             var url = $"https://wiki.sa-mp.com/wiki/{article}";
-            Logger.Write(url);
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(
                 _httpClient.GetContent(url)
