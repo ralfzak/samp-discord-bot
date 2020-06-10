@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using domain.Models;
-using domain.Repo;
-using domain;
+using main.Core.Models;
+using main.Core.Repo;
+using main.Core;
 
 namespace main.Services
 {
@@ -24,7 +24,6 @@ namespace main.Services
                 Name = name,
                 ByUserid = byuid,
                 ByName = byname,
-                IsExpired = "N",
                 ExpiresOn = _timeProvider.UtcNow.AddSeconds(secondsadd),
                 Reason = reason
             };

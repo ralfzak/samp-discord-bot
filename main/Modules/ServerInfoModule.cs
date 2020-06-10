@@ -5,8 +5,8 @@ using Discord.Commands;
 using main.Services;
 using main.Models;
 using System.Net;
-using domain.Models;
-using domain;
+using main.Core.Models;
+using main.Core;
 using main.Exceptions;
 
 namespace main.Modules
@@ -24,7 +24,6 @@ namespace main.Modules
         private readonly ulong _adminChannelId;
 
         public ServerInfoModule(
-            Configuration configuration, 
             UserService userService, 
             MessageService messageService, 
             SampServerService sampServerService)
@@ -32,8 +31,8 @@ namespace main.Modules
             _userService = userService;
             _messageService = messageService;
             _sampServerService = sampServerService;
-            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
-            _botChannelId = UInt64.Parse(configuration.GetVariable("BOT_CHAN_ID"));
+            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
+            _botChannelId = Configuration.GetVariable("Guild.BotCommandsChannelId");
         }
 
         [Command("server")]

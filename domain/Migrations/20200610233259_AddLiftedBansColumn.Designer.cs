@@ -2,22 +2,24 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using domain.Models;
+using main.Core.Models;
 
 namespace domain.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20200610233259_AddIsExpiredBansColumn")]
+    partial class AddIsExpiredBansColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("domain.Models.Bans", b =>
+            modelBuilder.Entity("main.Core.Models.Bans", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -44,13 +46,6 @@ namespace domain.Migrations
                         .HasColumnName("expires_on")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("IsExpired")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("is_expired")
-                        .HasColumnType("enum('Y','N')")
-                        .HasDefaultValueSql("'N'");
-
                     b.Property<string>("Name")
                         .HasColumnName("name")
                         .HasColumnType("varchar(256)")
@@ -75,7 +70,7 @@ namespace domain.Migrations
                     b.ToTable("bans");
                 });
 
-            modelBuilder.Entity("domain.Models.Verifications", b =>
+            modelBuilder.Entity("main.Core.Models.Verifications", b =>
                 {
                     b.Property<long>("Userid")
                         .ValueGeneratedOnAdd()

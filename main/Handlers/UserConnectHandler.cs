@@ -1,4 +1,4 @@
-﻿using domain;
+﻿using main.Core;
 using main.Services;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,13 +18,16 @@ namespace main.Handlers
         private readonly ulong _guildId;
         private readonly ulong _verifiedRoleId;
 
-        public UserConnectHandler(IServiceProvider services, Configuration configuration, CacheService cacheService, VerificationService verificationService)
+        public UserConnectHandler(
+            IServiceProvider services, 
+            CacheService cacheService, 
+            VerificationService verificationService)
         {
             _discord = services.GetRequiredService<DiscordSocketClient>();
             _verificationService = verificationService;
             _cacheService = cacheService;
-            _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
-            _verifiedRoleId = UInt64.Parse(configuration.GetVariable("VERIFIED_ROLE_ID"));
+            _guildId = Configuration.GetVariable("Guild.Id");
+            _verifiedRoleId = Configuration.GetVariable("Guild.VerifiedRoleId");
 
             _discord.UserJoined += OnUserJoinServer;
             _discord.UserLeft += OnUserLeaveServer;

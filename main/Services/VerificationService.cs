@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using domain.Models;
-using domain.Repo;
-using domain;
+using main.Core.Models;
+using main.Core.Repo;
+using main.Core;
 
 namespace main.Services
 {
@@ -12,11 +11,13 @@ namespace main.Services
     {
         private IVerificationsRepository _verificationsRepository;
         private IHttpClient _httpClient;
+        private readonly string _forumProfileUrl;
         
         public VerificationService(IVerificationsRepository verificationsRepository, IHttpClient httpClient)
         {
             _verificationsRepository = verificationsRepository;
             _httpClient = httpClient;
+            _forumProfileUrl = Configuration.GetVariable("Urls.Forum.Profile");
         }
 
         public List<ulong> GetUserIDsFromForumInfo(string forumInfo) =>
@@ -65,7 +66,7 @@ namespace main.Services
             GetForumProfileNameFromContent(GetForumProfileContentAsync(profileId));
         
         private string GetForumProfileContentAsync(int profileId) => 
-            _httpClient.GetContent($"{Program.FORUM_PROFILE_URL}{profileId}");
+            _httpClient.GetContent($"{_forumProfileUrl}{profileId}");
         
         private string GetForumProfileNameFromContent(string content)
         {

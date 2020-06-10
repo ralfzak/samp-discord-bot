@@ -1,4 +1,4 @@
-﻿namespace domain
+﻿namespace main.Core
 {
     public enum VerificationStates
     {

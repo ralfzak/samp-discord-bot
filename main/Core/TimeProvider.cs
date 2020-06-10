@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace domain
+namespace main.Core
 {
     public interface ITimeProvider
     {

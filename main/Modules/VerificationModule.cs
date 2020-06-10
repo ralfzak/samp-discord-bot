@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using main.Services;
-using main.Helpers;
+using main.Utils;
 using Discord.WebSocket;
-using domain;
+using main.Core;
 
 namespace main.Modules
 {
@@ -20,17 +20,23 @@ namespace main.Modules
         private readonly ulong _myId;
         private readonly ulong _adminChannelId;
         private readonly ulong _verifiedRoleId;
+        private readonly string _forumProfileUrl;
 
-        public VerificationModule(Configuration configuration, UserService userService, CacheService cacheService, VerificationService verificationService, MessageService messageService)
+        public VerificationModule(
+            UserService userService, 
+            CacheService cacheService,
+            VerificationService verificationService, 
+            MessageService messageService)
         {
             _userService = userService;
             _cacheService = cacheService;
             _messageService = messageService;
             _verificationService = verificationService;
-            _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
-            _myId = UInt64.Parse(configuration.GetVariable("MY_ID"));
-            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
-            _verifiedRoleId = UInt64.Parse(configuration.GetVariable("VERIFIED_ROLE_ID"));
+            _guildId = Configuration.GetVariable("Guild.Id");
+            _myId = Configuration.GetVariable("Bot.Id");
+            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
+            _verifiedRoleId = Configuration.GetVariable("Guild.VerifiedRoleId");
+            _forumProfileUrl = Configuration.GetVariable("Urls.Forum.Profile");
         }
 
         [Command("verify")]
@@ -48,7 +54,7 @@ namespace main.Modules
             if (Context.Guild != null)
             {
                 Context.Message.DeleteAsync();
-                user.SendMessageAsync(MessageHelper.GetVerificationCmdDescription(user.Mention));
+                user.SendMessageAsync(StringConstants.GetVerificationCmdDescription(user.Mention));
                 return;
             }
 
@@ -71,7 +77,9 @@ namespace main.Modules
 
                     int cachedProfile = _cacheService.GetUserForumId(user.Id);
                     string cachedToken = _cacheService.GetUserToken(user.Id);
-                    if (cachedProfile == -1 || cachedToken == "" || userVerificationState != VerificationStates.WaitingConfirm)
+                    if (cachedProfile == -1 
+                        || cachedToken == "" 
+                        || userVerificationState != VerificationStates.WaitingConfirm)
                     {
                         _cacheService.ClearCache(user.Id);
                         ReplyAsync("Your verification process hasn't been initiated, type `/verify` to start your verification process.");
@@ -97,14 +105,18 @@ namespace main.Modules
                     }
 
                     _cacheService.ClearCache(user.Id);
-                    _verificationService.StoreUserVerification(user.Id, cachedProfile, forumName, user.Username);
+                    _verificationService.StoreUserVerification(
+                        user.Id, 
+                        cachedProfile, 
+                        forumName, 
+                        user.Username);
 
                     var discordServer = Context.Client.GetGuild(_guildId);
                     discordServer
                         .GetTextChannel(_adminChannelId)
-                        .SendMessageAsync($"{guildUser.Mention} ({guildUser.Username}) has successfully verified to **{forumName}** <{Program.FORUM_PROFILE_URL}{cachedProfile}>");
+                        .SendMessageAsync($"{guildUser.Mention} ({guildUser.Username}) has successfully verified to **{forumName}** <{_forumProfileUrl}{cachedProfile}>");
 
-                    ReplyAsync(MessageHelper.GetVerificationSuccessMessage(user.Mention, cachedProfile));
+                    ReplyAsync(StringConstants.GetVerificationSuccessMessage(user.Mention, cachedProfile));
 
                     guildUser.AddRoleAsync(discordServer.GetRole(_verifiedRoleId));
                     break;
@@ -129,14 +141,14 @@ namespace main.Modules
 
                     if (option == string.Empty)
                     {
-                        ReplyAsync(MessageHelper.GetVerificationCmdDescription(user.Mention));
+                        ReplyAsync(StringConstants.GetVerificationCmdDescription(user.Mention));
                         return;
                     }
 
                     int profile_id = -1;
                     if (!Int32.TryParse(option, out profile_id))
                     {
-                        ReplyAsync(MessageHelper.GetVerificationCmdDescription(user.Mention));
+                        ReplyAsync(StringConstants.GetVerificationCmdDescription(user.Mention));
                         return;
                     }
 
@@ -159,7 +171,7 @@ namespace main.Modules
                     _cacheService.SetUserToken(user.Id, token);
                     _cacheService.SetUserForumId(user.Id, profile_id);
 
-                    ReplyAsync(MessageHelper.GetVerificationWaitingMessage(user.Mention, profile_id, token));
+                    ReplyAsync(StringConstants.GetVerificationWaitingMessage(user.Mention, profile_id, token));
                     break;
             }
         }
@@ -171,7 +183,7 @@ namespace main.Modules
 
             if (Context.Guild == null)
             {
-                ReplyAsync(MessageHelper.CommandServerOnly);
+                ReplyAsync(StringConstants.CommandServerOnly);
                 return;
             }
 
@@ -207,7 +219,8 @@ namespace main.Modules
                 return;
             }
 
-            var responseMessage = await ReplyAsync($"{guildUser.Mention} is **{profileName}**: {Program.FORUM_PROFILE_URL}{profileid}");
+            var responseMessage = 
+                await ReplyAsync($"{guildUser.Mention} is **{profileName}**: {_forumProfileUrl}{profileid}");
             _messageService.LogCommand(Context.Message.Id, responseMessage.Id);
         }
 
@@ -239,7 +252,7 @@ namespace main.Modules
                 string profileName = "";
                 _verificationService.GetUserForumProfileId(uid, out profileid, out profileName);
 
-                ReplyAsync($"**{profileName}** ({Program.FORUM_PROFILE_URL}{profileid}) is <@{uid}>");
+                ReplyAsync($"**{profileName}** ({_forumProfileUrl}{profileid}) is <@{uid}>");
             }
         }
         
@@ -274,7 +287,7 @@ namespace main.Modules
             string forumName = "";
             if ( (forumid != 0) && _verificationService.IsForumProfileLinked(forumid) )
             {
-                ReplyAsync($"Forum ID <{Program.FORUM_PROFILE_URL}{forumid}> is already linked to a user.");
+                ReplyAsync($"Forum ID <{_forumProfileUrl}{forumid}> is already linked to a user.");
                 return;
             }
             

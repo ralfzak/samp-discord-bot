@@ -1,14 +1,34 @@
 {
-  "BOT_TOKEN": "",  
-  "COMMANDS_PREFIX": "",
-  "GUILD_ID": "",
-  "MY_ID": "",
-  "SCRIPTING_CHAN_ID": "",
-  "BOT_CHAN_ID": "",
-  "ADMIN_CHAN_ID": "",
-  "VERIFIED_ROLE_ID": "",
-  "DB_SERVER": "",
-  "DB_DB": "",
-  "DB_USER": "",
-  "DB_PASS": ""
+  "Bot": {
+    "Token": "",
+    "Id": 0
+  },
+  "Guild": {
+    "Id": 0,
+    "ScriptingChannelId": 0,
+    "BotCommandsChannelId": 0,
+    "AdminChannelId": 0,
+    "VerifiedRoleId": 0
+  },
+  "CommandPrefix": "/",
+  "Database": {
+    "Host": "",
+    "Schema": "",
+    "User": "",
+    "Password": ""
+  },
+  "Urls": {
+    "Samp": {
+      "Website": "https://sa-mp.com",
+      "HostedTabProvider": "https://game-mp.com"
+    },
+    "Forum": {
+      "Profile": "https://forum.sa-mp.com/member.php?u=",
+      "Settings": "http://forum.sa-mp.com/profile.php?do=privacy"
+    },
+    "Wiki": {
+      "Docs": "https://wiki.sa-mp.com/wiki/",
+      "Search": "https://wiki.sa-mp.com/wiki/Special:Search?search="
+    }
+  }
 }

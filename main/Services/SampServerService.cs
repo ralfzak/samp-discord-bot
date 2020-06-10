@@ -4,8 +4,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Linq;
-using domain.Models;
-using domain;
+using main.Core.Models;
+using main.Core;
 using main.Exceptions;
 
 namespace main.Services
@@ -13,10 +13,12 @@ namespace main.Services
     public class SampServerService
     {
         private readonly IHttpClient _httpClient;
+        private readonly string _hostedTabListUrl;
         
         public SampServerService(IHttpClient httpClient)
         {
             _httpClient = httpClient;
+            _hostedTabListUrl = Configuration.GetVariable("Urls.Samp.HostedTabProvider");
         }
         
         public (string ip, ushort port) ParseIpPort(string ipPort)
@@ -104,7 +106,7 @@ namespace main.Services
             Uri.CheckHostName(hostname) == UriHostNameType.Dns;
         
         private bool IsOnHostedTab(string ip, ushort port) =>
-            _httpClient.GetContent("http://game-mp.com/").Contains($"{ip}:{port}");
+            _httpClient.GetContent(_hostedTabListUrl).Contains($"{ip}:{port}");
         
         private Dictionary<string, string> SendAndReadPacketData(
             string ip,

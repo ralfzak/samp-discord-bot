@@ -7,10 +7,10 @@ using Discord.Commands;
 using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
-using main.Helpers;
+using main.Utils;
 using main.Services;
 
-namespace domain
+namespace main.Core
 {
     #pragma warning disable 4014,1998
     public class Commands
@@ -22,16 +22,20 @@ namespace domain
         private readonly MessageService _messageService;
         private readonly char _commandsPrefix;
 
-        public Commands(IServiceProvider services, CommandService commands, Configuration configuration, DiscordSocketClient discord, MessageService messageService, UserService userService)
+        public Commands(
+            IServiceProvider services, 
+            CommandService commands,
+            DiscordSocketClient discord, 
+            MessageService messageService, 
+            UserService userService)
         {
             _services = services;
             _userService = userService;
             _messageService = messageService;
             _commands = commands;
             _discord = discord;
-
-            var prefix = configuration.GetVariable("COMMANDS_PREFIX");
-            _commandsPrefix = prefix == "" ? '/' : prefix[0];
+            
+            _commandsPrefix = Configuration.GetVariable("CommandPrefix") ?? '/';
 
             _commands.CommandExecuted += CommandExecutedAsync;
             _discord.MessageReceived += MessageReceivedAsync;

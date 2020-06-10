@@ -1,7 +1,7 @@
 ﻿using System;
-using domain;
-using domain.Models;
-using domain.Repo;
+using main.Core;
+using main.Core.Models;
+using main.Core.Repo;
 using main.Services;
 using Moq;
 using Xunit;
@@ -25,7 +25,6 @@ namespace test.Services
                 ByUserid = 1,
                 ByName = "any",
                 ExpiresOn = null,
-                IsExpired = "N",
                 Reason = "any",
                 BannedOn = time
             };
@@ -53,7 +52,6 @@ namespace test.Services
                 ByUserid = 1,
                 ByName = "any",
                 ExpiresOn = time.AddSeconds(secondsToAdd),
-                IsExpired = "N",
                 Reason = "any",
                 BannedOn = time
             };

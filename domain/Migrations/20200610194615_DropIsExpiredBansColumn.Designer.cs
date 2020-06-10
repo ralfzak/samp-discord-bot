@@ -9,8 +9,8 @@ using main.Core.Models;
 namespace domain.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200607155258_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20200610194615_DropIsExpiredBansColumn")]
+    partial class DropIsExpiredBansColumn
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

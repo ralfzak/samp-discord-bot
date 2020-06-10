@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using domain.Models;
-using domain.Repo;
 using System.Linq;
+using main.Core.Models;
+using main.Core.Repo;
 
-namespace domain.Database
+namespace main.Core.Database
 {
     /**
      * Persists [Bans] instances using [DatabaseContext].
@@ -41,11 +41,13 @@ namespace domain.Database
 
         public List<Bans> GetBans(string criteria) =>
             (UInt64.TryParse(criteria, out ulong searchId)) 
-                ? _databaseContext.Bans.Where(b => b.Userid == searchId && b.ExpiresOn == null).ToList() 
-                : _databaseContext.Bans.Where(b => b.Name.Contains(criteria) && b.ExpiresOn == null).ToList();
+                ? _databaseContext.Bans.Where(b => b.Userid == searchId).ToList() 
+                : _databaseContext.Bans.Where(b => b.Name.Contains(criteria)).ToList();
         
         public List<Bans> GetExpiredBans() => 
-            _databaseContext.Bans.Where(b => b.ExpiresOn != null && b.ExpiresOn < _timeProvider.UtcNow)
+            _databaseContext.Bans.Where(b => b.ExpiresOn != null && 
+                                             b.ExpiresOn < _timeProvider.UtcNow &&
+                                             b.Lifted == 0)
                 .ToList();
     }
 }

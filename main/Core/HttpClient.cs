@@ -1,7 +1,7 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace domain
+namespace main.Core
 {
     /**
      * Responsible for handling HTTP(s) calls.
@@ -14,7 +14,7 @@ namespace domain
         string GetContent(string url);
     }
     
-    public partial class HttpClient : IHttpClient
+    public class HttpClient : IHttpClient
     {
         public string GetContent(string url)
         {

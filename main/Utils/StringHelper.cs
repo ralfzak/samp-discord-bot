@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace main.Helpers
+namespace main.Utils
 {
     public static class StringHelper
     {
@@ -37,7 +37,6 @@ namespace main.Helpers
         public static string GenerateRandom(int length)
         {
             Random random = new Random();
-
             return 
                 new string(
                     Enumerable.Repeat("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", length)

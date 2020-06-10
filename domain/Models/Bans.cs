@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace domain.Models
+namespace main.Core.Models
 {
     public partial class Bans
     {
@@ -11,8 +11,8 @@ namespace domain.Models
         public ulong ByUserid { get; set; }
         public string ByName { get; set; }
         public DateTime? ExpiresOn { get; set; }
-        public string IsExpired { get; set; }
         public string Reason { get; set; }
         public DateTimeOffset BannedOn { get; set; }
+        public short Lifted { get; set; }
     }
 }

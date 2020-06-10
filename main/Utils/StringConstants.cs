@@ -1,6 +1,8 @@
-namespace main.Helpers
+using main.Core;
+
+namespace main.Utils
 {
-    public static class MessageHelper
+    public static class StringConstants
     {
         public const string UserNotFound = "User not found.";
         public const string CommandServerOnly = "This only works on the server.";
@@ -17,7 +19,7 @@ namespace main.Helpers
                    "\n" +
                    "**EXAMPLE OF USAGE**" +
                    "\n" +
-                   $"Lets assume your profile URL is *<{Program.FORUM_PROFILE_URL}218502>*" +
+                   $"Lets assume your profile URL is *<{Configuration.GetVariable("Urls.Forum.Profile")}218502>*" +
                    "\n" +
                    "Then your profile ID will be *218502*" +
                    "\n" +
@@ -38,14 +40,14 @@ namespace main.Helpers
             return $"Thanks {mention}! The verification process has been initiated. All you have to do now is to paste the below token in your profile biography and type `/verify done` so I can have a quick look over it to verify you." +
                    "\n" +
                    "\n" +
-                   $"Profile URL: {Program.FORUM_PROFILE_URL}{profileid}" +
+                   $"Profile URL: {Configuration.GetVariable("Urls.Forum.Profile")}{profileid}" +
                    "\n" +
                    $"Token: **{token}**" +
                    "\n" +
                    "\n" +
                    $"You can edit profile biography here: <http://forum.sa-mp.com/profile.php?do=editprofile> in the 'Additional Information' section at the end of the page." +
                    "\n" +
-                   $"Please make sure your \"About Me\" profile section is visible to *Everyone* so I can see it.  You can change this setting here: <http://forum.sa-mp.com/profile.php?do=privacy>" +
+                   $"Please make sure your \"About Me\" profile section is visible to *Everyone* so I can see it.  You can change this setting here: <{Configuration.GetVariable("Urls.Forum.Settings")}>" +
                    "\n" +
                    "\n" +
                    "Facing trouble? Ask for help on Discord!";
@@ -56,7 +58,7 @@ namespace main.Helpers
             return $"Good work {mention}! You have completed your verification process and now verified on the SAMP discord server." +
                    "\n" +
                    "\n" +
-                   $"Linked Forum Profile: {Program.FORUM_PROFILE_URL}{profileid}" +
+                   $"Linked Forum Profile: {Configuration.GetVariable("Urls.Forum.Profile")}{profileid}" +
                    "\n" +
                    "\n" +
                    "Congratulations. It was pleasure doing business with you." +
