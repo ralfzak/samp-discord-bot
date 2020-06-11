@@ -9,4 +9,4 @@ install:
 
 script:
 - dotnet build --no-restore
-- dotnet test
+- dotnet test --collect:"XPlat Code Coverage" 
