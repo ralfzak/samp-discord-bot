@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using domain.Models;
 using System.Linq;
+using domain.Models;
 using domain.Repo;
 
-namespace domain.Database
+namespace main.Core.Database
 {
+    /**
+     * Persists [Verifications] instances using [DatabaseContext].
+     */
     public partial class MysqlVerificationsRepository : IVerificationsRepository
     {
         private readonly DatabaseContext _databaseContext;

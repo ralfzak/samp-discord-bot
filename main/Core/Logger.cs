@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace domain
+namespace main.Core
 {
     class Logger
     {

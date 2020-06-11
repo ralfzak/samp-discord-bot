@@ -1,10 +1,10 @@
-﻿using System;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using main.Helpers;
+using main.Utils;
 using Discord;
 using Discord.Commands;
 using main.Services;
-using domain;
+using main.Core;
 
 namespace main.Modules
 {
@@ -15,15 +15,20 @@ namespace main.Modules
         private readonly BanningService _banningService;
         private readonly ulong _adminChannelId;
 
-        public BanningModule(ITimeProvider timeProvider, Configuration configuration, BanningService banningService)
+        public BanningModule(ITimeProvider timeProvider, BanningService banningService)
         {
             _timeProvider = timeProvider;
             _banningService = banningService;
-            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
+            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
         }
 
         [Command("ban")]
-        public async Task Ban(IUser user = null, int days = 0, int hours = 0, int sendMessageToUser = 0, [RemainderAttribute]string reason = MessageHelper.NoReasonGiven)
+        public async Task Ban(
+            IUser user = null, 
+            int days = 0, 
+            int hours = 0,
+            int sendMessageToUser = 0,
+            [RemainderAttribute]string reason = StringConstants.NoReasonGiven)
         {
             if (Context.Channel.Id != _adminChannelId)
                 return;
@@ -41,7 +46,7 @@ namespace main.Modules
             var guildUser = Context.Guild.GetUser(user.Id);
             if (guildUser == null)
             {
-                ReplyAsync(MessageHelper.UserNotFound);
+                ReplyAsync(StringConstants.UserNotFound);
                 return;
             }
 
@@ -144,7 +149,7 @@ namespace main.Modules
                 return;
             }
 
-            foreach (var ban in bans)
+            foreach (var ban in bans.Where(b => b.Lifted == 0))
             {
                 if (ban.ExpiresOn != null) 
                 {

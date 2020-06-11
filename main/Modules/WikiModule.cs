@@ -1,12 +1,11 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using domain.Models;
 using main.Services;
-using domain;
+using main.Core;
 using main.Exceptions;
-using main.Models;
 
 namespace main.Modules
 {
@@ -19,15 +18,17 @@ namespace main.Modules
         private readonly ulong _botChannelId;
         private readonly ulong _adminChannelId;
         private readonly ulong _scriptingChannelId;
+        private readonly string _wikiSearchUrl;
 
-        public WikiModule(Configuration configuration, UserService userService, WikiService wikiService, MessageService messageService)
+        public WikiModule(UserService userService, WikiService wikiService, MessageService messageService)
         {
             _userService = userService;
             _wikiService = wikiService;
             _messageService = messageService;
-            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
-            _botChannelId = UInt64.Parse(configuration.GetVariable("BOT_CHAN_ID"));
-            _scriptingChannelId = UInt64.Parse(configuration.GetVariable("SCRIPTING_CHAN_ID"));
+            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
+            _botChannelId = Configuration.GetVariable("Guild.BotCommandsChannelId");
+            _scriptingChannelId = Configuration.GetVariable("Guild.ScriptingChannelId");
+            _wikiSearchUrl = Configuration.GetVariable("Urls.Wiki.Seach");
         }
 
         [Command("wiki")]
@@ -58,7 +59,7 @@ namespace main.Modules
             }
             catch (InvalidWikiPageException)
             {
-                var response = await ReplyAsync($"Sorry! I haven't found any similar matches. Try the wiki search: <https://wiki.sa-mp.com/wiki/Special:Search?search={input}>");
+                var response = await ReplyAsync($"Sorry! I haven't found any similar matches. Try the wiki search: <{_wikiSearchUrl}{input}>");
                 _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }

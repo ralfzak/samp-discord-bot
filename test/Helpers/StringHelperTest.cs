@@ -1,4 +1,4 @@
-﻿using main.Helpers;
+﻿using main.Utils;
 using Xunit;
 
 namespace test.Helpers

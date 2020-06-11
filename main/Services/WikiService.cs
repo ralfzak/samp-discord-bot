@@ -1,18 +1,12 @@
-﻿using main.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Web;
+using domain.Models;
 using HtmlAgilityPack;
-using domain;
+using main.Core;
 using main.Exceptions;
-using main.Helpers;
-using HttpClient = System.Net.Http.HttpClient;
+using main.Utils;
 
 namespace main.Services
 {
@@ -84,16 +78,18 @@ namespace main.Services
         };
 
         private readonly IHttpClient _httpClient;
+        private readonly string _wikiUrl;
         
         public WikiService(IHttpClient httpClient)
         {
             _httpClient = httpClient;
+            _wikiUrl = Configuration.GetVariable("Urls.Wiki.Docs");
         }
         
         public WikiPageData GetPageData(string article)
         {
             article = GetClosestArticleName(article);
-            var url = $"https://wiki.sa-mp.com/wiki/{article}";
+            var url = $"{_wikiUrl}{article}";
             var htmlDocument = new HtmlDocument();
             htmlDocument.LoadHtml(
                 _httpClient.GetContent(url)
@@ -205,7 +201,7 @@ namespace main.Services
                 foreach (string thread in WikiThreads)
                 {
                     int distance = StringHelper.ComputeLevenshteinDistance(article.ToLower(), thread.ToLower());
-                    if ((distance <= 4) && (distance < minDistance))
+                    if ((distance <= 2) && (distance < minDistance))
                     {
                         article = thread;
                         minDistance = distance;

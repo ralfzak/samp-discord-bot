@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using domain.Models;
 using domain.Repo;
-using System.Linq;
 
-namespace domain.Database
+namespace main.Core.Database
 {
     /**
      * Persists [Bans] instances using [DatabaseContext].
@@ -33,7 +33,7 @@ namespace domain.Database
             if (ban == null)
                 return;
             
-            ban.ExpiresOn = _timeProvider.UtcNow;
+            ban.Lifted = 1;
             _databaseContext.Bans.Update(ban);
             _databaseContext.SaveChangesAsync();
             Logger.Write($"[DeleteByUserId - Bans] {userId}");
@@ -41,11 +41,13 @@ namespace domain.Database
 
         public List<Bans> GetBans(string criteria) =>
             (UInt64.TryParse(criteria, out ulong searchId)) 
-                ? _databaseContext.Bans.Where(b => b.Userid == searchId && b.ExpiresOn == null).ToList() 
-                : _databaseContext.Bans.Where(b => b.Name.Contains(criteria) && b.ExpiresOn == null).ToList();
+                ? _databaseContext.Bans.Where(b => b.Userid == searchId).ToList() 
+                : _databaseContext.Bans.Where(b => b.Name.Contains(criteria)).ToList();
         
         public List<Bans> GetExpiredBans() => 
-            _databaseContext.Bans.Where(b => b.ExpiresOn != null && b.ExpiresOn < _timeProvider.UtcNow)
+            _databaseContext.Bans.Where(b => b.ExpiresOn != null && 
+                                             b.ExpiresOn < _timeProvider.UtcNow &&
+                                             b.Lifted == 0)
                 .ToList();
     }
 }

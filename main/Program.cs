@@ -4,22 +4,19 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using domain.Models;
+using domain.Repo;
 using main.Services;
 using main.Modules;
-using domain;
+using main.Core;
 using main.Handlers;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
-using domain.Repo;
-using domain.Database;
+using main.Core.Database;
 
 namespace main
 {
     class Program
     {
-        public static string FORUM_PROFILE_URL = "https://forum.sa-mp.com/member.php?u=";
-
-        static void Main(string[] args)
+        static void Main(string[] args)  
         {
             new Program().MainAsync().GetAwaiter().GetResult();
         }
@@ -28,16 +25,16 @@ namespace main
         {
             using (var services = ConfigureServices())
             {
+                services.GetRequiredService<DatabaseContext>().Database.Migrate();
+                
                 var client = services.GetRequiredService<DiscordSocketClient>();
-                var configuration = services.GetRequiredService<Configuration>();
-
-                services.GetRequiredService<DatabaseContext>().Database.GetDbConnection().ConnectionString = 
-                    BuildDbConnectionString(configuration);
-
+                
                 client.Log += LogAsync;
                 services.GetRequiredService<CommandService>().Log += LogAsync;
 
-                await client.LoginAsync(TokenType.Bot, configuration.GetVariable("BOT_TOKEN"));
+                string token = Configuration.GetVariable("Bot.Token");
+                await client.LoginAsync(TokenType.Bot, token);
+                
                 await client.StartAsync();
 
                 await services.GetRequiredService<Commands>().InitializeAsync();
@@ -50,22 +47,7 @@ namespace main
                 await Task.Delay(-1);
             }
         }
-
-        private string BuildDbConnectionString(Configuration configuration)
-        {
-            return $"server={configuration.GetVariable("DB_SERVER")};" +
-                   $"database={configuration.GetVariable("DB_DB")};" +
-                   $"user={configuration.GetVariable("DB_USER")};" +
-                   $"password={configuration.GetVariable("DB_PASS")};" +
-                   $"port=3306;";
-        }
-
-        private Task LogAsync(LogMessage log)
-        {
-            Logger.Write(log.ToString());
-            return Task.CompletedTask;
-        }
-
+        
         private ServiceProvider ConfigureServices()
         {
             return new ServiceCollection()
@@ -73,14 +55,16 @@ namespace main
                 {
                     MessageCacheSize = 150
                 }))
-                .AddDbContext<DatabaseContext>()
+                .AddDbContext<DatabaseContext>(options =>
+                {
+                    options.UseMySQL(DbConnectionString());
+                })
                 .AddSingleton<IBansRepository, MysqlBansRepository>()
                 .AddSingleton<IVerificationsRepository, MysqlVerificationsRepository>()
                 
                 .AddSingleton<ITimeProvider, CurrentTimeProvider>()
                 .AddSingleton<IHttpClient, HttpClient>()
                 .AddSingleton<CommandService>()
-                .AddSingleton<Configuration>()
                 .AddSingleton<Commands>()
 
                 .AddSingleton<BanningHandler>()
@@ -104,6 +88,21 @@ namespace main
                 .AddSingleton<WikiService>()
 
                 .BuildServiceProvider();
+        }
+        
+        private string DbConnectionString()
+        {
+            return $"server={Configuration.GetVariable("Database.Host")};" +
+                   $"database={Configuration.GetVariable("Database.Schema")};" +
+                   $"user={Configuration.GetVariable("Database.User")};" +
+                   $"password={Configuration.GetVariable("Database.Password")};" +
+                   "port=3306;";
+        }
+
+        private Task LogAsync(LogMessage log)
+        {
+            Logger.Write(log.ToString());
+            return Task.CompletedTask;
         }
     }
 }

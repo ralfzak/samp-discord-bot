@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using domain.Models;
-using domain;
+using main.Core;
 
 namespace main.Services
 {

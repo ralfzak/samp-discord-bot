@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.WebSocket;
 using System.Linq;
-using domain;
-using main.Helpers;
+using main.Core;
+using main.Utils;
 using Discord;
 using Discord.Rest;
 using System.Threading;
@@ -21,13 +21,13 @@ namespace main.Handlers
         private readonly ulong _adminChannelId;
         private Timer _banTimer;
 
-        public BanningHandler(IServiceProvider services, Configuration configuration, BanningService banningService)
+        public BanningHandler(IServiceProvider services, BanningService banningService)
         {
             _discord = services.GetRequiredService<DiscordSocketClient>();
             _banningService = banningService;
-            _guildId = UInt64.Parse(configuration.GetVariable("GUILD_ID"));
-            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
-            _banTimer = new Timer(OnBanCheckAsync, null, 60000, 600000);
+            _guildId = Configuration.GetVariable("Guild.Id");
+            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
+            _banTimer = new Timer(OnBanCheckAsync, null, 10000, 600000);
 
             _discord.UserBanned += OnUserBanned;
             _discord.UserUnbanned += OnUserUnbanned;
@@ -42,7 +42,7 @@ namespace main.Handlers
         {
             var banData = server.GetBanAsync(user.Id);
             var banningUser = GetBanningUserFromAuditLog(server, user.Id);
-            var banReason = banData.Result.Reason ?? MessageHelper.NoReasonGiven;
+            var banReason = banData.Result.Reason ?? StringConstants.NoReasonGiven;
             
             _banningService.StoreBan(
                 banData.Result.User.Id, 

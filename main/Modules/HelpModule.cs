@@ -1,6 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using domain;
+﻿using System.Threading.Tasks;
+using main.Core;
 using Discord;
 using Discord.Commands;
 
@@ -12,12 +11,14 @@ namespace main.Modules
         private readonly ulong _adminChannelId;
         private readonly ulong _botChannelId;
         private readonly ulong _scriptingChannelId;
+        private readonly string _websiteUrl;
 
-        public HelpModule(Configuration configuration)
+        public HelpModule()
         {
-            _adminChannelId = UInt64.Parse(configuration.GetVariable("ADMIN_CHAN_ID"));
-            _botChannelId = UInt64.Parse(configuration.GetVariable("BOT_CHAN_ID"));
-            _scriptingChannelId = UInt64.Parse(configuration.GetVariable("SCRIPTING_CHAN_ID"));
+            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
+            _botChannelId = Configuration.GetVariable("Guild.BotCommandsChannelId");
+            _scriptingChannelId = Configuration.GetVariable("Guild.ScriptingChannelId");
+            _websiteUrl = Configuration.GetVariable("Urls.OfficialWebsite");
         }
 
         [Command("help")]
@@ -42,32 +43,32 @@ namespace main.Modules
                 .WithDescription("List of general server commands that I respond to:")
                 .WithColor(new Color(0xD0021B))
                 .AddField("/verify",
-                    "[**Parameters:**](https://forum.sa-mp.com/) <profile_id/done/cancel>" +
+                    $"[**Parameters:**]({_websiteUrl}) <profile_id/done/cancel>" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) Links your discord account with a SAMP forum account using a simple verification process." +
+                    $"[**Info:**]({_websiteUrl}) Links your discord account with a SAMP forum account using a simple verification process." +
                     "\n" +
-                    "[**Availability:**](https://forum.sa-mp.com/) As a direct message.")
+                    $"[**Availability:**]({_websiteUrl}) As a direct message.")
                 
                 .AddField("/whois",
-                    "[**Parameters:**](https://forum.sa-mp.com/) [@]<user>" +
+                    $"[**Parameters:**]({_websiteUrl}) [@]<user>" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) This command looks up SAMP forum profiles of given linked discord accounts." +
+                    $"[**Info:**]({_websiteUrl}) This command looks up SAMP forum profiles of given linked discord accounts." +
                     "\n" +
-                    "[**Availability:**](https://forum.sa-mp.com/) On the discord server where I am available.")
+                    $"[**Availability:**]({_websiteUrl}) On the discord server where I am available.")
 
                 .AddField("/server, /srv",
-                    "[**Parameters:**](https://forum.sa-mp.com/) <ip/hostname>[:port]" +
+                    $"[**Parameters:**]({_websiteUrl}) <ip/hostname>[:port]" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) This command fetches SAMP server data for a given server." +
+                    $"[**Info:**]({_websiteUrl}) This command fetches SAMP server data for a given server." +
                     "\n" +
-                    $"[**Availability:**](https://forum.sa-mp.com/) Only on <#{_botChannelId}>.")
+                    $"[**Availability:**]({_websiteUrl}) Only on <#{_botChannelId}>.")
 
             .AddField("/wiki",
-                    "[**Parameters:**](https://forum.sa-mp.com/) <callback/function/article>" +
+                    $"[**Parameters:**]({_websiteUrl}) <callback/function/article>" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) This command fetches articles from the official SAMP Wiki." +
+                    $"[**Info:**]({_websiteUrl}) This command fetches articles from the official SAMP Wiki." +
                     "\n" +
-                    $"[**Availability:**](https://forum.sa-mp.com/) Only on <#{_botChannelId}> and <#{_scriptingChannelId}>.");
+                    $"[**Availability:**]({_websiteUrl}) Only on <#{_botChannelId}> and <#{_scriptingChannelId}>.");
 
             return builder.Build();
         }
@@ -79,34 +80,34 @@ namespace main.Modules
                 .WithDescription("List of admin commands that I only respond to here:")
                 .WithColor(new Color(0xD0021B))
                 .AddField("/fverify",
-                    "[**Parameters:**](https://forum.sa-mp.com/) [@]<user> [forumid]" +
+                    $"[**Parameters:**]({_websiteUrl}) [@]<user> [forumid]" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) Force links a discord account with a SAMP forum account.")
+                    $"[**Info:**]({_websiteUrl}) Force links a discord account with a SAMP forum account.")
 
                 .AddField("/funverify",
-                    "[**Parameters:**](https://forum.sa-mp.com/) [@]<user>" +
+                    $"[**Parameters:**]({_websiteUrl}) [@]<user>" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) Drops a forum verification and removes the user role.")
+                    $"[**Info:**]({_websiteUrl}) Drops a forum verification and removes the user role.")
 
                 .AddField("/rvwhois",
-                    "[**Parameters:**](https://forum.sa-mp.com/) <forum_id/forum_name>" +
+                    $"[**Parameters:**]({_websiteUrl}) <forum_id/forum_name>" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) This command fetches discord user(s) linked to a given forum account.")
+                    $"[**Info:**]({_websiteUrl}) This command fetches discord user(s) linked to a given forum account.")
 
                 .AddField("/ban",
-                    "[**Parameters:**](https://forum.sa-mp.com/) [@]<user> [days] [hours] [send ban message] [reason]" +
+                    $"[**Parameters:**]({_websiteUrl}) [@]<user> [days] [hours] [send ban message] [reason]" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) This command issues a discord ban. Use this command with no parameters for more information. Check channel pins.")
+                    $"[**Info:**]({_websiteUrl}) This command issues a discord ban. Use this command with no parameters for more information. Check channel pins.")
 
                 .AddField("/banlookup",
-                    "[**Parameters:**](https://forum.sa-mp.com/) <userid, username>" +
+                    $"[**Parameters:**]({_websiteUrl}) <userid, username>" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) This command lists a list of banned account based on a search criteria. Check channel pins.")
+                    $"[**Info:**]({_websiteUrl}) This command lists a list of banned account based on a search criteria. Check channel pins.")
 
                 .AddField("/unban",
-                    "[**Parameters:**](https://forum.sa-mp.com/) <userid, username>" +
+                    $"[**Parameters:**]({_websiteUrl}) <userid, username>" +
                     "\n" +
-                    "[**Info:**](https://forum.sa-mp.com/) This command lifts a list of bans given a certain criteria. Check channel pins.");
+                    $"[**Info:**]({_websiteUrl}) This command lifts a list of bans given a certain criteria. Check channel pins.");
 
             return builder.Build();
         }

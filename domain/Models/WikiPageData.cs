@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace main.Models
+namespace domain.Models
 {
     public class WikiPageData
     {

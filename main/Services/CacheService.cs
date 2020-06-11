@@ -15,13 +15,13 @@ namespace main.Services
 
         public int GetUserForumId(ulong userId)
         {
-            string key = $"FORUMID-{userId}";
+            string key = $"{CacheStatesPrefix.Forum}-{userId}";
             return (_cacheMap.ContainsKey(key)) ? Int32.Parse(_cacheMap[key]) : -1;
         }
 
         public void SetUserForumId(ulong userId, int forumId)
         {
-            string key = $"FORUMID-{userId}";
+            string key = $"{CacheStatesPrefix.Forum}-{userId}";
             if (_cacheMap.ContainsKey(key))
             {
                 _cacheMap[key] = forumId.ToString();
@@ -31,13 +31,13 @@ namespace main.Services
 
         public string GetUserToken(ulong userId)
         {
-            string key = $"TOKEN-{userId}";
+            string key = $"{CacheStatesPrefix.Token}-{userId}";
             return (_cacheMap.ContainsKey(key)) ? _cacheMap[key] : "";
         }
 
         public void SetUserToken(ulong userId, string token)
         {
-            string key = $"TOKEN-{userId}";
+            string key = $"{CacheStatesPrefix.Token}-{userId}";
             if (_cacheMap.ContainsKey(key))
             {
                 _cacheMap[key] = token;
@@ -47,7 +47,7 @@ namespace main.Services
 
         public VerificationStates GetUserVerificationState(ulong userId)
         {
-            string key = $"STATE-{userId}";
+            string key = $"{CacheStatesPrefix.State}-{userId}";
             return (_cacheMap.ContainsKey(key)) 
                 ? ((VerificationStates)Int32.Parse(_cacheMap[key])) 
                 : VerificationStates.None;
@@ -55,7 +55,7 @@ namespace main.Services
 
         public void SetUserVerificationState(ulong userId, VerificationStates state)
         {
-            string key = $"STATE-{userId}";
+            string key = $"{CacheStatesPrefix.State}-{userId}";
             if (_cacheMap.ContainsKey(key))
             {
                 _cacheMap[key] = ((int)state).ToString();
@@ -65,7 +65,12 @@ namespace main.Services
 
         public void ClearCache(ulong userId)
         {
-            string[] keys = { $"STATE-{userId}", $"FORUMID-{userId}", $"TOKEN-{userId}" };
+            string[] keys =
+            {
+                $"{CacheStatesPrefix.State}-{userId}", 
+                $"{CacheStatesPrefix.Forum}-{userId}", 
+                $"{CacheStatesPrefix.Token}-{userId}"
+            };
 
             foreach (string key in keys)
             {
@@ -74,6 +79,13 @@ namespace main.Services
                     _cacheMap.Remove(key);
                 }
             }
+        }
+        
+        private enum CacheStatesPrefix
+        {
+            State = 0,
+            Forum = 1,
+            Token = 2
         }
     }
 }

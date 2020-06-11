@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using domain;
-using HttpClient = domain.HttpClient;
+using main.Core;
 
 namespace main.Services
 {
     public class StatsService
     {
         private readonly IHttpClient _httpClient;
-
+        private readonly string _sampUrl;
+        
         public StatsService(IHttpClient httpClient)
         {
             _httpClient = httpClient;
+            _sampUrl = Configuration.GetVariable("Urls.Samp.Website");
         }
         
         public (int playersCount, int serversCount) GetSampPlayerServerCount()
@@ -44,6 +43,6 @@ namespace main.Services
         }
 
         private string GetSampWebsiteContent() =>
-            _httpClient.GetContent("https://www.sa-mp.com/");
+            _httpClient.GetContent(_sampUrl);
     }
 }

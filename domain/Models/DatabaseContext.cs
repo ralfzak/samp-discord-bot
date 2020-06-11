@@ -53,12 +53,6 @@ namespace domain.Models
 
                 entity.Property(e => e.ExpiresOn).HasColumnName("expires_on");
 
-                entity.Property(e => e.IsExpired)
-                    .IsRequired()
-                    .HasColumnName("is_expired")
-                    .HasColumnType("enum('Y','N')")
-                    .HasDefaultValueSql("'N'");
-
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
                     .HasMaxLength(256)
@@ -72,6 +66,10 @@ namespace domain.Models
                 entity.Property(e => e.Userid)
                     .HasColumnName("userid")
                     .HasColumnType("bigint(20)");
+
+                entity.Property(e => e.Lifted)
+                    .HasColumnName("lifted")
+                    .HasColumnType("tinyint(1)");
             });
 
             modelBuilder.Entity<Verifications>(entity =>

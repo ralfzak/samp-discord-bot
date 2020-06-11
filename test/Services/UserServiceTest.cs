@@ -1,7 +1,6 @@
-using domain;
+using main.Core;
 using main.Services;
 using Moq;
-using System;
 using Xunit;
 
 namespace test.Services
