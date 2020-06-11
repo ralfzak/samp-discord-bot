@@ -1,11 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using main.Services;
-using main.Models;
-using System.Net;
-using main.Core.Models;
 using main.Core;
 using main.Exceptions;
 

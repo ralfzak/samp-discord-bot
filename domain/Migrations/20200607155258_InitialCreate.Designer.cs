@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using main.Core.Models;
+using main.Core;
 
-namespace domain.Migrations
+namespace main.Core.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20200607155258_InitialCreate")]

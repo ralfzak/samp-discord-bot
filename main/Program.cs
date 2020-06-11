@@ -1,10 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using main.Core.Models;
 using main.Services;
 using main.Modules;
 using main.Core;

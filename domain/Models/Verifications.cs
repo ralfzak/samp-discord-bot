@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace main.Core.Models
+namespace main.Core
 {
     public partial class Verifications
     {

@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 
-namespace main.Core.Models
+namespace main.Core
 {
     public partial class Bans
     {

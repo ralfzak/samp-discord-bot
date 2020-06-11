@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using main.Core;
-using HttpClient = main.Core.HttpClient;
 
 namespace main.Services
 {

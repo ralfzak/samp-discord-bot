@@ -1,12 +1,10 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using main.Services;
 using main.Core;
 using main.Exceptions;
-using main.Models;
 
 namespace main.Modules
 {

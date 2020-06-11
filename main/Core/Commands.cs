@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using System.Collections.Generic;
-using System.Linq;
-using main.Utils;
 using main.Services;
 
 namespace main.Core

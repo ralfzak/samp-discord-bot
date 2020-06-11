@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using main.Core.Models;
+using main.Core;
 
 namespace main.Core.Repo
 {

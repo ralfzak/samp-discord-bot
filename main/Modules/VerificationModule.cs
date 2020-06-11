@@ -4,7 +4,6 @@ using Discord;
 using Discord.Commands;
 using main.Services;
 using main.Utils;
-using Discord.WebSocket;
 using main.Core;
 
 namespace main.Modules
