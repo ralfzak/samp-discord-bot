@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Linq;
+using domain.Models;
 using main.Core;
 using main.Exceptions;
 

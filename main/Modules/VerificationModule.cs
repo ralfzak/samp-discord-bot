@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using domain;
 using main.Services;
 using main.Utils;
 using main.Core;

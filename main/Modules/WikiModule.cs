@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using domain.Models;
 using main.Services;
 using main.Core;
 using main.Exceptions;

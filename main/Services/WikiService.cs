@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using domain.Models;
 using HtmlAgilityPack;
 using main.Core;
 using main.Exceptions;

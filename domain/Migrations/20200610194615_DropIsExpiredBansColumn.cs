@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace main.Core.Migrations
+namespace domain.Migrations
 {
     public partial class DropIsExpiredBansColumn : Migration
     {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using main.Core.Repo;
+using domain.Models;
+using domain.Repo;
 using main.Core;
 
 namespace main.Services

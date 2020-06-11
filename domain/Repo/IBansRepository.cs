@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using main.Core;
+using domain.Models;
 
-namespace main.Core.Repo
+namespace domain.Repo
 {
     /**
      * Responsible for persisting [Bans] instances.

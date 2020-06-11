@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using main.Core;
-using main.Core.Repo;
+using domain.Models;
+using domain.Repo;
 
 namespace main.Core.Database
 {

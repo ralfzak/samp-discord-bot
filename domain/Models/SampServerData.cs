@@ -1,4 +1,4 @@
-﻿namespace main.Core
+﻿namespace domain.Models
 {
     public class SampServerData
     {
