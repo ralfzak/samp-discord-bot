@@ -33,7 +33,7 @@ namespace main.Core.Database
             if (ban == null)
                 return;
             
-            ban.ExpiresOn = _timeProvider.UtcNow;
+            ban.Lifted = 1;
             _databaseContext.Bans.Update(ban);
             _databaseContext.SaveChangesAsync();
             Logger.Write($"[DeleteByUserId - Bans] {userId}");

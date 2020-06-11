@@ -2,7 +2,7 @@
 
 namespace domain.Migrations
 {
-    public partial class AddIsExpiredBansColumn : Migration
+    public partial class AddLiftedBansColumn : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

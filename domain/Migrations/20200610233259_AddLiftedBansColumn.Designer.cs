@@ -9,8 +9,8 @@ using domain.Models;
 namespace domain.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200610233259_AddIsExpiredBansColumn")]
-    partial class AddIsExpiredBansColumn
+    [Migration("20200610233259_AddLiftedBansColumn")]
+    partial class AddLiftedBansColumn
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,7 +19,7 @@ namespace domain.Migrations
                 .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("main.Core.Models.Bans", b =>
+            modelBuilder.Entity("domain.Models.Bans", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,7 +70,7 @@ namespace domain.Migrations
                     b.ToTable("bans");
                 });
 
-            modelBuilder.Entity("main.Core.Models.Verifications", b =>
+            modelBuilder.Entity("domain.Models.Verifications", b =>
                 {
                     b.Property<long>("Userid")
                         .ValueGeneratedOnAdd()
