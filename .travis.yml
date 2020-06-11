@@ -1,12 +1,10 @@
-sudo: required
 language: csharp
-mono: none
-
 dotnet: 2.1.805
-
-install:
-- dotnet restore
+mono: none
+os: linux
+sudo: required
 
 script:
+- dotnet restore
 - dotnet build --no-restore
 - dotnet test
