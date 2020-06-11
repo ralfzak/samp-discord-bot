@@ -2,9 +2,10 @@ language: csharp
 dotnet: 2.1.805
 mono: none
 os: linux
-sudo: required
+
+before_script:
+  - dotnet restore
+  - dotnet build --no-restore
 
 script:
-- dotnet restore
-- dotnet build --no-restore
-- dotnet test
+  - dotnet test
