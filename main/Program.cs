@@ -25,7 +25,7 @@ namespace main
         {
             using (var services = ConfigureServices())
             {
-                services.GetRequiredService<DatabaseContext>().Database.Migrate();
+                EnsureMigrations(services.GetRequiredService<DatabaseContext>());
                 
                 var client = services.GetRequiredService<DiscordSocketClient>();
                 
@@ -88,6 +88,12 @@ namespace main
                 .AddSingleton<WikiService>()
 
                 .BuildServiceProvider();
+        }
+        
+        private void EnsureMigrations(DatabaseContext dbContext)
+        {
+            dbContext.Database.ExecuteSqlRaw(@"CREATE TABLE IF NOT EXISTS `__EFMigrationsHistory` (`MigrationId` VARCHAR(150) NOT NULL, `ProductVersion` VARCHAR(32) NOT NULL, PRIMARY KEY (`MigrationId`));");
+            dbContext.Database.Migrate();
         }
         
         private string DbConnectionString()
