@@ -9,4 +9,4 @@ install:
 
 script:
 - dotnet build --no-restore
-- dotnet test --collect:"XPlat Code Coverage" 
+- dotnet test --collect:"XPlat Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./lcov Test
