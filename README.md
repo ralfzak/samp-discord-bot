@@ -46,17 +46,24 @@ Responsible for fetching and parsing global SA:MP stats from [sa-mp.com](https:/
 Most of the bot can be configured using the `config.json` configuration file in the project main root.
 |Key|Description|
 |-|-|
-|BOT_TOKEN|Discord bot client secret. More information [here](https://discord.com/developers/docs/intro).|
-|GUILD_ID|Discord server Id|
-|MY_ID|Bot client Id|
-|SCRIPTING_CHAN_ID|Scripting channel Id|
-|BOT_CHAN_ID|Bot channel Id|
-|ADMIN_CHAN_ID|Admin channel Id|
-|VERIFIED_ROLE_ID|Verified role Id|
-|DB_SERVER|Database server host|
-|DB_DB|Database database|
-|DB_USER|Database user|
-|DB_PASS|Database password|
+|CommandPrefix|The prefix for command execution. Default: backslash */*|
+|Bot.Token|Discord bot client secret. More information [here](https://discord.com/developers/docs/intro).|
+|Bot.Id|Bot client Id. More information [here](https://discord.com/developers/docs/intro).|
+|Guild.Id|Discord server Id. More information [here](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).|
+|Guild.ScriptingChannelId|Scripting channel Id. Used to limit some commands usage. More information [here](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).|
+|Guild.BotCommandsChannelId|Bot channel Id. Used to limit some commands usage. More information [here](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).|
+|Guild.AdminChannelId|Admin channel Id. Used to limit some commands usage and logging. More information [here](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-).|
+|Guild.VerifiedRoleId|Verified role Id. Role to be granted when a user successfully verifies. More information [here](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) and [here](https://github.com/ralfzak/samp-discord-bot#verification).|
+|Database.Host|Database host.|
+|Database.Schema|Database schema, aka database name.|
+|Database.User|Database user having access to the schema.|
+|Database.Password|Database user password.|
+|Urls.Samp.Website|SA:MP's official website. Used for global stats fetching and in different references. Default: https://sa-mp.com|
+|Urls.Samp.HostedTabProvider|SA:MP's hosted tab listing. Used to identify if a server is on hosted tab. Default: https://game-mp.com|
+|Urls.Forum.Profile|Forum profiles link. Used to query forum profiles followed by a profile Id and in different references. Default: https://forum.sa-mp.com/member.php?u=|
+|Urls.Forum.Settings|Forum profile privacy settings link. Used in different references. Default: http://forum.sa-mp.com/profile.php?do=privacy|
+|Urls.Wiki.Docs|Wiki articles link. Used to query wiki pages followed by the article name and in different references. Default: https://wiki.sa-mp.com/wiki/|
+|Urls.Wiki.Search|Wiki search link. Used to reference searching wiki pages followed by the article name. Default: https://wiki.sa-mp.com/wiki/Special:Search?search=|
 
 ## Dependencies
 1. .Net Core framework 2.2. Download [here](https://dotnet.microsoft.com/download).
@@ -65,7 +72,7 @@ Most of the bot can be configured using the `config.json` configuration file in 
 
 ## Installation
 1. Copy configuration template and fill in respective values `cp main/config.json.template main/config.json`.
-2. Optional: Run `dotnet ef database update` to run migrations and create the database schema.
+2. Optional: Run `dotnet ef database update` to run migrations and create the database schema. Note that migration table is required to run the update command. Read more [here](https://docs.microsoft.com/en-us/ef/ef6/modeling/code-first/migrations/). **The application will start by running all unran migrations including the schema creation and migrations history table**.
 3. Run the application: `cd main && dotnet run`.
 
 ## Contributing
