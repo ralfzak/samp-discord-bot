@@ -2,7 +2,9 @@
 # SA:MP Discord Bot
 This is a .NET Core discord bot built using [Discord.Net framework](https://github.com/discord-net/Discord.Net). This bot is also known as Wu Zi Mu which is part of [SA:MP's discord server](https://forum.sa-mp.com/showthread.php?t=665803).
 
-![Wu Zi Mu](https://github.com/ralfzak/samp-discord-bot/blob/master/WuZiMu.jpg)
+![Wu Zi Mu](WuZiMu.jpg)
+
+[![Build Status](https://travis-ci.com/ralfzak/samp-discord-bot.svg?branch=master)](https://travis-ci.com/ralfzak/samp-discord-bot) [![License](https://img.shields.io/badge/license-GNU%203.0-orange)](LICENSE) 
 
 ## Features
 ### Verification
