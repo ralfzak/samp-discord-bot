@@ -27,17 +27,14 @@ namespace main
                 EnsureMigrations(services.GetRequiredService<DatabaseContext>());
                 
                 var client = services.GetRequiredService<DiscordSocketClient>();
-                
                 client.Log += LogAsync;
-                services.GetRequiredService<CommandService>().Log += LogAsync;
-
                 string token = Configuration.GetVariable("Bot.Token");
                 await client.LoginAsync(TokenType.Bot, token);
-                
                 await client.StartAsync();
 
+                services.GetRequiredService<CommandService>().Log += LogAsync;
+                
                 await services.GetRequiredService<Commands>().InitializeAsync();
-
                 await services.GetRequiredService<BanningHandler>().InitializeAsync();
                 await services.GetRequiredService<UserConnectHandler>().InitializeAsync();
                 await services.GetRequiredService<BotStatusHandler>().InitializeAsync();
