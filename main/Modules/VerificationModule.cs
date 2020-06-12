@@ -197,7 +197,7 @@ namespace main.Modules
 
             if (user.Id == _myId) // me
             {
-                var response = await ReplyAsync($"{user.Mention}(穆伍兹) also known as Woozi is the blind leader of the Mountain Cloud Boys.");
+                var response = await ReplyAsync($"{user.Mention}(穆伍兹) also known as Wu Zi Mu is the blind leader of the Mountain Cloud Boys.");
                 _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             }
