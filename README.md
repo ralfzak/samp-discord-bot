@@ -12,7 +12,7 @@ Linking a discord account to a forum account. Linking a forum account grants a v
 This module introduces the following commands:
 |Command|Parameters|Information|Availability|
 |-|-|-|-|
-|verify|[profile_id/done/cancel]|Links your discord account with a SAMP forum account using a simple verification process.|As a direct message.|
+|verify|[profile_id/done/cancel]|Links your discord account with a SAMP forum account using a simple verification process.|As a direct message|
 |whois|[@]user|This command looks up SAMP forum profiles of given linked discord accounts.|Any channel|
 |rvwhois|forum_id/forum_name|This command fetches discord user(s) linked to a given forum account.|Admin channel|
 |fverify|[@]user [forumid]|Force links a discord account with a SAMP forum account|Admin channel|
@@ -32,7 +32,7 @@ Querying SA:MP servers to fetch live data. Data is queried using two packet type
 This module introduces the following commands:
 |Command|Parameters|Information|Availability|
 |-|-|-|-|
-|server/srv|ip/hostname[:port]|This command issues a discord ban.|Bot channel|
+|server/srv|ip/hostname[:port]|This command queries a given SA:MP server with two packets to fetch general and rules data. More information [here](https://wiki.sa-mp.com/wiki/Query)|Bot channel|
 
 ### SA:MP Wiki
 Fetching SA:MP wiki page data and parsing it. This module also implements [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) to match an article name to closest pre-defined articles.
