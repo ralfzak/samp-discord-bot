@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace domain.Models
+namespace main.Core.Domain.Models
 {
-    public partial class Bans
+    public class Bans
     {
         public long Id { get; set; }
         public ulong Userid { get; set; }

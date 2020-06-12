@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using main.Core.Domain.Models;
 
-namespace domain.Models
+namespace main.Core.Database
 {
     public partial class DatabaseContext : DbContext
     {

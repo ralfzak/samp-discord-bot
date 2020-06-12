@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using domain;
 using main.Services;
 using main.Utils;
 using main.Core;
+using main.Core.Domain;
 
 namespace main.Modules
 {
@@ -89,7 +89,7 @@ namespace main.Modules
                     string forumName = _verificationService.GetForumProfileNameIfContainsToken(cachedProfile, cachedToken);
                     if (forumName == string.Empty)
                     {
-                        _userService.SetUserCooldown(user.Id, "", 15);
+                        _userService.SetUserCooldown(user.Id, 15);
                         ReplyAsync("I couldn't find the token in your profile. Make sure your profile is set to public and the token is in your biography section." +
                             "\n" +
                             ":no_entry: You are allowed to check again in 15 seconds.");

@@ -21,7 +21,7 @@ namespace main.Services
         private bool IsOnCooldown(long ticks) =>
             _timeProvider.GetElapsedFromEpoch(ticks) > 0;
 
-        public void SetUserCooldown(ulong userId, string cmd, int seconds)
+        public void SetUserCooldown(ulong userId, int seconds, string cmd = "")
         {
             string key = GetMapKey(userId, cmd);
             long ticksUtc = (_timeProvider.UtcNow.AddSeconds(seconds).Ticks);

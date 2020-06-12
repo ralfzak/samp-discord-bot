@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using domain.Models;
 using HtmlAgilityPack;
 using main.Core;
 using main.Exceptions;
 using main.Utils;
+using main.Core.Domain.Models;
 
 namespace main.Services
 {

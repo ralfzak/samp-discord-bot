@@ -14,7 +14,7 @@ namespace test.Services
             var command = "testCommand";
             ulong userId = 1;
             
-            subject.SetUserCooldown(userId, command, 60);
+            subject.SetUserCooldown(userId, 60, command);
 
             var result = subject.IsUserOnCooldown(userId, command);
             Assert.True(result);
@@ -27,7 +27,7 @@ namespace test.Services
             var command = "testCommand";
             ulong userId = 1;
             
-            subject.SetUserCooldown(userId, command, 60);
+            subject.SetUserCooldown(userId,60, command);
 
             var result = subject.IsUserOnCooldown(2, command);
             Assert.False(result);
@@ -39,7 +39,7 @@ namespace test.Services
             var subject = GetFakeTimeStubbedSubject(0);
             var command = "testCommand";
             ulong userId = 1;
-            subject.SetUserCooldown(userId, command, 60);
+            subject.SetUserCooldown(userId, 60, command);
 
             var result = subject.IsUserOnCooldown(userId, command);
             
@@ -52,7 +52,7 @@ namespace test.Services
             var subject = GetFakeTimeStubbedSubject(10);
             var command = "testCommand";
             ulong userId = 1;
-            subject.SetUserCooldown(userId, command, 60);
+            subject.SetUserCooldown(userId, 60, command);
 
             var result = subject.IsUserOnCooldown(userId, command);
             

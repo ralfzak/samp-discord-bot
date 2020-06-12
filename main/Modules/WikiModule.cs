@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using domain.Models;
 using main.Services;
 using main.Core;
 using main.Exceptions;
+using main.Core.Domain.Models;
 
 namespace main.Modules
 {
@@ -113,7 +113,7 @@ namespace main.Modules
             var responseMessage = await ReplyAsync(null, embed: builder.Build());
             _messageService.LogCommand(Context.Message.Id, responseMessage.Id);
 
-            _userService.SetUserCooldown(Context.User.Id, "wiki", 15);
+            _userService.SetUserCooldown(Context.User.Id, 15, "wiki");
         }
     }
 }
