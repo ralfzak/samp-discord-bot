@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using domain.Models;
 using main.Services;
 using main.Core;
 using main.Exceptions;
+using main.Core.Domain.Models;
 
 namespace main.Modules
 {
@@ -60,14 +60,12 @@ namespace main.Modules
             }
             catch (InvalidIpParseException)
             {
-                _userService.SetUserCooldown(Context.User.Id, "server", 5);
-                
                 var response = await ReplyAsync(NotValidServer);
                 _messageService.LogCommand(Context.Message.Id, response.Id);
                 return;
             } catch (UnableToConnectToServerException)
             {
-                _userService.SetUserCooldown(Context.User.Id, "server", 10);
+                _userService.SetUserCooldown(Context.User.Id, 10, "server");
 
                 var response = await ReplyAsync(FailedFetchServerData);
                 _messageService.LogCommand(Context.Message.Id, response.Id);
@@ -94,7 +92,7 @@ namespace main.Modules
             var responseMessage = await ReplyAsync("", embed: builder.Build());
             _messageService.LogCommand(Context.Message.Id, responseMessage.Id);
 
-            _userService.SetUserCooldown(Context.User.Id, "server", 60);
+            _userService.SetUserCooldown(Context.User.Id, 30, "server");
         }
     }
 }

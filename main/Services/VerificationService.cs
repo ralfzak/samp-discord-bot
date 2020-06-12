@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using domain.Models;
-using domain.Repo;
 using main.Core;
+using main.Core.Domain.Repo;
+using main.Core.Domain.Models;
 
 namespace main.Services
 {

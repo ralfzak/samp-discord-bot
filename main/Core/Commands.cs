@@ -57,7 +57,7 @@ namespace main.Core
             if (_userService.IsUserOnCooldown(rawMessage.Author.Id))
                 return;
 
-            _userService.SetUserCooldown(rawMessage.Author.Id, "", 4);
+            _userService.SetUserCooldown(rawMessage.Author.Id, 4);
             var context = new SocketCommandContext(_discord, message);
             await _commands.ExecuteAsync(context, argPos, _services);
         }

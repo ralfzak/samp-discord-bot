@@ -3,14 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using domain.Models;
-using domain.Repo;
 using main.Services;
 using main.Modules;
 using main.Core;
 using main.Handlers;
 using Microsoft.EntityFrameworkCore;
 using main.Core.Database;
+using main.Core.Domain.Repo;
 
 namespace main
 {

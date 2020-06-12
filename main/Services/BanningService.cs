@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using domain.Models;
-using domain.Repo;
 using main.Core;
+using main.Core.Domain.Models;
+using main.Core.Domain.Repo;
 
 namespace main.Services
 {
