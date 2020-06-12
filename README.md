@@ -1,6 +1,6 @@
 
 # SA:MP Discord Bot
-This is a .NET Core discord bot built using [Discord.Net framework](https://github.com/discord-net/Discord.Net). This bot is also known as Woozi which is part of [SA:MP's discord server](https://forum.sa-mp.com/showthread.php?t=665803).
+This is a .NET Core discord bot built using [Discord.Net framework](https://github.com/discord-net/Discord.Net). This bot is also known as Woozie which is part of [SA:MP's discord server](https://forum.sa-mp.com/showthread.php?t=665803).
 
 ![Wu Zi Mu](WuZiMu.jpg)
 
