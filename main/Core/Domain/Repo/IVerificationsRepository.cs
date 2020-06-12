@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using domain.Models;
+using main.Core.Domain.Models;
 
-namespace domain.Repo
+namespace main.Core.Domain.Repo
 {
     /**
      * Responsible for persisting [Verifications] instances.

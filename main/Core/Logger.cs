@@ -2,7 +2,7 @@
 
 namespace main.Core
 {
-    class Logger
+    public static class Logger
     {
         public static void Write(string s)
         {

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace domain.Models
+namespace main.Core.Domain.Models
 {
-    public partial class Verifications
+    public class Verifications
     {
         public ulong Userid { get; set; }
         public int? ForumId { get; set; }

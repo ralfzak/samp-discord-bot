@@ -2,24 +2,22 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using domain.Models;
+using main.Core.Database;
 
-namespace domain.Migrations
+namespace main.Core.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200610194615_DropIsExpiredBansColumn")]
-    partial class DropIsExpiredBansColumn
+    partial class DatabaseContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("domain.Models.Bans", b =>
+            modelBuilder.Entity("main.Core.Domain.Models.Bans", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,12 +44,9 @@ namespace domain.Migrations
                         .HasColumnName("expires_on")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("IsExpired")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("is_expired")
-                        .HasColumnType("enum('Y','N')")
-                        .HasDefaultValueSql("'N'");
+                    b.Property<byte>("Lifted")
+                        .HasColumnName("lifted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Name")
                         .HasColumnName("name")
@@ -77,7 +72,7 @@ namespace domain.Migrations
                     b.ToTable("bans");
                 });
 
-            modelBuilder.Entity("domain.Models.Verifications", b =>
+            modelBuilder.Entity("main.Core.Domain.Models.Verifications", b =>
                 {
                     b.Property<long>("Userid")
                         .ValueGeneratedOnAdd()

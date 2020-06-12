@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using domain.Models;
-using domain.Repo;
 using main.Core;
+using main.Core.Domain.Models;
+using main.Core.Domain.Repo;
 using main.Services;
 using Moq;
 using Xunit;
