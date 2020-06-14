@@ -23,7 +23,7 @@ namespace main.Core.Database
         public void Create(Verifications verification)
         {
             _databaseContext.Verifications.Add(verification);
-            _databaseContext.SaveChangesAsync();
+            _databaseContext.SaveChanges();
         }
 
         public void DeleteByUserId(ulong userId)
@@ -33,7 +33,7 @@ namespace main.Core.Database
             {
                 verification.DeletedOn = _timeProvider.UtcNow;
                 _databaseContext.Verifications.Update(verification);
-                _databaseContext.SaveChangesAsync();
+                _databaseContext.SaveChanges();
             }
         }
 
