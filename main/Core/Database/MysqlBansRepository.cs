@@ -23,7 +23,7 @@ namespace main.Core.Database
         public void Create(Bans ban)
         {
             _databaseContext.Bans.Add(ban);
-            _databaseContext.SaveChangesAsync();
+            _databaseContext.SaveChanges();
             Logger.Write($"[Create - Bans] {ban.Userid} {ban.ByUserid}");
         }
 
@@ -35,7 +35,7 @@ namespace main.Core.Database
             
             ban.Lifted = 1;
             _databaseContext.Bans.Update(ban);
-            _databaseContext.SaveChangesAsync();
+            _databaseContext.SaveChanges();
             Logger.Write($"[DeleteByUserId - Bans] {userId}");
         }
 
@@ -45,9 +45,9 @@ namespace main.Core.Database
                 : _databaseContext.Bans.Where(b => b.Name.Contains(criteria)).ToList();
         
         public List<Bans> GetExpiredBans() => 
-            _databaseContext.Bans.Where(b => b.ExpiresOn != null && 
-                                             b.ExpiresOn < _timeProvider.UtcNow &&
-                                             b.Lifted == 0)
+            _databaseContext.Bans
+                .Where(b => b.ExpiresOn != null && b.ExpiresOn < _timeProvider.UtcNow && 
+                            b.Lifted == 0)
                 .ToList();
     }
 }
