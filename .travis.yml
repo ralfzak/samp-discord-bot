@@ -8,4 +8,7 @@ before_script:
   - dotnet build --no-restore
 
 script:
-  - dotnet test
+  - dotnet test -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+
+after_script:
+  - bash <(curl -s https://codecov.io/bash)
