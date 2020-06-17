@@ -1,5 +1,8 @@
 ﻿namespace main.Core.Domain.Models
 {
+    /// <summary>
+    /// Responsible for carrying single SAMP server related data.
+    /// </summary>
     public class SampServerData
     {
         public string Ip { get; set; }

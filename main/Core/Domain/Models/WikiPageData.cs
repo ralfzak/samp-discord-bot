@@ -2,6 +2,9 @@
 
 namespace main.Core.Domain.Models
 {
+    /// <summary>
+    /// Responsible for carrying a parsed wiki article data.
+    /// </summary>
     public class WikiPageData
     {
         public string Title { get; set; }
