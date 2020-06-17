@@ -4,7 +4,7 @@ This is a .NET Core discord bot built using [Discord.Net framework](https://gith
 
 ![Wu Zi Mu](WuZiMu.jpg)
 
-[![Build Status](https://travis-ci.com/ralfzak/samp-discord-bot.svg?branch=master)](https://travis-ci.com/ralfzak/samp-discord-bot) [![License](https://img.shields.io/badge/license-GNU%203.0-orange)](LICENSE) 
+[![Build Status](https://travis-ci.com/ralfzak/samp-discord-bot.svg?branch=master)](https://travis-ci.com/ralfzak/samp-discord-bot) [![License](https://img.shields.io/badge/license-GNU%203.0-orange)](LICENSE) [![Code Coverage](https://codecov.io/gh/ralfzak/samp-discord-bot/branch/master/graph/badge.svg)](https://github.com/ralfzak/samp-discord-bot)
 
 ## Features
 ### Verification
