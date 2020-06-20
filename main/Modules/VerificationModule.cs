@@ -204,7 +204,7 @@ namespace main.Modules
 
             int profileid = -1;
             string profileName = "";
-            _verificationService.GetUserForumProfileId(guildUser.Id, out profileid, out profileName);
+            _verificationService.GetUserForumProfileData(guildUser.Id, out profileid, out profileName);
             if (profileid == -1)
             {
                 var response = await ReplyAsync($"{guildUser.Mention} is not verified yet.");
@@ -250,7 +250,7 @@ namespace main.Modules
             {
                 int profileid = -1;
                 string profileName = "";
-                _verificationService.GetUserForumProfileId(uid, out profileid, out profileName);
+                _verificationService.GetUserForumProfileData(uid, out profileid, out profileName);
 
                 ReplyAsync($"**{profileName}** ({_forumProfileUrl}{profileid}) is <@{uid}>");
             }
