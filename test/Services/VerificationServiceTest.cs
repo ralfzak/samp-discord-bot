@@ -50,10 +50,10 @@ namespace test.Services
         }
         
         [Fact]
-        public void Test_GetUserForumProfileId_WithValidVerification_ReturnsCorrectForumIdAndForumName()
+        public void Test_GetUserForumProfileData_WithValidVerification_ReturnsCorrectForumIdAndForumName()
         {
             var repoMock = new Mock<IVerificationsRepository>();
-            var subject = Subject(repoMock, MockHttpClient());
+            var subject = Subject(repoMock, MockHttpClient("<title>SA-MP Forums - View Profile: any</title>"));
             var verification = new Verifications
             {
                 Userid = 1,
@@ -65,20 +65,20 @@ namespace test.Services
             };
             repoMock.Setup(m => m.FindByUserId(It.IsAny<ulong>())).Returns(verification);
 
-            subject.GetUserForumProfileId(verification.Userid, out int forumId, out string forumName);
+            subject.GetUserForumProfileData(verification.Userid, out int forumId, out string forumName);
 
             Assert.Equal(verification.ForumId, forumId);
             Assert.Equal(verification.ForumName, forumName);
         }
         
         [Fact]
-        public void Test_GetUserForumProfileId_WithNoVerification_ReturnsInvalidForumIdAndEmptyForumName()
+        public void Test_GetUserForumProfileData_WithNoVerification_ReturnsInvalidForumIdAndEmptyForumName()
         {
             var repoMock = new Mock<IVerificationsRepository>();
             var subject = Subject(repoMock, MockHttpClient());
             repoMock.Setup(m => m.FindByUserId(It.IsAny<ulong>())).Returns(null as Verifications);
 
-            subject.GetUserForumProfileId(1, out int forumId, out string forumName);
+            subject.GetUserForumProfileData(1, out int forumId, out string forumName);
 
             Assert.Equal(-1, forumId);
             Assert.Equal(string.Empty, forumName);
