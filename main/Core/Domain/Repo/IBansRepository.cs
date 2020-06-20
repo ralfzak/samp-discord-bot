@@ -18,7 +18,7 @@ namespace main.Core.Domain.Repo
         /// Deletes a persisted ban instance by <paramref name="userId"/>.
         /// </summary>
         /// <remarks>
-        /// If a ban is not found, the deletion will silently not occure.
+        /// If a ban is not found, the deletion will silently not occur.
         /// </remarks>
         /// <param name="userId">A user Id field of a <see cref="Bans"/> object</param>
         void DeleteByUserId(ulong userId);
