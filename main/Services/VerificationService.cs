@@ -32,7 +32,7 @@ namespace main.Services
             if (verification != null)
             {
                 forumId = verification.ForumId ?? -1;
-                forumName = verification.ForumName;
+                forumName = GetForumProfileName(forumId);
             }
         }
 
