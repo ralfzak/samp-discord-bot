@@ -8,7 +8,7 @@ before_script:
   - dotnet build --no-restore
 
 script:
-  - dotnet test -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*]main.Core.Database.Migrations.*%2c[*]main.Core.Domain.Models.*%2c[*]main.Core.Commands%2c[*]main.Core.Configuration%2c[*]main.Core.HttpClient%2c[*]main.Core.TimeProvider%2c[*]main.Handlers.*"
+  - dotnet test -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*]main.Core.Database.Migrations.*%2c[*]main.Core.Domain.Models.*%2c[*]main.Core.Commands%2c[*]main.Core.Configuration%2c[*]main.Core.HttpClient%2c[*]main.Core.CurrentTimeProvider%2c[*]main.Handlers.*"
 
 after_script:
   - bash <(curl -s https://codecov.io/bash)
