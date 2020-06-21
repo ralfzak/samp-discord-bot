@@ -23,7 +23,7 @@ namespace main.Services
         public List<ulong> GetUserIDsFromForumInfo(string forumInfo) =>
             _verificationsRepository.FindByForumInfo(forumInfo).Select(v => v.Userid).ToList();
 
-        public void GetUserForumProfileId(ulong userId, out int forumId, out string forumName)
+        public void GetUserForumProfileData(ulong userId, out int forumId, out string forumName)
         { 
             forumId = -1;
             forumName = string.Empty;
@@ -32,7 +32,7 @@ namespace main.Services
             if (verification != null)
             {
                 forumId = verification.ForumId ?? -1;
-                forumName = verification.ForumName;
+                forumName = GetForumProfileName(forumId);
             }
         }
 
