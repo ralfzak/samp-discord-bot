@@ -8,7 +8,7 @@ before_script:
   - dotnet build --no-restore
 
 script:
-  - dotnet test -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*]main.Core.Database.Migrations"
+  - dotnet test -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:ExcludeByFile=\"../main/Core/Database/*\"
 
 after_script:
   - bash <(curl -s https://codecov.io/bash)
