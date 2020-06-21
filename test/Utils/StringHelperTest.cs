@@ -1,7 +1,7 @@
 ﻿using main.Utils;
 using Xunit;
 
-namespace test.Helpers
+namespace test.Utils
 {
     public class StringHelperTest
     {
