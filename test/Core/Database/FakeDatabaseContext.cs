@@ -12,19 +12,19 @@ namespace test.Core.Database
         protected FakeDatabaseContext()
         {
             _contextOptions = new DbContextOptionsBuilder<DatabaseContext>()
-                .UseInMemoryDatabase("database")
+                .UseInMemoryDatabase($"database{typeof(T).Name}")
                 .Options;
         }
 
         protected DatabaseContext Context() =>
             new DatabaseContext(_contextOptions);
-        
-        protected List<T> GetAll(DatabaseContext context) => 
+
+        protected List<T> GetAll(DatabaseContext context) =>
             context.Set<T>().ToList();
 
         protected void Provision(DatabaseContext context, List<T> records)
         {
-            context.Set<T>().RemoveRange(GetAll(context));
+            context.Set<T>().RemoveRange(context.Set<T>().IgnoreQueryFilters());
             context.SaveChanges();
 
             if (records != null)

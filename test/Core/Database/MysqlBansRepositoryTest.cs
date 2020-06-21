@@ -69,8 +69,8 @@ namespace test.Core.Database
 
                 subject.DeleteByUserId(ban.Userid);
 
-                var result = GetAll(context).Select(b => b.Userid);
-                Assert.Contains(noise.Userid, result);
+                var result = GetAll(context).First(b => b.Id == noise.Id);
+                Assert.Equal(0, result.Lifted);
             }
         }
         
@@ -106,8 +106,8 @@ namespace test.Core.Database
                 
                 subject.DeleteByUserId(ban.Userid);
 
-                var result = GetAll(context).Select(b => b.Userid);
-                Assert.Contains(ban.Userid, result);
+                var result = GetAll(context).First(b => b.Id == ban.Id);
+                Assert.Equal(1, result.Lifted);
             }
         }
 
