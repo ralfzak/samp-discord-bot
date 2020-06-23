@@ -5,11 +5,16 @@ using Newtonsoft.Json;
 
 namespace main.Core
 {
+    /// <summary>
+    /// General configuration interaction.
+    /// </summary>
     public static class Configuration
     {
-        /**
-         * Returns configuration variables from config.json file.
-         */
+        /// <summary>
+        /// Returns configuration variables from config.json file.
+        /// </summary>
+        /// <param name="key">The Json Key, dot delimited, that identifies for a given value</param>
+        /// <returns>The key value set, or null if no matching key is found</returns>
         public static dynamic GetVariable(string key)
         {
             try

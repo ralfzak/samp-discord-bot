@@ -2,14 +2,16 @@
 
 namespace main.Core
 {
-    /**
-     * Responsible for handling HTTP(s) calls.
-     */
+    /// <summary>
+    /// Responsible for handling HTTP(s) calls.
+    /// </summary>
     public interface IHttpClient
     {
-        /**
-         * Returns the content of a given [url] response.
-         */
+        /// <summary>
+        /// Returns the content of a given <paramref name="url"/> GET response.
+        /// </summary>
+        /// <param name="url">The endpoint to call</param>
+        /// <returns>The raw content <seealso cref="url"/> endpoint.</returns>
         string GetContent(string url);
     }
     
