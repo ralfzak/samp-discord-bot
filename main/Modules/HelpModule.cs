@@ -5,6 +5,9 @@ using Discord.Commands;
 
 namespace main.Modules
 {
+    /// <summary>
+    /// Encapsulates all help-related commands.
+    /// </summary>
     #pragma warning disable 4014,1998    
     public class HelpModule : ModuleBase<SocketCommandContext>
     {

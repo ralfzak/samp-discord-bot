@@ -12,6 +12,9 @@ using main.Services;
 
 namespace main.Handlers
 {
+    /// <summary>
+    /// Encapsulates all ban related events.
+    /// </summary>
     #pragma warning disable 4014, 1998
     public class BanningHandler
     {

@@ -7,6 +7,9 @@ using main.Services;
 
 namespace main.Handlers
 {
+    /// <summary>
+    /// Encapsulates samp stats timer responsible to update the bot status.
+    /// </summary>
     #pragma warning disable 4014,1998
     public class BotStatusHandler
     {

@@ -9,6 +9,9 @@ using main.Core.Domain.Models;
 
 namespace main.Modules
 {
+    /// <summary>
+    /// Encapsulates all wiki-related commands.
+    /// </summary>
     #pragma warning disable 4014,1998
     public class WikiModule : ModuleBase<SocketCommandContext>
     {
