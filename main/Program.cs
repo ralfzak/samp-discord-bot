@@ -13,14 +13,20 @@ using main.Core.Domain.Repo;
 
 namespace main
 {
+    /// <summary>
+    /// Main application class
+    /// </summary>
     class Program
     {
+        /// <summary>
+        /// Main application entry point
+        /// </summary>
         static void Main(string[] args)  
         {
             new Program().MainAsync().GetAwaiter().GetResult();
         }
 
-        public async Task MainAsync()
+        private async Task MainAsync()
         {
             using (var services = ConfigureServices())
             {

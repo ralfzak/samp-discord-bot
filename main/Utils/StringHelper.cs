@@ -3,8 +3,18 @@ using System.Linq;
 
 namespace main.Utils
 {
+    /// <summary>
+    /// Encapsulates a set of string functions.
+    /// </summary>
     public static class StringHelper
     {
+        /// <summary>
+        /// Calculates the Levenshtein distance of two given strings.
+        /// More information on the algorithm here: https://en.wikipedia.org/wiki/Levenshtein_distance
+        /// </summary>
+        /// <param name="s">A string sequence to compare</param>
+        /// <param name="t">A string sequence to compare</param>
+        /// <returns>the Levenshtein distance</returns>
         public static int ComputeLevenshteinDistance(string s, string t)
         {
             int n = s.Length;
@@ -34,6 +44,11 @@ namespace main.Utils
             return d[n, m];
         }
         
+        /// <summary>
+        /// Generates a random string of a specified <paramref name="length"/>.
+        /// </summary>
+        /// <param name="length">Length of the random generated string</param>
+        /// <returns>A random string</returns>
         public static string GenerateRandom(int length)
         {
             Random random = new Random();
