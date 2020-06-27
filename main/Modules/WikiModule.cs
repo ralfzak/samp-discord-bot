@@ -31,7 +31,7 @@ namespace main.Modules
             _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
             _botChannelId = Configuration.GetVariable("Guild.BotCommandsChannelId");
             _scriptingChannelId = Configuration.GetVariable("Guild.ScriptingChannelId");
-            _wikiSearchUrl = Configuration.GetVariable("Urls.Wiki.Seach");
+            _wikiSearchUrl = Configuration.GetVariable("Urls.Wiki.Search");
         }
 
         [Command("wiki")]

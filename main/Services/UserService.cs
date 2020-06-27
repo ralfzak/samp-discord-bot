@@ -4,6 +4,9 @@ using main.Core;
 
 namespace main.Services
 {
+    /// <summary>
+    /// Encapsulates all user related functions.
+    /// </summary>
     public class UserService
     {
         private ITimeProvider _timeProvider;
@@ -21,10 +24,16 @@ namespace main.Services
         private bool IsOnCooldown(long ticks) =>
             _timeProvider.GetElapsedFromEpoch(ticks) > 0;
 
-        public void SetUserCooldown(ulong userId, int seconds, string cmd = "")
+        /// <summary>
+        /// Sets a given <paramref name="userId"/> a <paramref name="identifier"/> key with a cooldown of <paramref name="numberOfSeconds"/>
+        /// </summary>
+        /// <param name="userId">The user Id to be set on cooldown</param>
+        /// <param name="numberOfSeconds">Number of seconds until the cooldown is over</param>
+        /// <param name="identifier">A key used to differentiate different cooldowns set</param>
+        public void SetUserCooldown(ulong userId, int numberOfSeconds, string identifier = "")
         {
-            string key = GetMapKey(userId, cmd);
-            long ticksUtc = (_timeProvider.UtcNow.AddSeconds(seconds).Ticks);
+            string key = GetMapKey(userId, identifier);
+            long ticksUtc = (_timeProvider.UtcNow.AddSeconds(numberOfSeconds).Ticks);
 
             if (_cooldownMap.ContainsKey(key))
             {
@@ -33,9 +42,16 @@ namespace main.Services
             else _cooldownMap.Add(key, ticksUtc);
         }
 
-        public bool IsUserOnCooldown(ulong userId, string cmd = "")
+        /// <summary>
+        /// Returns whether a given <paramref name="userId"/> is on cooldown differentiated by a given <paramref name="identifier"/>.
+        /// This command also drops all expired cooldowns in order to free memory.
+        /// </summary>
+        /// <param name="userId">The user id used to check if on cooldown</param>
+        /// <param name="identifier">The command string to differentiated different set cooldowns</param>
+        /// <returns>True if a user is on cooldown, false otherwise</returns>
+        public bool IsUserOnCooldown(ulong userId, string identifier = "")
         {
-            string key = GetMapKey(userId, cmd);
+            string key = GetMapKey(userId, identifier);
 
             // remove all keys with low cooldown
             if (_cooldownMap.Count > 0)

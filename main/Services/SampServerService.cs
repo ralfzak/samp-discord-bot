@@ -10,6 +10,9 @@ using main.Core.Domain.Models;
 
 namespace main.Services
 {
+    /// <summary>
+    /// Encapsulates all SAMP server querying functionalities.
+    /// </summary>
     public class SampServerService
     {
         private readonly IHttpClient _httpClient;
@@ -21,6 +24,15 @@ namespace main.Services
             _hostedTabListUrl = Configuration.GetVariable("Urls.Samp.HostedTabProvider");
         }
         
+        /// <summary>
+        /// Parses a given ip or hostname and port string concatenated with a colon.
+        /// The hostname is queried and the IP entry is fetched.
+        /// If no port was provided, a default 7777 port is returned.
+        /// A typical given <paramref name="ipPort"/> can be: "127.0.0.1:1234" or "host.com:1234"
+        /// </summary>
+        /// <param name="ipPort">The colon-concatenated ip and port</param>
+        /// <returns>A parsed Ip and Port pair</returns>
+        /// <exception cref="InvalidIpParseException">Occurs when parsing fails, with a reason</exception>
         public (string ip, ushort port) ParseIpPort(string ipPort)
         {
             string ip = ipPort;
@@ -70,6 +82,15 @@ namespace main.Services
             }
         }
 
+        /// <summary>
+        /// Queries a SAMP server by <paramref name="ip"/> and <paramref name="port"/>.
+        /// General server information along with some rules are fetched, <see cref="SampServerData"/> for all fetched
+        /// entries.
+        /// </summary>
+        /// <param name="ip">The IP of the SAMP server to query</param>
+        /// <param name="port">The port of the SAMP server to query</param>
+        /// <returns><see cref="SampServerData"/> object containing all the retrieved data</returns>
+        /// <exception cref="UnableToConnectToServerException">Occurs when querying fails, with a reason</exception>
         public SampServerData GetServerData(string ip, ushort port)
         {
             var generalInfo = SendAndReadPacketData(ip, port, (char)SampPackets.GeneralInfo, 2500);
