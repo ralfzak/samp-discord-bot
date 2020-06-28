@@ -86,6 +86,16 @@ namespace main.Services
             _wikiUrl = Configuration.GetVariable("Urls.Wiki.Docs");
         }
         
+        /// <summary>
+        /// Queries a given wiki <paramref name="article"/> and returns it's parsed data. Given article is matched
+        /// against a predefined set of existing articles and closely matched. If a close match is found, the article name
+        /// is returned. 
+        /// If any of the <see cref="WikiPageData"/> fields fails to be parsed, each will be set a default value. See
+        /// object documentation for more information.
+        /// </summary>
+        /// <param name="article">The article name to query</param>
+        /// <returns><see cref="WikiPageData"/> object that contains the parsed given <paramref name="article"/></returns>
+        /// <exception cref="InvalidWikiPageException">Occurs when wiki parsing fails, with a reson</exception>
         public WikiPageData GetPageData(string article)
         {
             article = GetClosestArticleName(article);

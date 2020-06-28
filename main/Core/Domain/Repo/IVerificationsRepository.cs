@@ -3,35 +3,51 @@ using main.Core.Domain.Models;
 
 namespace main.Core.Domain.Repo
 {
-    /**
-     * Responsible for persisting [Verifications] instances.
-     */
+    /// <summary>
+    /// Responsible for persisting <see cref="Verifications"/> instances.
+    /// </summary>
     public interface IVerificationsRepository
     {
-        /**
-         * Persists a [Verifications] instance.
-         */
+        /// <summary>
+        /// Persists a <see cref="Verifications"/> instance.
+        /// </summary>
+        /// <param name="verification">A single Verifications object with data to be persisted</param>
         void Create(Verifications verification);
-
-        /**
-         * Drops a [Verifications] instance.
-         */
+        
+        /// <summary>
+        /// Deletes a persisted verification instance by <paramref name="userId"/>.
+        /// </summary>
+        /// <remarks>
+        /// If a verification is not found, the deletion will silently not occur.
+        /// </remarks>
+        /// <param name="userId">A user Id field of a <see cref="Verifications"/> object</param>
         void DeleteByUserId(ulong userId);
 
-        /**
-         * Returns a list of [Verifications] matching a given [criteria], or an empty list if no matching instances
-         * were found.
-         */
+        /// <summary>
+        /// Fetches a list of persisted <see cref="Verifications"/> matching a given <paramref name="criteria"/>.
+        /// </summary>
+        /// <param name="criteria">Data to be searched by</param>
+        /// <returns>
+        /// A list of <see cref="Verifications"/>, or an empty list if no matching instances were found.
+        /// </returns>
         List<Verifications> FindByForumInfo(string criteria);
         
-        /**
-         * Returns a [Verifications] matching a given [forumId], or null if no matching instance was found.
-         */
+        /// <summary>
+        /// Fetches a persisted verification instance by <paramref name="forumId"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Verifications"/> object, or null if no matching record was found.
+        /// </returns>
+        /// <param name="forumId">A forum Id field of a <see cref="Verifications"/> object</param>
         Verifications FindByForumId(int forumId);        
         
-        /**
-         * Returns a [Verifications] matching a given [userId], or null if no matching instance was found.
-         */
+        /// <summary>
+        /// Fetches a persisted verification instance by <paramref name="userId"/>.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Verifications"/> object, or null if no matching record was found.
+        /// </returns>
+        /// <param name="userId">A user Id field of a <see cref="Verifications"/> object</param>
         Verifications FindByUserId(ulong userId);
     }
 }

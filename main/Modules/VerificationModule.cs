@@ -9,6 +9,9 @@ using main.Core.Domain;
 
 namespace main.Modules
 {
+    /// <summary>
+    /// Encapsulates all verification-related commands.
+    /// </summary>
     #pragma warning disable 4014,1998
     public class VerificationModule : ModuleBase<SocketCommandContext>
     {

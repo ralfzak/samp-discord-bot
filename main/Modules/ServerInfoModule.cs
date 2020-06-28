@@ -8,6 +8,9 @@ using main.Core.Domain.Models;
 
 namespace main.Modules
 {
+    /// <summary>
+    /// Encapsulates all SAMP server stats commands.
+    /// </summary>
     #pragma warning disable 4014,1998
     public class ServerInfoModule : ModuleBase<SocketCommandContext>
     {

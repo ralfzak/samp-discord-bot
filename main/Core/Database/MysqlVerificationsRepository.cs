@@ -6,10 +6,10 @@ using main.Core.Domain.Models;
 
 namespace main.Core.Database
 {
-    /**
-     * Persists [Verifications] instances using [DatabaseContext].
-     */
-    public partial class MysqlVerificationsRepository : IVerificationsRepository
+    /// <summary>
+    /// Persists <see cref="Verifications"/> instances using <see cref="DatabaseContext"/>.
+    /// </summary>
+    public class MysqlVerificationsRepository : IVerificationsRepository
     {
         private readonly DatabaseContext _databaseContext;
         private ITimeProvider _timeProvider;

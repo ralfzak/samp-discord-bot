@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace main.Handlers
 {
+    /// <summary>
+    /// Encapsulates user connect event for welcoming and verification role setting.
+    /// </summary>
     #pragma warning disable 4014, 1998
     public class UserConnectHandler
     {

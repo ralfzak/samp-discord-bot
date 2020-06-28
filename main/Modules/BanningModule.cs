@@ -8,6 +8,9 @@ using main.Core;
 
 namespace main.Modules
 {
+    /// <summary>
+    /// Encapsulates all banning-related commands.
+    /// </summary>
     #pragma warning disable 4014,1998
     public class BanningModule : ModuleBase<SocketCommandContext>
     {

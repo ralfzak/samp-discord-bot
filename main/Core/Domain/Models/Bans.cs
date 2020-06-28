@@ -2,6 +2,9 @@
 
 namespace main.Core.Domain.Models
 {
+    /// <summary>
+    /// Responsible for carrying single ban related data.
+    /// </summary>
     public class Bans
     {
         public long Id { get; set; }

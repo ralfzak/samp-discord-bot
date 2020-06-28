@@ -8,6 +8,10 @@ using main.Services;
 
 namespace main.Core
 {
+    /// <summary>
+    /// Main entry point for general command processing. This class is also responsible for command exception handling
+    /// and user timeout. 
+    /// </summary>
     #pragma warning disable 4014,1998
     public class Commands
     {

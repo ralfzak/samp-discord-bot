@@ -6,10 +6,10 @@ using main.Core.Domain.Repo;
 
 namespace main.Core.Database
 {
-    /**
-     * Persists [Bans] instances using [DatabaseContext].
-     */
-    public partial class MysqlBansRepository: IBansRepository
+    /// <summary>
+    /// Persists <see cref="Bans"/> instances using <see cref="DatabaseContext"/>.
+    /// </summary>
+    public class MysqlBansRepository: IBansRepository
     {
         private readonly DatabaseContext _databaseContext;
         private ITimeProvider _timeProvider;

@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace main.Handlers
 {
+    /// <summary>
+    /// Encapsulates message related events.
+    /// Handles message monitoring for command message deletion. 
+    /// </summary>
     #pragma warning disable 4014, 1998
     class MessageHandler
     {

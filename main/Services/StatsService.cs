@@ -15,6 +15,11 @@ namespace main.Services
             _sampUrl = Configuration.GetVariable("Urls.Samp.Website");
         }
         
+        /// <summary>
+        /// Queries SAMP's official website to retrieve global player count and server count.
+        /// If querying fails, either failed values are returned as 0.
+        /// </summary>
+        /// <returns>A global player and server count pair</returns>
         public (int playersCount, int serversCount) GetSampPlayerServerCount()
         {
             var websiteContent = GetSampWebsiteContent();

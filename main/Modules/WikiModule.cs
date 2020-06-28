@@ -9,6 +9,9 @@ using main.Core.Domain.Models;
 
 namespace main.Modules
 {
+    /// <summary>
+    /// Encapsulates all wiki-related commands.
+    /// </summary>
     #pragma warning disable 4014,1998
     public class WikiModule : ModuleBase<SocketCommandContext>
     {
@@ -28,7 +31,7 @@ namespace main.Modules
             _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
             _botChannelId = Configuration.GetVariable("Guild.BotCommandsChannelId");
             _scriptingChannelId = Configuration.GetVariable("Guild.ScriptingChannelId");
-            _wikiSearchUrl = Configuration.GetVariable("Urls.Wiki.Seach");
+            _wikiSearchUrl = Configuration.GetVariable("Urls.Wiki.Search");
         }
 
         [Command("wiki")]

@@ -2,6 +2,9 @@ using main.Core;
 
 namespace main.Utils
 {
+    /// <summary>
+    /// A set of predefined constant strings.
+    /// </summary>
     public static class StringConstants
     {
         public const string UserNotFound = "User not found.";
