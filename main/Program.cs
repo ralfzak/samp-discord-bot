@@ -60,7 +60,7 @@ namespace main
                 .AddDbContext<DatabaseContext>(options =>
                 {
                     options.UseMySQL(DbConnectionString());
-                })
+                }, ServiceLifetime.Transient)
                 .AddSingleton<IBansRepository, MysqlBansRepository>()
                 .AddSingleton<IVerificationsRepository, MysqlVerificationsRepository>()
                 
