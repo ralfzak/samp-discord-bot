@@ -34,7 +34,7 @@ namespace main
                 
                 var client = services.GetRequiredService<DiscordSocketClient>();
                 client.Log += LogAsync;
-                string token = Configuration.GetVariable("Bot.Token");
+                string token = Configuration.GetVariable(ConfigurationKeys.BotToken);
                 await client.LoginAsync(TokenType.Bot, token);
                 await client.StartAsync();
 
@@ -100,10 +100,10 @@ namespace main
         
         private string DbConnectionString()
         {
-            return $"server={Configuration.GetVariable("Database.Host")};" +
-                   $"database={Configuration.GetVariable("Database.Schema")};" +
-                   $"user={Configuration.GetVariable("Database.User")};" +
-                   $"password={Configuration.GetVariable("Database.Password")};" +
+            return $"server={Configuration.GetVariable(ConfigurationKeys.DatabaseHost)};" +
+                   $"database={Configuration.GetVariable(ConfigurationKeys.DatabaseSchema)};" +
+                   $"user={Configuration.GetVariable(ConfigurationKeys.DatabaseUser)};" +
+                   $"password={Configuration.GetVariable(ConfigurationKeys.DatabasePassword)};" +
                    "port=3306;";
         }
 

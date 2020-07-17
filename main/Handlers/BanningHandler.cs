@@ -28,8 +28,8 @@ namespace main.Handlers
         {
             _discord = services.GetRequiredService<DiscordSocketClient>();
             _banningService = banningService;
-            _guildId = Configuration.GetVariable("Guild.Id");
-            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
+            _guildId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildId);
+            _adminChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildAdminChannelId);
             _banTimer = new Timer(OnBanCheckAsync, null, 10000, 600000);
 
             _discord.UserBanned += OnUserBanned;

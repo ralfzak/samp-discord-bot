@@ -31,8 +31,8 @@ namespace main.Modules
             _userService = userService;
             _messageService = messageService;
             _sampServerService = sampServerService;
-            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
-            _botChannelId = Configuration.GetVariable("Guild.BotCommandsChannelId");
+            _adminChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildAdminChannelId);
+            _botChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildBotcommandsChannelId);
         }
 
         [Command("server")]

@@ -22,7 +22,7 @@ namespace main.Modules
         {
             _timeProvider = timeProvider;
             _banningService = banningService;
-            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
+            _adminChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildAdminChannelId);
         }
 
         [Command("ban")]

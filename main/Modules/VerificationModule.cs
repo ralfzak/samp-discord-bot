@@ -35,11 +35,11 @@ namespace main.Modules
             _cacheService = cacheService;
             _messageService = messageService;
             _verificationService = verificationService;
-            _guildId = Configuration.GetVariable("Guild.Id");
-            _myId = Configuration.GetVariable("Bot.Id");
-            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
-            _verifiedRoleId = Configuration.GetVariable("Guild.VerifiedRoleId");
-            _forumProfileUrl = Configuration.GetVariable("Urls.Forum.Profile");
+            _guildId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildId);
+            _myId = Configuration.GetVariable<ulong>(ConfigurationKeys.BotId);
+            _adminChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildAdminChannelId);
+            _verifiedRoleId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildVerifiedRoleId);
+            _forumProfileUrl = Configuration.GetVariable(ConfigurationKeys.UrlForumProfile);
         }
 
         [Command("verify")]
