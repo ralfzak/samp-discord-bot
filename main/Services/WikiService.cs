@@ -83,7 +83,7 @@ namespace main.Services
         public WikiService(IHttpClient httpClient)
         {
             _httpClient = httpClient;
-            _wikiUrl = Configuration.GetVariable("Urls.Wiki.Docs");
+            _wikiUrl = Configuration.GetVariable(ConfigurationKeys.UrlWikiDocs);
         }
         
         /// <summary>

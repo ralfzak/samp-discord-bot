@@ -3,12 +3,24 @@ dotnet: 2.1.805
 mono: none
 os: linux
 
-before_script:
-  - dotnet restore
-  - dotnet build --no-restore
+jobs:
+  include:
+    - stage: compile
+      script: dotnet build
+      
+    - stage: test
+      script: dotnet test -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*]main.Core.Database.Migrations.*%2c[*]main.Core.Domain.Models.*%2c[*]main.Core.Commands%2c[*]main.Core.Configuration%2c[*]main.Core.HttpClient%2c[*]main.Core.CurrentTimeProvider%2c[*]main.Handlers.*"
+      after_script: bash <(curl -s https://codecov.io/bash)
+    
+    - stage: deploy
+      before_script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_OWNER" --password-stdin
+      script:
+        - docker build --no-cache -t "$DOCKER_OWNER"/samp-discord-bot:lastest .
+        - docker tag "$DOCKER_OWNER"/samp-discord-bot:latest "$DOCKER_OWNER"/samp-discord-bot:latest
+        - docker push "$DOCKER_OWNER"/samp-discord-bot:latest
 
-script:
-  - dotnet test -c Release /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*]main.Core.Database.Migrations.*%2c[*]main.Core.Domain.Models.*%2c[*]main.Core.Commands%2c[*]main.Core.Configuration%2c[*]main.Core.HttpClient%2c[*]main.Core.CurrentTimeProvider%2c[*]main.Handlers.*"
-
-after_script:
-  - bash <(curl -s https://codecov.io/bash)
+stages:
+  - compile
+  - test
+  - name: deploy
+    if: branch = master AND type != pull_request

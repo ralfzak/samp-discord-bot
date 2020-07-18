@@ -28,10 +28,10 @@ namespace main.Modules
             _userService = userService;
             _wikiService = wikiService;
             _messageService = messageService;
-            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
-            _botChannelId = Configuration.GetVariable("Guild.BotCommandsChannelId");
-            _scriptingChannelId = Configuration.GetVariable("Guild.ScriptingChannelId");
-            _wikiSearchUrl = Configuration.GetVariable("Urls.Wiki.Search");
+            _adminChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildAdminChannelId);
+            _botChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildBotcommandsChannelId);
+            _scriptingChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildScriptingChannelId);
+            _wikiSearchUrl = Configuration.GetVariable(ConfigurationKeys.UrlWikiSearch);
         }
 
         [Command("wiki")]

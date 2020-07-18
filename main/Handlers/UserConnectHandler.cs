@@ -27,8 +27,8 @@ namespace main.Handlers
             _discord = services.GetRequiredService<DiscordSocketClient>();
             _verificationService = verificationService;
             _cacheService = cacheService;
-            _guildId = Configuration.GetVariable("Guild.Id");
-            _verifiedRoleId = Configuration.GetVariable("Guild.VerifiedRoleId");
+            _guildId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildId);
+            _verifiedRoleId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildVerifiedRoleId);
 
             _discord.UserJoined += OnUserJoinServer;
             _discord.UserLeft += OnUserLeaveServer;

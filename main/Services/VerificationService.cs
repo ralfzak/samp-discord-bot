@@ -21,7 +21,7 @@ namespace main.Services
         {
             _verificationsRepository = verificationsRepository;
             _httpClient = httpClient;
-            _forumProfileUrl = Configuration.GetVariable("Urls.Forum.Profile");
+            _forumProfileUrl = Configuration.GetVariable(ConfigurationKeys.UrlForumProfile);
         }
 
         /// <summary>

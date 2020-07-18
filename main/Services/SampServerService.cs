@@ -21,7 +21,7 @@ namespace main.Services
         public SampServerService(IHttpClient httpClient)
         {
             _httpClient = httpClient;
-            _hostedTabListUrl = Configuration.GetVariable("Urls.Samp.HostedTabProvider");
+            _hostedTabListUrl = Configuration.GetVariable(ConfigurationKeys.UrlSampHostedtabprovider);
         }
         
         /// <summary>

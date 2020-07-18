@@ -18,10 +18,10 @@ namespace main.Modules
 
         public HelpModule()
         {
-            _adminChannelId = Configuration.GetVariable("Guild.AdminChannelId");
-            _botChannelId = Configuration.GetVariable("Guild.BotCommandsChannelId");
-            _scriptingChannelId = Configuration.GetVariable("Guild.ScriptingChannelId");
-            _websiteUrl = Configuration.GetVariable("Urls.OfficialWebsite");
+            _adminChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildAdminChannelId);
+            _botChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildBotcommandsChannelId);
+            _scriptingChannelId = Configuration.GetVariable<ulong>(ConfigurationKeys.GuildScriptingChannelId);
+            _websiteUrl = Configuration.GetVariable(ConfigurationKeys.UrlSampWebsite);
         }
 
         [Command("help")]

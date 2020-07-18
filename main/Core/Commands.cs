@@ -35,7 +35,7 @@ namespace main.Core
             _commands = commands;
             _discord = discord;
             
-            _commandsPrefix = Configuration.GetVariable("CommandPrefix") ?? '/';
+            _commandsPrefix = Configuration.GetVariable<char>(ConfigurationKeys.GuildCommandPrefix);
 
             _commands.CommandExecuted += CommandExecutedAsync;
             _discord.MessageReceived += MessageReceivedAsync;

@@ -12,7 +12,7 @@ namespace main.Services
         public StatsService(IHttpClient httpClient)
         {
             _httpClient = httpClient;
-            _sampUrl = Configuration.GetVariable("Urls.Samp.Website");
+            _sampUrl = Configuration.GetVariable(ConfigurationKeys.UrlSampWebsite);
         }
         
         /// <summary>
