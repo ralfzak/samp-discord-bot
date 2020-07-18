@@ -16,7 +16,7 @@ jobs:
       before_script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_OWNER" --password-stdin
       script:
         - cd main
-        - docker build --no-cache -t "$DOCKER_OWNER"/samp-discord-bot:lastest .
+        - docker build --no-cache -t "$DOCKER_OWNER"/samp-discord-bot:latest .
         - docker tag "$DOCKER_OWNER"/samp-discord-bot:latest "$DOCKER_OWNER"/samp-discord-bot:latest
         - docker push "$DOCKER_OWNER"/samp-discord-bot:latest
 
