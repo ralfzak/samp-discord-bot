@@ -74,7 +74,7 @@ Most of the bot can be configured using environment variables.
 ## Installation
 1. Change your secrets in `run.sh`.
 2. Configure the bot as needed by changing the container's environment variables in `docker-compose.yml`.
-3. Start the containers `docker-compose up`.
+3. Run the application `./run.sh`.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
