@@ -1,0 +1,49 @@
+version: "3"
+
+networks:
+  default:
+    external:
+      name: gateway
+  mysql:
+    driver: bridge
+    internal: true
+
+services:
+  mysql:
+    image: "mysql:5.6"
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: "$DATABASE_PASSWORD"
+    volumes:
+      - "${HOME_DIRECTORY}/conf.d:/etc/mysql/conf.d"
+      - "${HOME_DIRECTORY}:/var/lib/mysql"
+    networks:
+      - mysql
+
+  samp-discord-bot:
+    image: "${DOCKER_OWNER}/samp-discord-bot:latest"
+    restart: on-failure
+    environment:
+      BOT_TOKEN: "$BOT_TOKEN"
+      BOT_ID: 568132337573953552
+      GUILD_ID: 567064077613006861
+      GUILD_SCRIPTING_CHANNEL_ID: 567081165677264898
+      GUILD_BOTCOMMANDS_CHANNEL_ID: 570986182452838412
+      GUILD_ADMIN_CHANNEL_ID: 569907291965358091
+      GUILD_VERIFIED_ROLE_ID: 568478807791763483
+      GUILD_COMMAND_PREFIX: "/"
+      URL_SAMP_WEBSITE: "https://sa-mp.com"
+      URL_SAMP_HOSTEDTABPROVIDER: "https://game-mp.com"
+      URL_FORUM_PROFILE: "https://forum.sa-mp.com/member.php?u="
+      URL_FORUM_SETTINGS: "http://forum.sa-mp.com/profile.php?do=privacy"
+      URL_WIKI_DOCS: "https://wiki.sa-mp.com/wiki/"
+      URL_WIKI_SEARCH: "https://wiki.sa-mp.com/wiki/Special:Search?search="
+      DATABASE_HOST: mysql
+      DATABASE_SCHEMA: sampdiscord
+      DATABASE_USER: root
+      DATABASE_PASSWORD: "$DATABASE_PASSWORD"
+    networks:
+      - default
+      - mysql
+    depends_on:
+      - mysql
