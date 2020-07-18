@@ -50,7 +50,7 @@ namespace main.Modules
             if (_verificationService.IsUserVerified(user.Id))
             {
                 Context.Message.DeleteAsync();
-                user.SendMessageAsync("Your discord account is already verified!");
+                user.SendMessageAsync("Your discord account is already verified :tada:");
                 return;
             }
 
