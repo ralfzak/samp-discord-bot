@@ -81,8 +81,5 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 Please make sure to update tests as appropriate.
 
-## Upcoming work
-* Setup a proper CD pipeline.
-
 ## License
 [GNU 3.0](https://github.com/ralfzak/samp-discord-bot/blob/master/LICENSE)
