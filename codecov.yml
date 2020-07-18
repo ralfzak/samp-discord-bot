@@ -1,0 +1,10 @@
+﻿coverage:
+  range: 20..70 # coverage lower than 50 is red, higher than 90 green, between color code
+
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 5%
+
+    patch: off
