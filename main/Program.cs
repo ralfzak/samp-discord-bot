@@ -42,7 +42,7 @@ namespace main
                 
                 await services.GetRequiredService<Commands>().InitializeAsync();
                 await services.GetRequiredService<BanningHandler>().InitializeAsync();
-                await services.GetRequiredService<UserConnectHandler>().InitializeAsync();
+                await services.GetRequiredService<UserActionsHandler>().InitializeAsync();
                 await services.GetRequiredService<BotStatusHandler>().InitializeAsync();
                 await services.GetRequiredService<MessageHandler>().InitializeAsync();
                 
@@ -63,6 +63,7 @@ namespace main
                 }, ServiceLifetime.Transient)
                 .AddSingleton<IBansRepository, MysqlBansRepository>()
                 .AddSingleton<IVerificationsRepository, MysqlVerificationsRepository>()
+                .AddSingleton<IUserRoleRepository, MysqlUserRoleRepository>()
                 
                 .AddSingleton<ITimeProvider, CurrentTimeProvider>()
                 .AddSingleton<IHttpClient, HttpClient>()
@@ -72,7 +73,7 @@ namespace main
                 .AddSingleton<BanningHandler>()
                 .AddSingleton<BotStatusHandler>()
                 .AddSingleton<MessageHandler>()
-                .AddSingleton<UserConnectHandler>()
+                .AddSingleton<UserActionsHandler>()
 
                 .AddSingleton<BanningModule>()
                 .AddSingleton<HelpModule>()

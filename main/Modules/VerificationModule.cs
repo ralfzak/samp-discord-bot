@@ -120,7 +120,7 @@ namespace main.Modules
                         .SendMessageAsync($"{guildUser.Mention} ({guildUser.Username}) has successfully verified to **{forumName}** <{_forumProfileUrl}{cachedProfile}>");
 
                     ReplyAsync(StringConstants.GetVerificationSuccessMessage(user.Mention, cachedProfile));
-
+                    
                     guildUser.AddRoleAsync(discordServer.GetRole(_verifiedRoleId));
                     break;
 

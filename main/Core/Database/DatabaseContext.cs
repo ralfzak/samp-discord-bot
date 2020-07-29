@@ -16,6 +16,7 @@ namespace main.Core.Database
 
         public virtual DbSet<Bans> Bans { get; set; }
         public virtual DbSet<Verifications> Verifications { get; set; }
+        public virtual DbSet<UserRole> UserRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -107,6 +108,29 @@ namespace main.Core.Database
                 entity.HasQueryFilter(e => e.DeletedOn == null);
             });
 
+            modelBuilder.Entity<UserRole>(entity =>
+            {
+                entity.ToTable("user_role");
+
+                entity.HasKey(e => new { e.UserId, e.RoleId })
+                    .HasName("PRIMARY");
+
+                entity.Property(e => e.UserId)
+                    .HasColumnName("user_id")
+                    .HasColumnType("bigint(20)");
+                
+                entity.Property(e => e.RoleId)
+                    .HasColumnName("role_id")
+                    .HasColumnType("bigint(20)");
+                
+                entity.Property(e => e.AssignedBy)
+                    .HasColumnName("assigned_by")
+                    .HasColumnType("bigint(20)");
+
+                entity.Property(e => e.AssignedOn)
+                    .HasColumnName("assigned_on");
+            });
+            
             OnModelCreatingPartial(modelBuilder);
         }
 
