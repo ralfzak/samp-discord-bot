@@ -46,7 +46,7 @@ namespace main.Handlers
             if (guildUser == null)
                 return;
             
-            var updatedRoles = guildUser.Roles.Select(r => r.Id).ToList();
+            var updatedRoles = guildUser.Roles.Where(r => !r.IsEveryone).Select(r => r.Id).ToList();
             var persistedRoles = _userService.GetUserRolesIds(guildUser.Id);
             var addedRoles = updatedRoles.Except(persistedRoles).ToList();
             var removedRoles = persistedRoles.Except(updatedRoles).ToList();
