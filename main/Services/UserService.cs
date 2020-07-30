@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using main.Core;
+using main.Core.Domain.Repo;
 
 namespace main.Services
 {
@@ -11,18 +12,14 @@ namespace main.Services
     {
         private ITimeProvider _timeProvider;
         private Dictionary<string, long> _cooldownMap;
+        private IUserRoleRepository _userRoleRepository;
 
-        public UserService(ITimeProvider timeProvider)
+        public UserService(ITimeProvider timeProvider, IUserRoleRepository userRoleRepository)
         {
             _timeProvider = timeProvider;
+            _userRoleRepository = userRoleRepository;
             _cooldownMap = new Dictionary<string, long>();
         }
-
-        private string GetMapKey(ulong userId, string channel) =>
-            $"{userId}-{channel}";
-
-        private bool IsOnCooldown(long ticks) =>
-            _timeProvider.GetElapsedFromEpoch(ticks) > 0;
 
         /// <summary>
         /// Sets a given <paramref name="userId"/> a <paramref name="identifier"/> key with a cooldown of <paramref name="numberOfSeconds"/>
@@ -74,5 +71,39 @@ namespace main.Services
 
             return false;
         }
+        
+        /// <summary>
+        /// Returns a list of role ids assigned to a specific given user id.
+        /// </summary>
+        /// <param name="userId">The unique Id of a user having roles assigned to</param>
+        /// <returns>List of role Ids, or empty list if none exist</returns>
+        public List<ulong> GetUserRolesIds(ulong userId) => 
+            _userRoleRepository.GetByUserId(userId).Select(r => r.RoleId).ToList();
+
+        /// <summary>
+        /// Assigns a user a specific role 
+        /// </summary>
+        /// <param name="userId">The Id of the user being assigned a role</param>
+        /// <param name="roleId">The role Id being assigned</param>
+        /// <param name="assignedById"></param>
+        public void AssignUserRole(ulong userId, ulong roleId, ulong assignedById) =>
+            _userRoleRepository.Create(userId, roleId, assignedById);
+
+        /// <summary>
+        /// Deletes a persisted role assignment instance by <paramref name="userId"/>.
+        /// </summary>
+        /// <remarks>
+        /// If a role assignment is not found, the deletion will silently not occur.
+        /// </remarks>
+        /// <param name="userId">A user Id field of a <see cref="UserRole"/> object</param>
+        /// <param name="roleId">A role Id field of a <see cref="UserRole"/> object</param>
+        public void DeleteUserRole(ulong userId, ulong roleId) =>
+            _userRoleRepository.Delete(userId, roleId);
+        
+        private string GetMapKey(ulong userId, string channel) =>
+            $"{userId}-{channel}";
+
+        private bool IsOnCooldown(long ticks) =>
+            _timeProvider.GetElapsedFromEpoch(ticks) > 0;
     }
 }
