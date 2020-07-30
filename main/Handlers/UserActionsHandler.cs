@@ -43,6 +43,9 @@ namespace main.Handlers
         {
             var guild = _discord.GetGuild(_guildId);
             var guildUser = guild.GetUser(newUser.Id);
+            if (guildUser == null)
+                return;
+            
             var updatedRoles = guildUser.Roles.Select(r => r.Id).ToList();
             var persistedRoles = _userService.GetUserRolesIds(guildUser.Id);
             var addedRoles = updatedRoles.Except(persistedRoles).ToList();
@@ -50,7 +53,7 @@ namespace main.Handlers
             
             addedRoles.ForEach(r =>
             {
-                var assinedBy = GetRoleAssigningUserFromAuditLog(guild, guildUser.Id);
+                var assinedBy = GetRoleAssigningUserFromAuditLog(guild, guildUser.Id) ?? guildUser;
                 _userService.AssignUserRole(guildUser.Id, r, assinedBy.Id);
             });
             
