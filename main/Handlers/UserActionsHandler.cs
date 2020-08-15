@@ -121,7 +121,7 @@ namespace main.Handlers
                 {
                     foreach (var logEntry in logEntries)
                     {
-                        if (logEntry.Action == ActionType.Ban)
+                        if (logEntry.Action == ActionType.RoleUpdated)
                         {
                             if ((logEntry.Data as MemberRoleAuditLogData).Target.Id == userId)
                             {
