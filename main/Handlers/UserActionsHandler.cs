@@ -111,7 +111,7 @@ namespace main.Handlers
         private IUser GetRoleAssigningUserFromAuditLog(SocketGuild server, ulong userId)
         {
             IUser assigningUser = null;
-            server.GetAuditLogsAsync(50).ForEach(logEntries =>
+            server.GetAuditLogsAsync(10).ForEach(logEntries =>
             {
                 if (logEntries == null)
                 {
@@ -121,7 +121,7 @@ namespace main.Handlers
                 {
                     foreach (var logEntry in logEntries)
                     {
-                        if (logEntry.Action == ActionType.RoleUpdated)
+                        if (logEntry.Action == ActionType.MemberRoleUpdated)
                         {
                             if ((logEntry.Data as MemberRoleAuditLogData).Target.Id == userId)
                             {
