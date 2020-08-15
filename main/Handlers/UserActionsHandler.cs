@@ -53,8 +53,8 @@ namespace main.Handlers
             
             addedRoles.ForEach(r =>
             {
-                var assinedBy = GetRoleAssigningUserFromAuditLog(guild, guildUser.Id) ?? guildUser;
-                _userService.AssignUserRole(guildUser.Id, r, assinedBy.Id);
+                var assignedBy = GetRoleAssigningUserFromAuditLog(guild, guildUser.Id) ?? guildUser;
+                _userService.AssignUserRole(guildUser.Id, r, assignedBy.Id);
             });
             
             removedRoles.ForEach(r =>
@@ -111,18 +111,25 @@ namespace main.Handlers
         private IUser GetRoleAssigningUserFromAuditLog(SocketGuild server, ulong userId)
         {
             IUser assigningUser = null;
-            server.GetAuditLogsAsync(5).ForEach(logEntries =>
+            server.GetAuditLogsAsync(50).ForEach(logEntries =>
             {
-                foreach (var logEntry in logEntries)
+                if (logEntries == null)
                 {
-                    if (logEntry.Action == ActionType.Ban)
+                    assigningUser = null;
+                }
+                else
+                {
+                    foreach (var logEntry in logEntries)
                     {
-                        if ((logEntry.Data as MemberRoleAuditLogData).Target.Id == userId)
+                        if (logEntry.Action == ActionType.Ban)
                         {
-                            assigningUser = logEntry.User;
-                            break;
+                            if ((logEntry.Data as MemberRoleAuditLogData).Target.Id == userId)
+                            {
+                                assigningUser = logEntry.User;
+                                break;
+                            }
                         }
-                    }
+                    } 
                 }
             });
             return assigningUser;
