@@ -103,7 +103,7 @@ namespace main.Modules
                     );
             }
 
-            if (articleData.CodeExample != string.Empty)
+            if (articleData.CodeExample != string.Empty && articleData.CodeExample.Length < 1020)
             {
                 builder.AddField(
                     "Sample", 
