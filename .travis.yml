@@ -21,7 +21,7 @@ jobs:
         - docker push "$DOCKER_OWNER"/samp-discord-bot:latest
 
 stages:
-  - compile
+  - build
   - test
   - name: push
     if: branch = master AND type != pull_request
